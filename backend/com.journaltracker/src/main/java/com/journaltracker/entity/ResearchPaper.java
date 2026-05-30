@@ -56,6 +56,28 @@ public class ResearchPaper {
     @Column(name = "journal_id")
     private Long journalId;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "journal_id", insertable = false, updatable = false)
+    private Journal journal;
+
+    @ManyToMany
+    @JoinTable(
+        name = "paper_authors",
+        joinColumns = @JoinColumn(name = "paper_id"),
+        inverseJoinColumns = @JoinColumn(name = "author_id")
+    )
+    @Builder.Default
+    private Set<Author> authors = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+        name = "paper_keywords",
+        joinColumns = @JoinColumn(name = "paper_id"),
+        inverseJoinColumns = @JoinColumn(name = "keyword_id")
+    )
+    @Builder.Default
+    private Set<Keyword> keywords = new HashSet<>();
+
     @Column(name = "fetched_at")
     private LocalDateTime fetchedAt;
 
