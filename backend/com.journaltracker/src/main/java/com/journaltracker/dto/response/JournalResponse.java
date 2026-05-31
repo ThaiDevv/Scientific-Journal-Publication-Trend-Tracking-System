@@ -1,4 +1,4 @@
-package com.journaltracker.dto;
+package com.journaltracker.dto.response;
 import lombok.Data;
 
 @Data
