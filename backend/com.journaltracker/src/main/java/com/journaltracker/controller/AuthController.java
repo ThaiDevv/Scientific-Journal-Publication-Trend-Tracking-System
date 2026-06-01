@@ -1,5 +1,6 @@
 package com.journaltracker.controller;
 
+import com.journaltracker.dto.request.LoginRequest;
 import com.journaltracker.dto.request.RegisterRequest;
 import com.journaltracker.dto.response.ApiResponse;
 import com.journaltracker.dto.response.AuthResponse;
@@ -8,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,5 +28,16 @@ public class AuthController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Register successfully", authResponse));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
+        AuthResponse authResponse = authService.login(request);
+        return ResponseEntity.ok(ApiResponse.success("Login successfully", authResponse));
+    }
+
+    @PostMapping("/me")
+    public ResponseEntity<ApiResponse<String>> me(Authentication authentication) {
+        return ResponseEntity.ok(ApiResponse.success("Authenticated", authentication.getName()));
     }
 }
