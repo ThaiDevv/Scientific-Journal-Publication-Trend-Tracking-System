@@ -2,10 +2,12 @@ package com.journaltracker.security;
 
 import com.journaltracker.entity.User;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Date;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,6 +55,20 @@ public class JwtTokenProvider {
 
     public String getRole(String token) {
         return getClaims(token).get("role", String.class);
+    }
+
+    public Claims getClaimsForRefresh(String token, Duration allowedExpiredDuration) {
+        try {
+            return getClaims(token);
+        } catch (ExpiredJwtException exception) {
+            Claims claims = exception.getClaims();
+            Date expiration = claims.getExpiration();
+            Date refreshDeadline = new Date(expiration.getTime() + allowedExpiredDuration.toMillis());
+            if (new Date().after(refreshDeadline)) {
+                throw exception;
+            }
+            return claims;
+        }
     }
 
     private Claims getClaims(String token) {

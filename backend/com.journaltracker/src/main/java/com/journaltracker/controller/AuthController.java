@@ -1,6 +1,7 @@
 package com.journaltracker.controller;
 
 import com.journaltracker.dto.request.LoginRequest;
+import com.journaltracker.dto.request.RefreshTokenRequest;
 import com.journaltracker.dto.request.RegisterRequest;
 import com.journaltracker.dto.response.ApiResponse;
 import com.journaltracker.dto.response.AuthResponse;
@@ -34,6 +35,12 @@ public class AuthController {
     public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
         AuthResponse authResponse = authService.login(request);
         return ResponseEntity.ok(ApiResponse.success("Login successfully", authResponse));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponse<AuthResponse>> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
+        AuthResponse authResponse = authService.refreshToken(request);
+        return ResponseEntity.ok(ApiResponse.success("Token refreshed successfully", authResponse));
     }
 
     @PostMapping("/me")
