@@ -1,29 +1,76 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+} from "react-router-dom";
 
-function HomePage() {
-  return <h1>Hello World</h1>;
-}
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
-function LoginPage() {
-  return <h1>Login Page</h1>;
-}
+function Dashboard() {
+  const navigate = useNavigate();
 
-function DashboardPage() {
-  return <h1>Dashboard Page</h1>;
-}
+  const handleLogout = () => {
+    // Xóa token
+    localStorage.removeItem("token");
 
-function NotFoundPage() {
-  return <h1>404 Not Found</h1>;
+    // Quay về login
+    navigate("/login");
+  };
+
+  return (
+    <div
+      style={{
+        textAlign: "center",
+        marginTop: 100,
+      }}
+    >
+      <h1>Dashboard Page</h1>
+
+      <button onClick={handleLogout}>
+        Logout
+      </button>
+    </div>
+  );
 }
 
 function App() {
+  const token = localStorage.getItem("token");
+
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="*" element={<NotFoundPage />} />
+        {/* Home */}
+        <Route
+          path="/"
+          element={
+            token ? (
+              <Navigate to="/dashboard" />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+
+        {/* Login */}
+        <Route
+          path="/login"
+          element={<Login />}
+        />
+
+        {/* Register */}
+        <Route
+          path="/register"
+          element={<Register />}
+        />
+
+        {/* Dashboard */}
+        <Route
+          path="/dashboard"
+          element={<Dashboard />}
+        />
       </Routes>
     </BrowserRouter>
   );
