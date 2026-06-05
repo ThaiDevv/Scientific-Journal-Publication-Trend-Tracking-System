@@ -42,7 +42,7 @@ public class DataSyncServiceImpl implements DataSyncService {
             Journal journal = findJournal(paperData);
             Set<Author> authors = findAuthors(paperData);
             Set<Keyword> keywords = findKeywords(paperData);
-            
+
             ResearchPaper newPaper = ResearchPaper.builder()
                     .title(paperData.getTitle())
                     .authors(authors)
@@ -55,7 +55,7 @@ public class DataSyncServiceImpl implements DataSyncService {
                     .publicationYear(paperData.getPublicationYear())
                     .sourceUrl(paperData.getSourceUrl())
                     .build();
-            
+
             paperRepository.save(newPaper);
             result.setNewPapers(result.getNewPapers() + 1);
             log.debug("[Save] Đã lưu bài báo: doi='{}', title='{}'", paperData.getDoi(), paperData.getTitle());
@@ -94,12 +94,17 @@ public class DataSyncServiceImpl implements DataSyncService {
         if (paperData.getAuthorNames() == null) {
             return authors;
         }
-        for (String authorName : paperData.getAuthorNames()) {
+        List<String> affiliations = paperData.getAuthorAffiliations();
+        List<String> authorNames = paperData.getAuthorNames();
+        for (int i = 0; i < authorNames.size(); i++) {
+            String authorName = authorNames.get(i);
             if (authorName == null || authorName.isBlank()) continue;
+            String affiliation = (affiliations != null && i < affiliations.size()) ? affiliations.get(i) : null;
             Author author = authorRepository.findByName(authorName.trim())
                     .orElseGet(() -> {
                         Author newAuthor = new Author();
                         newAuthor.setName(authorName.trim());
+                        newAuthor.setAffiliation(affiliation);
                         authorRepository.save(newAuthor);
                         return newAuthor;
                     });

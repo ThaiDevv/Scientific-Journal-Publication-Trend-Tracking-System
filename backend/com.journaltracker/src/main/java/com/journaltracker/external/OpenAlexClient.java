@@ -184,13 +184,17 @@ public class OpenAlexClient implements ExternalApiClient {
 
     private RawPaperData toRawPaperData(JsonNode result) {
         return RawPaperData.builder()
+                .externalId(textOrNull(result, "id"))
                 .doi(textOrNull(result, "doi"))
                 .title(textOrNull(result, "title"))
                 .abstractText(convertAbstractInvertedIndex(result.get("abstract_inverted_index")))
                 .publicationYear(integerOrNull(result, "publication_year"))
+                .sourceUrl(sourceUrl(result))
                 .journalName(journalName(result))
+                .journalIssn(journalIssn(result))
                 .authorNames(authorNames(result.get("authorships")))
-                .keywords(keywords(result.get("concepts")))
+                .authorAffiliations(authorAffiliations(result.get("authorships")))
+                .keywords(extractKeywords(result))
                 .build();
     }
 
@@ -225,6 +229,33 @@ public class OpenAlexClient implements ExternalApiClient {
         return textOrNull(source, "display_name");
     }
 
+    private String sourceUrl(JsonNode result) {
+        JsonNode location = result.path("primary_location");
+        return textOrNull(location, "landing_page_url");
+    }
+
+    private String journalIssn(JsonNode result) {
+        JsonNode source = result.path("primary_location").path("source");
+        return textOrNull(source, "issn_l");
+    }
+
+    private List<String> authorAffiliations(JsonNode authorships) {
+        if (authorships == null || !authorships.isArray()) {
+            return List.of();
+        }
+        List<String> affiliations = new ArrayList<>();
+        authorships.forEach(authorship -> {
+            JsonNode institutions = authorship.path("institutions");
+            if (institutions.isArray() && !institutions.isEmpty()) {
+                String affiliation = textOrNull(institutions.get(0), "display_name");
+                affiliations.add(affiliation);
+            } else {
+                affiliations.add(null);
+            }
+        });
+        return affiliations;
+    }
+
     private List<String> authorNames(JsonNode authorships) {
         if (authorships == null || !authorships.isArray()) {
             return List.of();
@@ -240,21 +271,30 @@ public class OpenAlexClient implements ExternalApiClient {
         return names;
     }
 
-    private List<String> keywords(JsonNode concepts) {
-        if (concepts == null || !concepts.isArray()) {
+    private List<String> extractKeywords(JsonNode result) {
+        // Prefer the newer "keywords" field over legacy "concepts"
+        JsonNode keywordsNode = result.get("keywords");
+        if (keywordsNode != null && keywordsNode.isArray() && !keywordsNode.isEmpty()) {
+            return extractDisplayNames(keywordsNode, 5);
+        }
+        // Fallback to "concepts" for backward compatibility
+        return extractDisplayNames(result.get("concepts"), 5);
+    }
+
+    private List<String> extractDisplayNames(JsonNode nodes, int limit) {
+        if (nodes == null || !nodes.isArray()) {
             return List.of();
         }
-
-        List<String> keywords = new ArrayList<>();
-        concepts.forEach(concept -> {
-            if (keywords.size() < 5) {
-                String keyword = textOrNull(concept, "display_name");
-                if (keyword != null) {
-                    keywords.add(keyword);
+        List<String> names = new ArrayList<>();
+        nodes.forEach(node -> {
+            if (names.size() < limit) {
+                String name = textOrNull(node, "display_name");
+                if (name != null) {
+                    names.add(name);
                 }
             }
         });
-        return keywords;
+        return names;
     }
 
     private String textOrNull(JsonNode node, String fieldName) {

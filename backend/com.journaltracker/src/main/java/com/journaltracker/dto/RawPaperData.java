@@ -21,5 +21,6 @@ public class RawPaperData {
     private String journalName;
     private String journalIssn;
     private List<String> authorNames;
+    private List<String> authorAffiliations;
     private List<String> keywords;
 }
