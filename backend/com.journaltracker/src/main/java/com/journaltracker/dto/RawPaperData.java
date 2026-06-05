@@ -1,8 +1,15 @@
 package com.journaltracker.dto;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import jakarta.validation.constraints.NotBlank;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class RawPaperData {
     private String externalId;
     private String doi;

@@ -29,3 +29,8 @@ springdoc:
     path: /v3/api-docs
   swagger-ui:
     path: /swagger-ui.html
+external-api:
+  openalex:
+    base-url: https://api.openalex.org
+    email: your_team_email@gmail.com
+    per-page: 25
