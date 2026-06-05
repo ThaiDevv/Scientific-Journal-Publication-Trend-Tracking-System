@@ -1,14 +1,19 @@
 package com.journaltracker.service.impl;
 
+import com.journaltracker.dto.request.LoginRequest;
 import com.journaltracker.dto.request.RegisterRequest;
 import com.journaltracker.dto.response.AuthResponse;
 import com.journaltracker.entity.User;
 import com.journaltracker.exception.DuplicateResourceException;
+import com.journaltracker.exception.UnauthorizedException;
 import com.journaltracker.repository.UserRepository;
 import com.journaltracker.security.JwtTokenProvider;
 import com.journaltracker.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,6 +28,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final AuthenticationManager authenticationManager;
 
     @Override
     @Transactional
@@ -52,6 +58,31 @@ public class AuthServiceImpl implements AuthService {
                 .tokenType("Bearer")
                 .username(savedUser.getUsername())
                 .role(savedUser.getRole())
+                .build();
+    }
+
+    @Override
+    public AuthResponse login(LoginRequest request) {
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getUsername(),
+                            request.getPassword()
+                    )
+            );
+        } catch (AuthenticationException ex) {
+            throw new UnauthorizedException("Invalid username or password");
+        }
+
+        User user = userRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new UnauthorizedException("Invalid username or password"));
+        String token = jwtTokenProvider.generateToken(toUserDetails(user));
+
+        return AuthResponse.builder()
+                .token(token)
+                .tokenType("Bearer")
+                .username(user.getUsername())
+                .role(user.getRole())
                 .build();
     }
 

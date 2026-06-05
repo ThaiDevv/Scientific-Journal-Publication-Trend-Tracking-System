@@ -1,6 +1,7 @@
 package com.journaltracker.controller;
 
 import com.journaltracker.dto.RawPaperData;
+import com.journaltracker.dto.request.LoginRequest;
 import com.journaltracker.dto.request.RegisterRequest;
 import com.journaltracker.dto.response.ApiResponse;
 import com.journaltracker.dto.response.AuthResponse;
@@ -29,7 +30,10 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String login() { return "login stub"; }
+    public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
+        AuthResponse authResponse = authService.login(request);
+        return ResponseEntity.ok(ApiResponse.success("Login successful", authResponse));
+    }
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> register(@Valid @RequestBody RegisterRequest request) {

@@ -13,6 +13,7 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class JwtTokenProvider {
@@ -42,7 +43,10 @@ public class JwtTokenProvider {
     }
     private Map<String, Object> getClaimsUser(UserDetails userDetails) {
         Map<String,Object> claims = new HashMap<>();
-        claims.put("roles", userDetails.getAuthorities());
+        claims.put("username", userDetails.getUsername());
+        claims.put("role", userDetails.getAuthorities().stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(",")));
         return claims;
     }
     public boolean validateToken(String token) {
