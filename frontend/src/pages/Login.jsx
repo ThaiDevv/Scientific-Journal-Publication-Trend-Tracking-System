@@ -2,43 +2,32 @@ import { Form, Input, Button, Card, Typography, message } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { loginApi } from "../api/authApi";
+import { useAuth } from "../hooks/useAuth";
 
 const { Title, Text } = Typography;
 
 function Login() {
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const onFinish = async (values) => {
-        console.log("ON FINISH CALLED");
-
         try {
             const res = await loginApi(values);
-            console.log(res.data);
-            console.log("LOGIN RESPONSE:", res.data);
             const authData = res.data.body;
 
-            localStorage.setItem(
-                "token",
-                authData.token
-            );
-
-            localStorage.setItem(
-                "user",
-                JSON.stringify({
-                    username: authData.username,
-                    role: authData.role,
-                })
-            );
+            // Dùng login() từ AuthContext để cập nhật state toàn cục
+            login(authData.token, {
+                username: authData.username,
+                role: authData.role,
+            });
 
             message.success("Đăng nhập thành công!");
-
-            navigate("/dashboard");
+            navigate("/dashboard", { replace: true });
         } catch (error) {
             console.error(error);
-
             message.error(
                 error?.response?.data?.message ||
-                "Sai tên đăng nhập hoặc mật khẩu"
+                    "Sai tên đăng nhập hoặc mật khẩu"
             );
         }
     };
