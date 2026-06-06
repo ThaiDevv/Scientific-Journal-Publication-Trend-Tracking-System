@@ -8,11 +8,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import java.util.List;
 import java.util.Optional;
 
-public interface PaperRepository extends JpaRepository<ResearchPaper, Long> {
+public interface PaperRepository extends JpaRepository<ResearchPaper, Long>,
+        JpaSpecificationExecutor<ResearchPaper> {
     Page<ResearchPaper> findByTitleContainingIgnoreCase(String keyword, Pageable pageable);
 
     Optional<ResearchPaper> findByDoi(String doi);
@@ -31,5 +32,6 @@ public interface PaperRepository extends JpaRepository<ResearchPaper, Long> {
     @Query("SELECT new com.journaltracker.dto.KeywordYearCount(k.id, p.publicationYear, COUNT(p)) " +
            "FROM ResearchPaper p JOIN p.keywords k " +
            "GROUP BY k.id, p.publicationYear")
+
     List<KeywordYearCount> getKeywordCountsGroupByYear();
 }
