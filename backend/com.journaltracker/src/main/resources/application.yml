@@ -2,6 +2,7 @@ server:
   port: 8080
 jwt:
   secret: mySuperSecretKeyForJwtAuthenticationSpringBootProject2026VerySecureSecretKey
+#  expiration: 86400000
   expiration: 86400000
 spring:
   application:

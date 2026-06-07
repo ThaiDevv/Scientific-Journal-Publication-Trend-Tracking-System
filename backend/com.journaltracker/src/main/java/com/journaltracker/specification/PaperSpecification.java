@@ -4,14 +4,13 @@ import com.journaltracker.entity.Author;
 import com.journaltracker.entity.Journal;
 import com.journaltracker.entity.ResearchPaper;
 import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
 
 public class PaperSpecification {
 
     public static Specification<ResearchPaper> hasKeyword(String keyword) {
-
         return (root, query, cb) -> {
-
             if (keyword == null || keyword.isBlank()) {
                 return null;
             }
@@ -26,15 +25,14 @@ public class PaperSpecification {
     }
 
     public static Specification<ResearchPaper> hasAuthor(String author) {
-
         return (root, query, cb) -> {
-
             if (author == null || author.isBlank()) {
                 return null;
             }
+            query.distinct(true);
 
             Join<ResearchPaper, Author> authorJoin =
-                    root.join("authors");
+                    root.join("authors", JoinType.LEFT);
 
             return cb.like(
                     cb.lower(authorJoin.get("name")),
@@ -44,15 +42,14 @@ public class PaperSpecification {
     }
 
     public static Specification<ResearchPaper> hasJournal(String journal) {
-
         return (root, query, cb) -> {
-
             if (journal == null || journal.isBlank()) {
                 return null;
             }
+            query.distinct(true);
 
             Join<ResearchPaper, Journal> journalJoin =
-                    root.join("journal");
+                    root.join("journal", JoinType.LEFT);
 
             return cb.like(
                     cb.lower(journalJoin.get("name")),
@@ -62,9 +59,7 @@ public class PaperSpecification {
     }
 
     public static Specification<ResearchPaper> yearGreaterThanOrEqual(Integer yearFrom) {
-
         return (root, query, cb) -> {
-
             if (yearFrom == null) {
                 return null;
             }
@@ -77,9 +72,7 @@ public class PaperSpecification {
     }
 
     public static Specification<ResearchPaper> yearLessThanOrEqual(Integer yearTo) {
-
         return (root, query, cb) -> {
-
             if (yearTo == null) {
                 return null;
             }

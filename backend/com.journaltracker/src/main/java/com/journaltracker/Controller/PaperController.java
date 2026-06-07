@@ -1,4 +1,4 @@
-package com.journaltracker.Controller;
+package com.journaltracker.controller;
 
 import com.journaltracker.dto.request.PaperSearchRequest;
 import com.journaltracker.dto.response.ApiResponse;
