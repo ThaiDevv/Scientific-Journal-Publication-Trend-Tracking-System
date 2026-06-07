@@ -1,104 +1,201 @@
-import { Form, Input, Button, Card, Typography, message } from "antd";
-import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import { useState, useEffect } from "react";
+import { Form, Input, Button, Typography, message } from "antd";
+import {
+    UserOutlined,
+    LockOutlined,
+    ReadOutlined,
+} from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { loginApi } from "../api/authApi";
-import { useAuth } from "../hooks/useAuth";
 
 const { Title, Text } = Typography;
 
 function Login() {
     const navigate = useNavigate();
-    const { login } = useAuth();
+
+
+    const images = [
+        "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200",
+        "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200",
+        "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1200",
+        "https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1200",
+    ];
+
+    const [currentImage, setCurrentImage] = useState(0);
+    const [fade, setFade] = useState(true);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setFade(false);
+
+            setTimeout(() => {
+                setCurrentImage((prev) =>
+                    prev === images.length - 1
+                        ? 0
+                        : prev + 1
+                );
+
+                setFade(true);
+            }, 500);
+        }, 3000);
+
+        return () => clearInterval(interval);
+    }, []);
 
     const onFinish = async (values) => {
         try {
             const res = await loginApi(values);
+
             const authData = res.data.body;
 
-            // Dùng login() từ AuthContext để cập nhật state toàn cục
-            login(authData.token, {
-                username: authData.username,
-                role: authData.role,
-            });
+            localStorage.setItem("token", authData.token);
 
-            message.success("Đăng nhập thành công!");
-            navigate("/dashboard", { replace: true });
+            localStorage.setItem(
+                "user",
+                JSON.stringify({
+                    username: authData.username,
+                    role: authData.role,
+                })
+            );
+
+            message.success("Đăng nhập thành công");
+
+            navigate("/dashboard");
         } catch (error) {
-            console.error(error);
             message.error(
                 error?.response?.data?.message ||
-                    "Sai tên đăng nhập hoặc mật khẩu"
+                "Sai tên đăng nhập hoặc mật khẩu"
             );
         }
     };
+
     return (
-        <div className="auth-page">
-            <Card className="auth-card">
-                <div className="academic-logo">
-                    <div className="logo-circle">🎓</div>
+        <div className="login-page">
+            <div className="login-container">
+                <div className="login-left">
+                    <div className="login-content">
+                        <div className="logo-section">
+                            <div className="logo-circle">
+                                <ReadOutlined />
+                            </div>
 
-                    <Title level={2}>Academic Forum</Title>
+                            <div>
+                                <h2 className="logo-title">
+                                    Academic Forum
+                                </h2>
 
-                    <Text>
-                        Scientific Journal Publication Trend Tracking System
-                    </Text>
+                                <p className="logo-subtitle">
+                                    Scientific Journal Publication
+                                    Trend Tracking System
+                                </p>
+                            </div>
+                        </div>
+
+                        <Title level={1} className="welcome-title">
+                            Welcome Back 👋
+                        </Title>
+
+                        <Text className="welcome-text">
+                            Sign in to access research papers,
+                            publication analytics and academic
+                            collaboration tools.
+                        </Text>
+
+                        <Form
+                            layout="vertical"
+                            onFinish={onFinish}
+                            className="login-form"
+                        >
+                            <Form.Item
+                                label="Username"
+                                name="username"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message:
+                                            "Vui lòng nhập tên đăng nhập",
+                                    },
+                                ]}
+                            >
+                                <Input
+                                    size="large"
+                                    prefix={<UserOutlined />}
+                                    placeholder="Enter your username"
+                                />
+                            </Form.Item>
+
+                            <Form.Item
+                                label="Password"
+                                name="password"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message:
+                                            "Vui lòng nhập mật khẩu",
+                                    },
+                                ]}
+                            >
+                                <Input.Password
+                                    size="large"
+                                    prefix={<LockOutlined />}
+                                    placeholder="Enter your password"
+                                />
+                            </Form.Item>
+
+                            <div className="forgot-row">
+                                <a href="#">
+                                    Forgot Password?
+                                </a>
+                            </div>
+
+                            <Button
+                                htmlType="submit"
+                                block
+                                size="large"
+                                className="signin-btn"
+                            >
+                                Sign In
+                            </Button>
+                        </Form>
+
+                        <div className="signup-link">
+                            Don't have an account?
+                            <Link to="/register">
+                                Sign up
+                            </Link>
+                        </div>
+
+                        <div className="terms">
+                            By signing in, you agree to our
+                            <a href="#"> Terms of Service </a>
+                            and
+                            <a href="#"> Privacy Policy</a>.
+                        </div>
+
+                        <div className="copyright">
+                            © 2026 Academic Forum.
+                            All rights reserved.
+                        </div>
+                    </div>
                 </div>
 
-                <Form layout="vertical" onFinish={onFinish}>
-                    <Form.Item
-                        name="username"
-                        rules={[
-                            {
-                                required: true,
-                                message: "Vui lòng nhập tên đăng nhập",
-                            },
-                        ]}
-                    >
-                        <Input
-                            size="large"
-                            prefix={<UserOutlined />}
-                            placeholder="Tên đăng nhập"
-                        />
-                    </Form.Item>
-
-                    <Form.Item
-                        name="password"
-                        rules={[
-                            {
-                                required: true,
-                                message: "Vui lòng nhập mật khẩu",
-                            },
-                        ]}
-                    >
-                        <Input.Password
-                            size="large"
-                            prefix={<LockOutlined />}
-                            placeholder="Mật khẩu"
-                        />
-                    </Form.Item>
-
-                    <Button
-                        type="primary"
-                        htmlType="submit"
-                        size="large"
-                        block
-                    >
-                        Đăng nhập
-                    </Button>
-
-                    <div className="terms">
-                        Bằng việc đăng nhập, bạn đồng ý với
-                        <a href="#"> Điều khoản sử dụng </a>
-                        và
-                        <a href="#"> Chính sách bảo mật</a>.
+                <div className="login-right">
+                    <div className="slider-wrapper">
+                        {images.map((image, index) => (
+                            <img
+                                key={index}
+                                src={image}
+                                alt=""
+                                className={
+                                    index === currentImage
+                                        ? "slider-image active"
+                                        : "slider-image"
+                                }
+                            />
+                        ))}
                     </div>
-
-                    <div className="auth-footer">
-                        <span>Chưa có tài khoản?</span>
-                        <Link to="/register">Đăng ký</Link>
-                    </div>
-                </Form>
-            </Card>
+                </div>
+            </div>
         </div>
     );
 }
