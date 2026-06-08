@@ -16,9 +16,10 @@ public interface ResearchTopicRepository extends JpaRepository<ResearchTopic, Lo
 
     @Modifying
     @Transactional
-    @Query("UPDATE ResearchTopic rt SET rt.isTrending = true WHERE rt.id IN (" +
-           "  SELECT DISTINCT r.id FROM ResearchTopic r JOIN r.keywords k, PublicationTrend pt " +
-           "  WHERE k.id = pt.keywordId AND pt.year = :maxYear AND pt.growthRate > 50.0" +
-           ")")
+    @Query(value = "UPDATE research_topics SET is_trending = true WHERE id IN (" +
+           "  SELECT DISTINCT tk.topic_id FROM topic_keywords tk " +
+           "  JOIN publication_trends pt ON tk.keyword_id = pt.keyword_id " +
+           "  WHERE pt.year = :maxYear AND pt.growth_rate > 50.0" +
+           ")", nativeQuery = true)
     void updateTrendingTopics(@Param("maxYear") int maxYear);
 }

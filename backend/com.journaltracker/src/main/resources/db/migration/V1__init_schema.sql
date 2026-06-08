@@ -39,7 +39,6 @@ CREATE TABLE authors
 (
     id          BIGINT PRIMARY KEY AUTO_INCREMENT,
     name        VARCHAR(255) NOT NULL,
-    external_id VARCHAR(255) UNIQUE,
     affiliation VARCHAR(500)
 );
 CREATE TABLE keywords

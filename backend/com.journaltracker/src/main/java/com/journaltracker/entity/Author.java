@@ -21,8 +21,7 @@ public class Author {
     @Column(nullable = false)
     String name;
 
-    @Column(name = "external_id")
-    String externalId;
+
 
     @Column(name = "affiliation")
     String affiliation;
