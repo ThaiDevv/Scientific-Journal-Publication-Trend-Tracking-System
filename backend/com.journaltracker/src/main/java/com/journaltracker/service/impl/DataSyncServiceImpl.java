@@ -36,7 +36,7 @@ public class DataSyncServiceImpl implements DataSyncService {
             if (isDuplicate(paperData)) {
                 log.debug("[Dedup] Bỏ qua bài báo trùng: doi='{}', title='{}'",
                         paperData.getDoi(), paperData.getTitle());
-                result.setDuplpicates(result.getDuplpicates() + 1);
+                result.setDuplicates(result.getDuplicates() + 1);
                 return;
             }
             Journal journal = findJournal(paperData);
@@ -56,8 +56,13 @@ public class DataSyncServiceImpl implements DataSyncService {
                     .sourceUrl(paperData.getSourceUrl())
                     .build();
 
-            paperRepository.save(newPaper);
+            ResearchPaper savedPaper = paperRepository.save(newPaper);
+            if (journal != null) {
+                journal.setPaperCount((journal.getPaperCount() == null ? 0 : journal.getPaperCount()) + 1);
+                journalRepository.save(journal);
+            }
             result.setNewPapers(result.getNewPapers() + 1);
+            result.getSyncedPapers().add(savedPaper);
             log.debug("[Save] Đã lưu bài báo: doi='{}', title='{}'", paperData.getDoi(), paperData.getTitle());
         } catch (Exception e) {
             log.error("[Error] Lỗi khi xử lý bài báo title='{}': {}", paperData.getTitle(), e.getMessage(), e);
@@ -168,7 +173,7 @@ public class DataSyncServiceImpl implements DataSyncService {
             page++;
         }
         result.setTotalFetched(totalFetched);
-        result.setSynceAt(LocalDate.now());
+        result.setSyncedAt(LocalDate.now());
         return result;
     }
 
@@ -195,7 +200,7 @@ public class DataSyncServiceImpl implements DataSyncService {
             page++;
         }
         result.setTotalFetched(totalFetched);
-        result.setSynceAt(LocalDate.now());
+        result.setSyncedAt(LocalDate.now());
         return result;
     }
 
@@ -219,12 +224,13 @@ public class DataSyncServiceImpl implements DataSyncService {
         for (SyncResult r : results) {
             result.setTotalFetched(result.getTotalFetched() + r.getTotalFetched());
             result.setNewPapers(result.getNewPapers() + r.getNewPapers());
-            result.setDuplpicates(result.getDuplpicates() + r.getDuplpicates());
+            result.setDuplicates(result.getDuplicates() + r.getDuplicates());
             result.setErrors(result.getErrors() + r.getErrors());
+            result.getSyncedPapers().addAll(r.getSyncedPapers());
         }
-        result.setSynceAt(LocalDate.now());
+        result.setSyncedAt(LocalDate.now());
         log.info("[Sync] Tổng hợp ALL: tổng={}, mới={}, trùng={}, lỗi={}",
-                result.getTotalFetched(), result.getNewPapers(), result.getDuplpicates(), result.getErrors());
+                result.getTotalFetched(), result.getNewPapers(), result.getDuplicates(), result.getErrors());
         return result;
     }
 }

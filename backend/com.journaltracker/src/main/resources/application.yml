@@ -33,5 +33,10 @@ springdoc:
 external-api:
   openalex:
     base-url: https://api.openalex.org
-    email: your_team_email@gmail.com
+    email: tranvanthai20062@gmail.com
     per-page: 25
+sync:
+  cron: "0 37 13 * * ?"
+  enabled: true
+  default-query: "computer science"
+  max-pages-per-sync: 5
