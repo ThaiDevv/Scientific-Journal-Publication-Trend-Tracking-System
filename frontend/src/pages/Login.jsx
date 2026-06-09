@@ -8,36 +8,26 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { loginApi } from "../api/authApi";
 
+import art1 from "../assets/journal_art_1.png";
+import art2 from "../assets/journal_art_2.png";
+import art3 from "../assets/journal_art_3.png";
+import art4 from "../assets/journal_art_4.png";
+
 const { Title, Text } = Typography;
 
 function Login() {
     const navigate = useNavigate();
 
-
-    const images = [
-        "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200",
-        "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200",
-        "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1200",
-        "https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1200",
-    ];
+    const images = [art1, art2, art3, art4];
 
     const [currentImage, setCurrentImage] = useState(0);
-    const [fade, setFade] = useState(true);
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setFade(false);
-
-            setTimeout(() => {
-                setCurrentImage((prev) =>
-                    prev === images.length - 1
-                        ? 0
-                        : prev + 1
-                );
-
-                setFade(true);
-            }, 500);
-        }, 3000);
+            setCurrentImage((prev) =>
+                prev === images.length - 1 ? 0 : prev + 1
+            );
+        }, 5000);
 
         return () => clearInterval(interval);
     }, []);
@@ -58,13 +48,15 @@ function Login() {
                 })
             );
 
-            message.success("Đăng nhập thành công");
+            message.success("Login Successful!");
 
             navigate("/dashboard");
         } catch (error) {
+            console.error(error);
+
             message.error(
                 error?.response?.data?.message ||
-                "Sai tên đăng nhập hoặc mật khẩu"
+                "Wrong username or password!"
             );
         }
     };
@@ -113,7 +105,7 @@ function Login() {
                                     {
                                         required: true,
                                         message:
-                                            "Vui lòng nhập tên đăng nhập",
+                                            "Please enter your username!",
                                     },
                                 ]}
                             >
@@ -131,7 +123,7 @@ function Login() {
                                     {
                                         required: true,
                                         message:
-                                            "Vui lòng nhập mật khẩu",
+                                            "Please enter your password!",
                                     },
                                 ]}
                             >
@@ -143,9 +135,7 @@ function Login() {
                             </Form.Item>
 
                             <div className="forgot-row">
-                                <a href="#">
-                                    Forgot Password?
-                                </a>
+                                <a href="#">Forgot Password?</a>
                             </div>
 
                             <Button
@@ -159,7 +149,7 @@ function Login() {
                         </Form>
 
                         <div className="signup-link">
-                            Don't have an account?
+                            Don't have an account?{" "}
                             <Link to="/register">
                                 Sign up
                             </Link>
@@ -185,7 +175,7 @@ function Login() {
                             <img
                                 key={index}
                                 src={image}
-                                alt=""
+                                alt={`slide-${index}`}
                                 className={
                                     index === currentImage
                                         ? "slider-image active"

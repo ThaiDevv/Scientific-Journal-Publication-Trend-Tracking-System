@@ -47,12 +47,12 @@ function Register() {
                 role: values.role,
             });
 
-            message.success("Đăng ký thành công!");
+            message.success("Registration successful!");
             navigate("/login");
         } catch (error) {
             message.error(
                 error?.response?.data?.message ||
-                "Username hoặc Email đã tồn tại"
+                "Username or Email already exists!"
             );
         }
     };
@@ -163,7 +163,7 @@ function Register() {
                                                     }
 
                                                     return Promise.reject(
-                                                        new Error("Mật khẩu không khớp")
+                                                        new Error("Passwords do not match!")
                                                     );
                                                 },
                                             }),
