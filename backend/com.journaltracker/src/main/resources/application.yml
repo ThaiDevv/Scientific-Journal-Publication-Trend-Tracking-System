@@ -36,7 +36,7 @@ external-api:
     email: tranvanthai20062@gmail.com
     per-page: 25
 sync:
-  cron: "0 37 13 * * ?"
+  cron: "0 57 23 * * ?"
   enabled: true
   default-query: "computer science"
   max-pages-per-sync: 5

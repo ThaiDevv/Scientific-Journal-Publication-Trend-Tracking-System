@@ -7,6 +7,7 @@ import {
 } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { loginApi } from "../api/authApi";
+import { useAuth } from "../hooks/useAuth";
 
 import art1 from "../assets/journal_art_1.png";
 import art2 from "../assets/journal_art_2.png";
@@ -17,10 +18,18 @@ const { Title, Text } = Typography;
 
 function Login() {
     const navigate = useNavigate();
+    const { login, isAuthenticated } = useAuth();
 
     const images = [art1, art2, art3, art4];
 
     const [currentImage, setCurrentImage] = useState(0);
+
+    // Tự động chuyển hướng sang dashboard nếu đã đăng nhập
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate("/dashboard");
+        }
+    }, [isAuthenticated, navigate]);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -38,15 +47,11 @@ function Login() {
 
             const authData = res.data.body;
 
-            localStorage.setItem("token", authData.token);
-
-            localStorage.setItem(
-                "user",
-                JSON.stringify({
-                    username: authData.username,
-                    role: authData.role,
-                })
-            );
+            // Cập nhật trạng thái đăng nhập vào AuthContext
+            login(authData.token, {
+                username: authData.username,
+                role: authData.role,
+            });
 
             message.success("Login Successful!");
 
