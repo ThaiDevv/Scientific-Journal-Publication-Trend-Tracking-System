@@ -1,9 +1,12 @@
 package com.journaltracker.service.impl;
 
 import com.journaltracker.dto.request.PaperSearchRequest;
+import com.journaltracker.dto.response.PaperDetailResponse;
 import com.journaltracker.dto.response.PaperSummaryResponse;
 import com.journaltracker.entity.ResearchPaper;
+import com.journaltracker.exception.ResourceNotFoundException;
 import com.journaltracker.mapper.PaperMapper;
+import com.journaltracker.repository.BookmarkRepository;
 import com.journaltracker.repository.PaperRepository;
 import com.journaltracker.service.PaperService;
 import com.journaltracker.specification.PaperSpecification;
@@ -21,6 +24,7 @@ public class PaperServiceImpl implements PaperService {
 
     private final PaperRepository paperRepository;
     private final PaperMapper paperMapper;
+    private final BookmarkRepository bookmarkRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -59,5 +63,29 @@ public class PaperServiceImpl implements PaperService {
                 paperRepository.findAll(specification, pageable);
 
         return paperPage.map(paperMapper::toSummaryResponse);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PaperDetailResponse getPaperById(
+            Long id,
+            String currentUsername
+    ) {
+
+        ResearchPaper paper = paperRepository.findDetailById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Paper not found with id: " + id
+                ));
+
+        boolean isBookmarked = currentUsername != null
+                && bookmarkRepository.existsByUserUsernameAndPaperId(
+                        currentUsername,
+                        id
+                );
+
+        return paperMapper.toDetailResponse(
+                paper,
+                isBookmarked
+        );
     }
 }
