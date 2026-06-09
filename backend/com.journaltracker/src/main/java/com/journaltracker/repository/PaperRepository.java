@@ -34,4 +34,6 @@ public interface PaperRepository extends JpaRepository<ResearchPaper, Long>,
            "GROUP BY k.id, p.publicationYear")
 
     List<KeywordYearCount> getKeywordCountsGroupByYear();
+
+    Optional<ResearchPaper> findByTitleIgnoreCase(String trim);
 }
