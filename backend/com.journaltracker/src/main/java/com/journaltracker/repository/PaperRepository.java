@@ -20,7 +20,9 @@ public interface PaperRepository extends JpaRepository<ResearchPaper, Long>,
 
     boolean existsByDoi(String doi);
 
-    boolean existsByTitle(String title);
+    @Query("SELECT COUNT(p) > 0 FROM ResearchPaper p WHERE LOWER(p.title) = LOWER(:title)")
+    boolean existsByTitle(@Param("title") String title);
+
     @Query("SELECT new com.journaltracker.dto.TrendDataPoint(p.publicationYear, CAST(COUNT(p) AS int)) " +
             "FROM ResearchPaper p JOIN p.keywords k " +
             "WHERE LOWER(k.name) = LOWER(:keyword) " +

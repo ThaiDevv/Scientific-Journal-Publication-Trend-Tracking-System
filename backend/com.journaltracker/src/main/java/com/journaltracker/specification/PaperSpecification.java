@@ -33,6 +33,8 @@ public class PaperSpecification {
                 return null;
             }
 
+            query.distinct(true);
+
             Join<ResearchPaper, Author> authorJoin =
                     root.join("authors");
 
@@ -50,6 +52,8 @@ public class PaperSpecification {
             if (journal == null || journal.isBlank()) {
                 return null;
             }
+
+            query.distinct(true);
 
             Join<ResearchPaper, Journal> journalJoin =
                     root.join("journal");

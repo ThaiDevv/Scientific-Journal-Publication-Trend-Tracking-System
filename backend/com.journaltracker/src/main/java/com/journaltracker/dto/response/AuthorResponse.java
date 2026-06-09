@@ -6,5 +6,5 @@ import lombok.Data;
 public class AuthorResponse {
     Long id;
     String name;
-    String affilliation;
+    String affiliation;
 }

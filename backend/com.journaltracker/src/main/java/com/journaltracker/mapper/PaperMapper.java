@@ -1,5 +1,6 @@
 package com.journaltracker.mapper;
 
+import com.journaltracker.dto.response.PaperResponse;
 import com.journaltracker.dto.response.PaperSummaryResponse;
 import com.journaltracker.entity.Author;
 import com.journaltracker.entity.Keyword;
@@ -11,8 +12,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {JournalMapper.class})
 public interface PaperMapper {
+
+    PaperResponse toResponse(ResearchPaper paper);
 
     @Mapping(
             target = "journalName",
