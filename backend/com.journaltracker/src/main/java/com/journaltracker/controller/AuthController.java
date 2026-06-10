@@ -52,8 +52,7 @@ public class AuthController {
     }
 
     @GetMapping("/test")
-    public List<RawPaperData> test() {
-//       dataSyncScheduler.syncData();
-       return CrossrefClient.fetchPapers("artificial intelligence", 1, 10);
+    public void test() {
+       dataSyncScheduler.syncData();
     }
 }
