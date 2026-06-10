@@ -5,7 +5,6 @@ import com.journaltracker.dto.TrendDataPoint;
 import com.journaltracker.entity.ResearchPaper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,10 +17,6 @@ public interface PaperRepository extends JpaRepository<ResearchPaper, Long>,
     Page<ResearchPaper> findByTitleContainingIgnoreCase(String keyword, Pageable pageable);
 
     Optional<ResearchPaper> findByDoi(String doi);
-
-    @EntityGraph(attributePaths = {"journal", "authors", "keywords"})
-    @Query("SELECT p FROM ResearchPaper p WHERE p.id = :id")
-    Optional<ResearchPaper> findDetailById(@Param("id") Long id);
 
     boolean existsByDoi(String doi);
 
