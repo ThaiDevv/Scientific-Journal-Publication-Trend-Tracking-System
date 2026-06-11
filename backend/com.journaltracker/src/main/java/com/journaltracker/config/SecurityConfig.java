@@ -20,18 +20,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final JwtAuthenticationFilter
-            jwtAuthenticationFilter;
+        private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(
-            HttpSecurity http
-    ) throws Exception {
+        @Bean
+        public SecurityFilterChain securityFilterChain(
+                        HttpSecurity http) throws Exception {
 
-        http.cors(org.springframework.security.config.Customizer.withDefaults());
+                http.cors(org.springframework.security.config.Customizer.withDefaults());
 
-        http.authorizeHttpRequests(auth ->
-                auth.requestMatchers(
+                http.authorizeHttpRequests(auth -> auth.requestMatchers(
                                 "/api/auth/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
@@ -39,47 +36,37 @@ public class SecurityConfig {
                                 "/api/papers/*",
                                 "/api/journals/**",
                                 "/swagger-ui.html",
-                                "/error"
-                        )
-                        .permitAll()
-                        .anyRequest()
-                        .authenticated()
-        );
+                                "/error")
+                                .permitAll()
+                                .anyRequest()
+                                .authenticated());
 
-        http.csrf(
-                AbstractHttpConfigurer::disable
-        );
+                http.csrf(
+                                AbstractHttpConfigurer::disable);
 
-        http.sessionManagement(session ->
-                session.sessionCreationPolicy(
-                        SessionCreationPolicy.STATELESS
-                )
-        );
+                http.sessionManagement(session -> session.sessionCreationPolicy(
+                                SessionCreationPolicy.STATELESS));
 
-        http.addFilterBefore(
-                jwtAuthenticationFilter,
-                UsernamePasswordAuthenticationFilter.class
-        );
-        http.exceptionHandling(exception ->
-                exception.authenticationEntryPoint(
-                        (request, response, authException) -> {
-                            response.sendError(
-                                    HttpServletResponse.SC_UNAUTHORIZED,
-                                    authException.getMessage()
-                            );
-                        }
-                )
-        );
-        return http.build();
-    }
+                http.addFilterBefore(
+                                jwtAuthenticationFilter,
+                                UsernamePasswordAuthenticationFilter.class);
+                http.exceptionHandling(exception -> exception.authenticationEntryPoint(
+                                (request, response, authException) -> {
+                                        response.sendError(
+                                                        HttpServletResponse.SC_UNAUTHORIZED,
+                                                        authException.getMessage());
+                                }));
+                return http.build();
+        }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+                return new BCryptPasswordEncoder();
+        }
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
+        @Bean
+        public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+                        throws Exception {
+                return authenticationConfiguration.getAuthenticationManager();
+        }
 }

@@ -18,18 +18,20 @@ const { Title, Text } = Typography;
 
 function Login() {
     const navigate = useNavigate();
-    const { login, isAuthenticated } = useAuth();
+    const { login, isAuthenticated, loading } = useAuth();
 
     const images = [art1, art2, art3, art4];
 
     const [currentImage, setCurrentImage] = useState(0);
 
-    // Tự động chuyển hướng sang dashboard nếu đã đăng nhập
+    // Chờ AuthContext đọc xong localStorage mới kiểm tra trạng thái đăng nhập
+    // Nếu không có `loading`, khi token còn hạn trong localStorage sẽ bị redirect
+    // ngay lần đầu render trước khi isAuthenticated được set đúng giá trị
     useEffect(() => {
-        if (isAuthenticated) {
+        if (!loading && isAuthenticated) {
             navigate("/dashboard");
         }
-    }, [isAuthenticated, navigate]);
+    }, [isAuthenticated, loading, navigate]);
 
     useEffect(() => {
         const interval = setInterval(() => {
