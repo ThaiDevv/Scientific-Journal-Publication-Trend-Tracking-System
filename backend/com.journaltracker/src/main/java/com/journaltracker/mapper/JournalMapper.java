@@ -12,8 +12,7 @@ public interface JournalMapper {
 
     default JournalDetailResponse toDetailResponse(
             Journal journal,
-            boolean isFollowed
-    ) {
+            boolean isFollowed) {
 
         JournalDetailResponse response = new JournalDetailResponse();
         response.setId(journal.getId());
