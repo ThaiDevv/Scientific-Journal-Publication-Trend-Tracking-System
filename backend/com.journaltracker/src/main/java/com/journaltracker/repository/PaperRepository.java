@@ -44,4 +44,11 @@ public interface PaperRepository extends JpaRepository<ResearchPaper, Long>,
     List<KeywordYearCount> getKeywordCountsGroupByYear();
 
     Optional<ResearchPaper> findByTitleIgnoreCase(String trim);
+
+
+    int countByAuthors_Id(Long authorId);
+
+    Page<ResearchPaper> findByAuthors_Id(Long authorId, Pageable pageable);
+
+    Page<ResearchPaper> findByKeywords_NameIgnoreCase(String keywordName, Pageable pageable);
 }

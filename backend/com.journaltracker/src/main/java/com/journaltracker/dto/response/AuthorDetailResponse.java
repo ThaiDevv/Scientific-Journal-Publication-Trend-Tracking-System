@@ -1,16 +1,20 @@
 package com.journaltracker.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class KeywordResponse {
+public class AuthorDetailResponse {
     private Long id;
     private String name;
-    private Integer usageCount;
+    private String affiliation;
+    private int paperCount;
+
 }
+
+
