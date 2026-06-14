@@ -2,6 +2,7 @@ package com.journaltracker.repository;
 
 import com.journaltracker.dto.KeywordYearCount;
 import com.journaltracker.dto.TrendDataPoint;
+import com.journaltracker.dto.response.YearlyStats;
 import com.journaltracker.entity.ResearchPaper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,4 +53,20 @@ public interface PaperRepository extends JpaRepository<ResearchPaper, Long>,
     Page<ResearchPaper> findByAuthors_Id(Long authorId, Pageable pageable);
 
     Page<ResearchPaper> findByKeywords_NameIgnoreCase(String keywordName, Pageable pageable);
+
+    long countByCreatedAtGreaterThanEqual(LocalDateTime createdAt);
+
+    @EntityGraph(attributePaths = {"journal", "authors", "keywords"})
+    List<ResearchPaper> findByPublicationYearLessThanEqualOrderByCreatedAtDesc(
+            Integer publicationYear,
+            Pageable pageable
+    );
+
+    @Query("SELECT new com.journaltracker.dto.response.YearlyStats(p.publicationYear, CAST(COUNT(p) AS int)) " +
+           "FROM ResearchPaper p " +
+           "WHERE p.publicationYear IS NOT NULL " +
+           "AND p.publicationYear <= :currentYear " +
+           "GROUP BY p.publicationYear " +
+           "ORDER BY p.publicationYear")
+    List<YearlyStats> countPublicationsByYear(@Param("currentYear") int currentYear);
 }

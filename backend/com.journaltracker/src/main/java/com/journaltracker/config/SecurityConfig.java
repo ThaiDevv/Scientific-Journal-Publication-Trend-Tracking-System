@@ -35,6 +35,7 @@ public class SecurityConfig {
                                 "/api/papers/search",
                                 "/api/papers/*",
                                 "/api/journals/**",
+                                "/api/dashboard/**",
                                 "/swagger-ui.html",
                                 "/error")
                                 .permitAll()
