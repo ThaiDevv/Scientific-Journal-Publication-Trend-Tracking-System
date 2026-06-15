@@ -23,7 +23,7 @@ const JournalBarChart = ({ data, loading }) => {
     return (
         <div style={{ width: '100%', height: 300 }}>
             <ResponsiveContainer>
-                <BarChart data={data} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+                <BarChart data={data} margin={{ top: 20, right: 30, left: 0, bottom: 65 }}>
                     {/* Định nghĩa dải màu Gradient (JP-37 Tech Details) */}
                     <defs>
                         <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
@@ -35,8 +35,12 @@ const JournalBarChart = ({ data, loading }) => {
                     <CartesianGrid strokeDasharray="3 3" vertical={false} />
                     <XAxis
                         dataKey="journalName"
-                        tick={{ fontSize: 12 }}
+                        tick={{ fontSize: 11 }}
                         interval={0} // Ép hiển thị tất cả tên
+                        angle={-35}
+                        textAnchor="end"
+                        height={75}
+                        tickFormatter={(value) => value && value.length > 25 ? `${value.substring(0, 22)}...` : value}
                     />
                     <YAxis />
 

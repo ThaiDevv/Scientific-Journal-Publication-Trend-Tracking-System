@@ -1,5 +1,6 @@
 package com.journaltracker.repository;
 
+import com.journaltracker.dto.response.FieldDistributionResponse;
 import com.journaltracker.dto.response.JournalStatsResponse;
 import com.journaltracker.entity.Journal;
 import org.springframework.data.domain.Page;
@@ -38,4 +39,17 @@ public interface JournalRepository extends JpaRepository<Journal, Long> {
             ORDER BY COUNT(p) DESC
             """)
     List<JournalStatsResponse> findTopJournalsByPaperCount(Pageable pageable);
+
+    @Query("""
+            SELECT new com.journaltracker.dto.response.FieldDistributionResponse(
+                j.field,
+                COUNT(p)
+            )
+            FROM Journal j
+            JOIN ResearchPaper p ON p.journalId = j.id
+            WHERE j.field IS NOT NULL AND j.field <> ''
+            GROUP BY j.field
+            ORDER BY COUNT(p) DESC
+            """)
+    List<FieldDistributionResponse> getFieldDistribution();
 }

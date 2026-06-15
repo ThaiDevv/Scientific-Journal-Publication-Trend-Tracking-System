@@ -2,6 +2,7 @@ package com.journaltracker.service.impl;
 
 import com.journaltracker.dto.TrendingTopic;
 import com.journaltracker.dto.response.DashboardStatsResponse;
+import com.journaltracker.dto.response.FieldDistributionResponse;
 import com.journaltracker.dto.response.JournalStatsResponse;
 import com.journaltracker.dto.response.PaperSummaryResponse;
 import com.journaltracker.dto.response.YearlyStats;
@@ -79,6 +80,11 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     public List<YearlyStats> getPublicationsByYear() {
         return paperRepository.countPublicationsByYear(LocalDate.now().getYear());
+    }
+
+    @Override
+    public List<FieldDistributionResponse> getFieldDistribution() {
+        return journalRepository.getFieldDistribution();
     }
 
     private int normalizeLimit(int limit) {

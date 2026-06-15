@@ -3,6 +3,7 @@ package com.journaltracker.controller;
 import com.journaltracker.dto.TrendingTopic;
 import com.journaltracker.dto.response.ApiResponse;
 import com.journaltracker.dto.response.DashboardStatsResponse;
+import com.journaltracker.dto.response.FieldDistributionResponse;
 import com.journaltracker.dto.response.JournalStatsResponse;
 import com.journaltracker.dto.response.PaperSummaryResponse;
 import com.journaltracker.dto.response.YearlyStats;
@@ -66,6 +67,14 @@ public class DashboardController {
         return ApiResponse.success(
                 "Get yearly publication stats successfully",
                 dashboardService.getPublicationsByYear()
+        );
+    }
+
+    @GetMapping("/field-distribution")
+    public ApiResponse<List<FieldDistributionResponse>> getFieldDistribution() {
+        return ApiResponse.success(
+                "Get field distribution successfully",
+                dashboardService.getFieldDistribution()
         );
     }
 }

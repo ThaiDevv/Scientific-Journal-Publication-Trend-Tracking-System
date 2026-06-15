@@ -21,10 +21,10 @@ export const getYearlyStats = () =>
     axiosInstance.get('/dashboard/yearly-stats');
 
 // ── Recent Papers ─────────────────────────────────────────────────────────────
-// GET /api/papers/search?page=0&size=10&sortBy=publicationYear&sortDir=desc
-export const getRecentPapers = (page = 0, size = 10) =>
-    axiosInstance.get('/papers/search', {
-        params: { page, size, sortBy: 'publicationYear', sortDir: 'desc' },
+// GET /api/dashboard/recent-papers?limit=10
+export const getRecentPapers = (limit = 10) =>
+    axiosInstance.get('/dashboard/recent-papers', {
+        params: { limit },
     });
 
 // ── Top Keywords (trending) ───────────────────────────────────────────────────

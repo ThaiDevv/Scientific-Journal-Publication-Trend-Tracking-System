@@ -102,7 +102,8 @@ const Dashboard = () => {
         setLoadingRecent(true);
         dashboardApi.getRecentPapers()
             .then(response => {
-                setRecentPapers(response.data?.body?.content || []);
+                const data = response.data?.body;
+                setRecentPapers(Array.isArray(data) ? data : (data?.content || []));
                 setLoadingRecent(false);
             })
             .catch(error => {
@@ -139,7 +140,9 @@ const Dashboard = () => {
                 <Col xs={24} sm={12} lg={6}>
                     <Card bordered={false}>
                         <Statistic title="Tổng số bài báo" value={stats?.totalPapers || 0} prefix={<FileTextOutlined />} />
-                        <Text type="success">{stats?.growth || "+0 tháng này"}</Text>
+                        <Text type="success">
+                            {stats?.growth || (stats?.papersThisMonth !== undefined ? `+${stats.papersThisMonth} bài mới tháng này` : "+0 tháng này")}
+                        </Text>
                     </Card>
                 </Col>
                 <Col xs={24} sm={12} lg={6}>

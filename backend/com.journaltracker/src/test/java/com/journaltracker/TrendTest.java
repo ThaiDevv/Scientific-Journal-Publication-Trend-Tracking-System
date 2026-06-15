@@ -15,6 +15,18 @@ public class TrendTest {
     @Autowired
     private TrendAnalysisService trendAnalysisService;
 
+    @Autowired
+    private com.journaltracker.repository.KeywordRepository keywordRepository;
+
+    @Test
+    public void printTopKeywords() {
+        System.out.println("=== KEYWORD LIST START ===");
+        keywordRepository.findAll().forEach(k -> {
+            System.out.println("KEYWORD: " + k.getName() + " (Usage: " + k.getUsageCount() + ")");
+        });
+        System.out.println("=== KEYWORD LIST END ===");
+    }
+
     @Test
     public void checkTrends() {
         System.out.println("=== TREND CHECK START ===");
