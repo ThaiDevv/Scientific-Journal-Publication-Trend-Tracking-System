@@ -55,18 +55,6 @@ public class DashboardServiceImpl implements DashboardService {
                 .build();
     }
 
-    @Override
-    public List<TrendingTopic> getTrendingTopics(int limit) {
-        Integer currentYear = publicationTrendRepository.findMaxYear();
-        if (currentYear == null) {
-            return List.of();
-        }
-
-        return publicationTrendRepository.findTopTrending(
-                currentYear,
-                PageRequest.of(0, normalizeLimit(limit))
-        );
-    }
 
     @Override
     public List<PaperSummaryResponse> getRecentPapers(int limit) {

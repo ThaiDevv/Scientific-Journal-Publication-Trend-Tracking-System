@@ -11,8 +11,6 @@ import java.util.List;
 public interface DashboardService {
     DashboardStatsResponse getOverviewStats();
 
-    List<TrendingTopic> getTrendingTopics(int limit);
-
     List<PaperSummaryResponse> getRecentPapers(int limit);
 
     List<JournalStatsResponse> getTopJournals(int limit);

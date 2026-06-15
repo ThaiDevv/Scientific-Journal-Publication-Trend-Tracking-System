@@ -7,6 +7,7 @@ import com.journaltracker.dto.response.JournalStatsResponse;
 import com.journaltracker.dto.response.PaperSummaryResponse;
 import com.journaltracker.dto.response.YearlyStats;
 import com.journaltracker.service.DashboardService;
+import com.journaltracker.service.TrendAnalysisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +20,7 @@ import java.util.List;
 @RequestMapping("/api/dashboard")
 @RequiredArgsConstructor
 public class DashboardController {
-
+    private final TrendAnalysisService trendAnalysisService;
     private final DashboardService dashboardService;
 
     @GetMapping("/stats")
@@ -36,7 +37,7 @@ public class DashboardController {
     ) {
         return ApiResponse.success(
                 "Get trending topics successfully",
-                dashboardService.getTrendingTopics(limit)
+                trendAnalysisService.getTopTrendingTopics(limit)
         );
     }
 
