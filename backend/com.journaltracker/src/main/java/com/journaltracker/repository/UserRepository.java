@@ -29,7 +29,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u WHERE " +
             "(:search IS NULL OR u.username LIKE %:search% OR u.email LIKE %:search%) " +
             "AND (:role IS NULL OR u.role = :role)")
-    Page<User> searchAndFilterUsers(@Param("search") String search,
-                                    @Param("role") String role,
-                                    Pageable pageable);
+    Page<User> searchAndFilterUsers(
+            @Param("search") String search,
+            @Param("role") com.journaltracker.entity.Role role,
+            Pageable pageable
+    );
 }
