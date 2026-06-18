@@ -35,7 +35,10 @@ public class SecurityConfig {
                                 "/api/papers/search",
                                 "/api/papers/*",
                                 "/api/journals/**",
+<<<<<<< HEAD
                                 "/api/dashboard/**",
+=======
+>>>>>>> b9ab7a1 (feature/trendsAPI)
                                 "/api/trends/**",
                                 "/swagger-ui.html",
                                 "/error")

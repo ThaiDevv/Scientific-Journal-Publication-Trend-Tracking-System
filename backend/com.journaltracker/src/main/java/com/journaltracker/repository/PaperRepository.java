@@ -41,9 +41,15 @@ public interface PaperRepository extends JpaRepository<ResearchPaper, Long>,
 
     @Query("SELECT new com.journaltracker.dto.KeywordYearCount(k.id, p.publicationYear, COUNT(p)) " +
            "FROM ResearchPaper p JOIN p.keywords k " +
+           "WHERE p.publicationYear IN (:currentYear, :previousYear) " +
            "GROUP BY k.id, p.publicationYear")
+    List<KeywordYearCount> getKeywordCountsForYears(@Param("currentYear") int currentYear, @Param("previousYear") int previousYear);
 
+    @Query("SELECT new com.journaltracker.dto.KeywordYearCount(k.id, p.publicationYear, COUNT(p)) " +
+           "FROM ResearchPaper p JOIN p.keywords k " +
+           "GROUP BY k.id, p.publicationYear")
     List<KeywordYearCount> getKeywordCountsGroupByYear();
+
 
     Optional<ResearchPaper> findByTitleIgnoreCase(String trim);
 
@@ -53,6 +59,7 @@ public interface PaperRepository extends JpaRepository<ResearchPaper, Long>,
     Page<ResearchPaper> findByAuthors_Id(Long authorId, Pageable pageable);
 
     Page<ResearchPaper> findByKeywords_NameIgnoreCase(String keywordName, Pageable pageable);
+<<<<<<< HEAD
 
     long countByCreatedAtGreaterThanEqual(LocalDateTime createdAt);
 
@@ -70,3 +77,6 @@ public interface PaperRepository extends JpaRepository<ResearchPaper, Long>,
            "ORDER BY p.publicationYear")
     List<YearlyStats> countPublicationsByYear(@Param("currentYear") int currentYear);
 }
+=======
+}
+>>>>>>> b9ab7a1 (feature/trendsAPI)
