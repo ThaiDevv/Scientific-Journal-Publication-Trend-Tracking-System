@@ -38,10 +38,15 @@ external-api:
     base-url: https://api.openalex.org
     email: ${OPENALEX_EMAIL:tranvanthai20062@gmail.com}
     per-page: 25
+
   crossref:
     base-url: https://api.crossref.org
     user-agent: JournalTracker/1.0 (mailto:${OPENALEX_EMAIL:tranvanthai20062@gmail.com})
     rows: 25
+
+  semanticscholar:
+    base-url: https://api.semanticscholar.org
+    api-key: ${SEMANTIC_SCHOLAR_API_KEY:}
 
 sync:
   cron: ${SYNC_CRON:0 0 13 * * ?}
