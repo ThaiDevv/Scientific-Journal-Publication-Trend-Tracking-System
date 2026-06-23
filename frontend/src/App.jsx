@@ -15,7 +15,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { useAuth } from "./hooks/useAuth";
 import "./App.css";
 
-
+import Bookmarks from "./pages/Bookmarks";
 
 // ─── Root redirect ────────────────────────────────────────────────────────────
 function RootRedirect() {
@@ -92,6 +92,14 @@ function App() {
                     element={
                         <ProtectedRoute>
                             <SearchPapers />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/bookmarks"
+                    element={
+                        <ProtectedRoute>
+                            <Bookmarks />
                         </ProtectedRoute>
                     }
                 />

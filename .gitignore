@@ -35,7 +35,7 @@ build/
 ### Frontend React/Vite ###
 **/node_modules/
 **/dist/
-**/.env
+backend/com.journaltracker/.env
 .env
 .env.local
 .env.*.local
