@@ -39,8 +39,6 @@ public class TrendController {
         int endYear = toYear != null ? toYear : LocalDate.now().getYear();
         List<TrendComparison> comparisons = trendAnalysisService.compareTrends(keywords, fromYear, endYear);
 
-        // Restructure to flat format expected by TrendLineChart:
-        // [{ "year": "2020", "AI": 10, "Blockchain": 5 }, ...]
         Map<Integer, Map<String, Object>> yearData = new TreeMap<>();
         for (TrendComparison comparison : comparisons) {
             String keyword = comparison.getKeyword();
@@ -56,7 +54,6 @@ public class TrendController {
             }
         }
 
-        // Fill in missing years for keywords with 0 if necessary, but Recharts handles missing keys fine.
         return ApiResponse.success(
                 "Compare trends successfully",
                 new ArrayList<>(yearData.values())

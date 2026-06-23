@@ -13,10 +13,13 @@ import com.journaltracker.repository.KeywordRepository;
 import com.journaltracker.repository.PaperRepository;
 import com.journaltracker.service.DataSyncService;
 import com.journaltracker.service.DeduplicationService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -24,7 +27,6 @@ import java.util.*;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class DataSyncServiceImpl implements DataSyncService {
     private final List<ExternalApiClient> clientList;
     private final PaperRepository paperRepository;
@@ -33,42 +35,55 @@ public class DataSyncServiceImpl implements DataSyncService {
     private final KeywordRepository keywordRepository;
     private final DeduplicationService deduplicationService;
 
+    @Autowired
+    @Lazy
+    private DataSyncServiceImpl self;
+
     public void processSinglePapper(RawPaperData paperData, SyncResult result, String sourceName) {
         try {
-            boolean isDuplicate = deduplicationService.deduplicateAndMerge(paperData, sourceName);
-            if (isDuplicate) {
-                result.setDuplicates(result.getDuplicates() + 1);
-                return;
-            }
-            Journal journal = findJournal(paperData);
-            Set<Author> authors = findAuthors(paperData);
-            Set<Keyword> keywords = findKeywords(paperData);
-
-            ResearchPaper newPaper = ResearchPaper.builder()
-                    .title(paperData.getTitle())
-                    .authors(authors)
-                    .keywords(keywords)
-                    .journal(journal)
-                    .doi(paperData.getDoi())
-                    .sourceApi(sourceName)
-                    .journalId(journal != null ? journal.getId() : null)
-                    .abstractText(paperData.getAbstractText())
-                    .publicationYear(paperData.getPublicationYear())
-                    .sourceUrl(paperData.getSourceUrl())
-                    .build();
-
-            ResearchPaper savedPaper = paperRepository.save(newPaper);
-            if (journal != null) {
-                journal.setPaperCount((journal.getPaperCount() == null ? 0 : journal.getPaperCount()) + 1);
-                journalRepository.save(journal);
-            }
-            result.setNewPapers(result.getNewPapers() + 1);
-            result.getSyncedPapers().add(savedPaper);
-            log.debug("[Save] Đã lưu bài báo: doi='{}', title='{}'", paperData.getDoi(), paperData.getTitle());
+            self.savePaperTransactional(paperData, result, sourceName);
         } catch (Exception e) {
             log.error("[Error] Lỗi khi xử lý bài báo title='{}': {}", paperData.getTitle(), e.getMessage(), e);
             result.setErrors(result.getErrors() + 1);
         }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void savePaperTransactional(RawPaperData paperData, SyncResult result, String sourceName) {
+        boolean isDuplicate = deduplicationService.deduplicateAndMerge(paperData, sourceName);
+        if (isDuplicate) {
+            result.setDuplicates(result.getDuplicates() + 1);
+            return;
+        }
+        Journal journal = findJournal(paperData);
+        Set<Author> authors = findAuthors(paperData);
+        Set<Keyword> keywords = findKeywords(paperData);
+
+        String sanitizedDoi = (paperData.getDoi() == null || paperData.getDoi().isBlank())
+                ? null
+                : paperData.getDoi().trim();
+
+        ResearchPaper newPaper = ResearchPaper.builder()
+                .title(paperData.getTitle())
+                .authors(authors)
+                .keywords(keywords)
+                .journal(journal)
+                .doi(sanitizedDoi)
+                .sourceApi(sourceName)
+                .journalId(journal != null ? journal.getId() : null)
+                .abstractText(paperData.getAbstractText())
+                .publicationYear(paperData.getPublicationYear())
+                .sourceUrl(paperData.getSourceUrl())
+                .build();
+
+        ResearchPaper savedPaper = paperRepository.save(newPaper);
+        if (journal != null) {
+            journal.setPaperCount((journal.getPaperCount() == null ? 0 : journal.getPaperCount()) + 1);
+            journalRepository.save(journal);
+        }
+        result.setNewPapers(result.getNewPapers() + 1);
+        result.getSyncedPapers().add(savedPaper);
+        log.debug("[Save] Đã lưu bài báo: doi='{}', title='{}'", sanitizedDoi, paperData.getTitle());
     }
 
     public Set<Keyword> findKeywords(RawPaperData paperData) {
@@ -77,7 +92,8 @@ public class DataSyncServiceImpl implements DataSyncService {
             return keywords;
         }
         paperData.getKeywords().forEach(keyword -> {
-            if (keyword == null || keyword.isBlank()) return;
+            if (keyword == null || keyword.isBlank())
+                return;
             Optional<Keyword> findKeyword = keywordRepository.findByNameIgnoreCase(keyword.trim());
             if (findKeyword.isPresent()) {
                 Keyword kw = findKeyword.get();
@@ -104,7 +120,8 @@ public class DataSyncServiceImpl implements DataSyncService {
         List<String> authorNames = paperData.getAuthorNames();
         for (int i = 0; i < authorNames.size(); i++) {
             String authorName = authorNames.get(i);
-            if (authorName == null || authorName.isBlank()) continue;
+            if (authorName == null || authorName.isBlank())
+                continue;
             String affiliation = (affiliations != null && i < affiliations.size()) ? affiliations.get(i) : null;
             Author author = authorRepository.findByName(authorName.trim())
                     .orElseGet(() -> {
@@ -135,14 +152,7 @@ public class DataSyncServiceImpl implements DataSyncService {
                 });
     }
 
-    public boolean isDuplicate(RawPaperData paper) {
-        if (paper.getDoi() != null && !paper.getDoi().isBlank()) {
-            if (paperRepository.existsByDoi(paper.getDoi())) {
-                return true;
-            }
-        }
-        return paper.getTitle() != null && !paper.getTitle().isBlank() && paperRepository.existsByTitle(paper.getTitle());
-    }
+
 
     public ExternalApiClient findExternalApiClient(String nameClient) {
         return clientList.stream()

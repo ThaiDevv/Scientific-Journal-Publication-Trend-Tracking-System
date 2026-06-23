@@ -1,6 +1,6 @@
 package com.journaltracker.controller;
 
-import com.journaltracker.client.SemanticScholarClient;
+import com.journaltracker.external.SemanticScholarClient;
 import com.journaltracker.dto.RawPaperData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

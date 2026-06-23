@@ -10,114 +10,227 @@ import {
     Spin,
     Row,
     Col,
+    Space,
     Typography,
     message,
 } from "antd";
+
 import {
     StarOutlined,
+    StarFilled,
 } from "@ant-design/icons";
+
 import { useNavigate } from "react-router-dom";
 
 import { searchPapers } from "../api/paperApi";
 import { getJournals } from "../api/journalApi";
 
+import {
+    addBookmark,
+    removeBookmark,
+    getMyBookmarks,
+} from "../api/bookmarkApi";
+
+
 const { Title, Text } = Typography;
 
 function SearchPapers() {
+
     const navigate = useNavigate();
 
     const [loading, setLoading] = useState(false);
 
     const [papers, setPapers] = useState([]);
+
     const [journals, setJournals] = useState([]);
 
+    const [bookmarkedIds, setBookmarkedIds] = useState([]);
+
     const [keyword, setKeyword] = useState("");
+
     const [author, setAuthor] = useState("");
+
     const [journalId, setJournalId] = useState();
 
     const [yearFrom, setYearFrom] = useState("");
+
     const [yearTo, setYearTo] = useState("");
 
     const [page, setPage] = useState(1);
-    const [pageSize] = useState(10);
+
+    const pageSize = 10;
+
     const [total, setTotal] = useState(0);
-    const [bookmarkedIds, setBookmarkedIds] = useState([]);
+
+    const [bookmarkCount, setBookmarkCount] = useState(0);
+
+    const loadBookmarkCount = async () => {
+        try {
+            const res = await getMyBookmarks(0, 1);
+
+            setBookmarkCount(res.data.body.totalElements);
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    async function loadBookmarks() {
+
+        try {
+
+            const res = await getMyBookmarks(0, 1000);
+
+            const ids =
+                res.data.body.content.map(item => item.id);
+
+            setBookmarkedIds(ids);
+
+        } catch (e) {
+
+            console.log(e);
+
+        }
+
+    }
 
     async function loadJournals() {
+
         try {
+
             const res = await getJournals({
                 page: 0,
                 size: 100,
             });
 
             setJournals(
-                res?.data?.body?.content || []
+                res.data.body.content || []
             );
-        } catch (error) {
-            console.error(error);
+
+        } catch (e) {
+
+            console.log(e);
+
         }
+
     }
-    const handleBookmark = (paperId) => {
-        setBookmarkedIds((prev) => {
-            if (prev.includes(paperId)) {
-                return prev.filter(id => id !== paperId);
-            }
-            return [...prev, paperId];
-        });
-    };
+
     async function loadPapers(currentPage = 1) {
+
         try {
+
             setLoading(true);
 
-            const params = {
+            const res = await searchPapers({
+
                 keyword,
+
                 author,
+
                 journalId,
+
                 yearFrom,
+
                 yearTo,
+
                 page: currentPage - 1,
+
                 size: pageSize,
+
                 sortBy: "publicationYear",
+
                 sortDir: "desc",
-            };
 
-            const res = await searchPapers(params);
+            });
 
-            const body = res?.data?.body;
+            const body = res.data.body;
 
-            setPapers(body?.content || []);
-            setTotal(body?.totalElements || 0);
-        } catch (error) {
-            console.error(error);
+            setPapers(body.content);
+
+            setTotal(body.totalElements);
+
+        } catch (e) {
 
             message.error(
-                error?.response?.data?.message ||
-                "Failed to load papers"
+                e.response?.data?.message ||
+                "Không tải được bài báo"
             );
-        } finally {
-            setLoading(false);
-        }
-    }
 
+        } finally {
+
+            setLoading(false);
+
+        }
+
+    }
     useEffect(() => {
+
         const init = async () => {
+
+            await loadBookmarks();
+
+            await loadBookmarkCount();
+
             await loadJournals();
+
             await loadPapers(1);
+
         };
 
         init();
-    }, []);
 
+    }, []);
+    const handleBookmark = async (paperId) => {
+
+        try {
+
+            if (bookmarkedIds.includes(paperId)) {
+
+                await removeBookmark(paperId);
+
+                setBookmarkedIds(prev =>
+                    prev.filter(id => id !== paperId)
+                );
+
+                message.success("Đã bỏ bookmark");
+
+            } else {
+
+                await addBookmark(paperId);
+
+                setBookmarkedIds(prev => [
+                    ...prev,
+                    paperId,
+                ]);
+
+                message.success("Đã bookmark");
+
+            }
+
+        } catch (e) {
+
+            message.error(
+                e.response?.data?.message ||
+                "Bookmark thất bại"
+            );
+
+        }
+
+    };
     const handleSearch = () => {
         setPage(1);
         loadPapers(1);
     };
 
     const handleReset = () => {
+
         setKeyword("");
+
         setAuthor("");
+
         setJournalId(undefined);
+
         setYearFrom("");
+
         setYearTo("");
 
         setPage(1);
@@ -125,76 +238,73 @@ function SearchPapers() {
         setTimeout(() => {
             loadPapers(1);
         }, 0);
+
     };
 
     const handlePageChange = (newPage) => {
-        setPage(newPage);
-        loadPapers(newPage);
-    };
 
+        setPage(newPage);
+
+        loadPapers(newPage);
+
+    };
     return (
+
         <div
             style={{
-                padding: "24px",
-                maxWidth: "1400px",
+                padding: 24,
+                maxWidth: 1400,
                 margin: "0 auto",
             }}
         >
+
             <Title level={2}>
                 Search Papers
             </Title>
 
-            {/* SEARCH BAR */}
             <Input.Search
                 size="large"
-                placeholder="Tìm kiếm bài báo theo từ khóa..."
+                placeholder="Tìm kiếm bài báo..."
                 value={keyword}
                 enterButton="Tìm kiếm"
-                onChange={(e) =>
-                    setKeyword(e.target.value)
-                }
+                onChange={(e)=>setKeyword(e.target.value)}
                 onSearch={handleSearch}
-                style={{
-                    marginBottom: 24,
-                }}
+                style={{marginBottom:24}}
             />
 
-            {/* FILTER */}
-            <Card
-                style={{
-                    marginBottom: 24,
-                }}
-            >
-                <Row gutter={[16, 16]}>
-                    <Col xs={24} md={6}>
+            <Card style={{ marginBottom: 16 }}>
+                <Row gutter={[16, 16]} align="middle">
+
+                    <Col flex="auto">
                         <Input
-                            placeholder="Author name"
+                            placeholder="Author"
                             value={author}
-                            onChange={(e) =>
-                                setAuthor(
-                                    e.target.value
-                                )
-                            }
+                            onChange={(e)=>setAuthor(e.target.value)}
                         />
                     </Col>
 
                     <Col xs={24} md={6}>
+
                         <Select
                             allowClear
-                            style={{
-                                width: "100%",
-                            }}
+                            style={{width:"100%"}}
                             placeholder="Journal"
                             value={journalId}
                             onChange={setJournalId}
-                            options={journals.map(
-                                (journal) => ({
-                                    label:
-                                        journal.name,
-                                    value:
-                                        journal.id,
-                                })
-                            )}
+                            options={journals.map(j=>({
+                                label:j.name,
+                                value:j.id
+                            }))}
+                        />
+
+                    </Col>
+
+                    <Col xs={12} md={3}>
+                        <Input
+                            type="number"
+                            placeholder="Year From"
+                            value={yearFrom}
+                            onChange={(e)=>setYearFrom(e.target.value)}
                         />
                     </Col>
 
@@ -202,191 +312,154 @@ function SearchPapers() {
                         <Input
                             type="number"
                             placeholder="Year To"
-                            onChange={(e) =>
-                                setYearTo(
-                                    e.target.value
-                                )
-                            }
-                        />
-                    </Col>
-
-                    <Col xs={12} md={3}>
-                        <Input
-                            type="number"
-                            placeholder="Year From"
-                            onChange={(e) =>
-                                setYearFrom(
-                                    e.target.value
-                                )
-                            }
+                            value={yearTo}
+                            onChange={(e)=>setYearTo(e.target.value)}
                         />
                     </Col>
 
                     <Col xs={24} md={6}>
-                        <Button
-                            type="primary"
-                            onClick={handleSearch}
-                            style={{
-                                marginRight: 8,
-                            }}
-                        >
-                            Tìm kiếm
-                        </Button>
+                        <Space wrap>
+                            <Button
+                                type="primary"
+                                onClick={handleSearch}
+                            >
+                                Tìm kiếm
+                            </Button>
 
-                        <Button
-                            onClick={handleReset}
-                        >
-                            Xóa bộ lọc
-                        </Button>
+                            <Button onClick={handleReset}>
+                                Xóa bộ lọc
+                            </Button>
+
+                            <Button
+                                type="default"
+                                onClick={() => navigate("/bookmarks")}
+                            >
+                                📌 Bài báo đã lưu ({bookmarkCount})
+                            </Button>
+                        </Space>
                     </Col>
+
                 </Row>
+
             </Card>
 
-            {/* RESULT COUNT */}
-            <div
-                style={{
-                    marginBottom: 20,
-                }}
-            >
+            <div style={{marginBottom:20}}>
                 <Text strong>
                     Tìm thấy {total} bài báo
                 </Text>
             </div>
 
-            {/* LOADING */}
-            {loading ? (
-                <div
-                    style={{
-                        textAlign: "center",
-                        padding: 80,
-                    }}
-                >
-                    <Spin size="large" />
-                </div>
-            ) : papers.length === 0 ? (
-                <Empty
-                    description="Không tìm thấy bài báo nào"
-                    image={Empty.PRESENTED_IMAGE_SIMPLE}
-                />
-            ) : (
-                <>
-                    {papers.map((paper) => (
-                        <Card
-                            key={paper.id}
-                            style={{
-                                marginBottom: 16,
-                            }}
-                        >
-                            <div
-                                style={{
-                                    display: "flex",
-                                    justifyContent:
-                                        "space-between",
-                                    gap: 20,
-                                }}
-                            >
-                                <div
-                                    style={{
-                                        flex: 1,
-                                    }}
-                                >
-                                    <Title
-                                        level={4}
-                                        style={{
-                                            cursor:
-                                                "pointer",
-                                            marginBottom:
-                                                8,
-                                        }}
-                                        onClick={() =>
-                                            navigate(
-                                                `/papers/${paper.id}`
-                                            )
-                                        }
-                                    >
-                                        {paper.title}
-                                    </Title>
+            {
+                loading ?
 
-                                    <Text>
-                                        {Array.isArray(
-                                            paper.authors
-                                        )
-                                            ? paper.authors.join(
-                                                ", "
-                                            )
-                                            : paper.authors}
-                                    </Text>
-
-                                    <br />
-
-                                    <Text type="secondary">
-                                        {
-                                            paper.journalName
-                                        }{" "}
-                                        •{" "}
-                                        {
-                                            paper.publicationYear
-                                        }
-                                    </Text>
-
-                                    <div
-                                        style={{
-                                            marginTop:
-                                                12,
-                                        }}
-                                    >
-                                        {paper.keywords?.map(
-                                            (
-                                                keyword
-                                            ) => (
-                                                <Tag
-                                                    key={
-                                                        keyword
-                                                    }
-                                                >
-                                                    {
-                                                        keyword
-                                                    }
-                                                </Tag>
-                                            )
-                                        )}
-                                    </div>
-                                </div>
-
-                                <Button
-                                    icon={
-                                        <StarOutlined
-                                            style={{
-                                                color: bookmarkedIds.includes(paper.id)
-                                                    ? "#faad14"
-                                                    : undefined
-                                            }}
-                                        />
-                                    }
-                                    onClick={() => handleBookmark(paper.id)}
-                                >
-                                    Bookmark
-                                </Button>
-                            </div>
-                        </Card>
-                    ))}
-
-                    <Pagination
-                        current={page}
-                        total={total}
-                        pageSize={pageSize}
-                        onChange={
-                            handlePageChange
-                        }
+                    <div
                         style={{
-                            textAlign: "center",
-                            marginTop: 24,
+                            textAlign:"center",
+                            padding:80
                         }}
-                    />
-                </>
-            )}
+                    >
+                        <Spin size="large"/>
+                    </div>
+
+                    :
+                    papers.length===0 ?
+
+                        <Empty
+                            description="Không có bài báo"
+                            image={Empty.PRESENTED_IMAGE_SIMPLE}
+                        />
+
+                        :
+                        <>
+                            {papers.map((paper) => (
+
+                                <Card key={paper.id} style={{ marginBottom: 16 }}>
+                                    <Row justify="space-between" align="top" wrap={false}>
+
+                                        <Col flex="auto">
+
+                                            <Title
+                                                level={4}
+                                                style={{
+                                                    marginBottom: 8,
+                                                    cursor: "pointer",
+
+                                                }}
+                                                ellipsis={{ rows: 2 }}
+                                                onClick={() => navigate(`/papers/${paper.id}`)}
+                                            >
+                                                {paper.title}
+                                            </Title>
+
+                                            <div style={{ marginBottom: 6 }}>
+                                                <Text>
+                                                    {paper.authorNames?.join(", ")}
+                                                </Text>
+                                            </div>
+
+                                            <Text type="secondary">
+                                                {paper.journalName} • {paper.publicationYear}
+                                            </Text>
+
+                                            <div style={{ marginTop: 10 }}>
+                                                {paper.keywords?.map((keyword) => (
+                                                    <Tag key={keyword}>
+                                                        {keyword}
+                                                    </Tag>
+                                                ))}
+                                            </div>
+
+                                        </Col>
+
+                                        <Col
+                                            flex="130px"
+                                            style={{
+                                                marginLeft: 20,
+                                                textAlign: "right",
+                                            }}
+                                        >
+
+                                            <Button
+                                                type="default"
+                                                style={{
+                                                    width: "100%",
+                                                    whiteSpace: "nowrap",
+                                                }}
+                                                icon={
+                                                    bookmarkedIds.includes(paper.id)
+                                                        ? <StarFilled style={{ color: "#faad14" }} />
+                                                        : <StarOutlined />
+                                                }
+                                                onClick={() => handleBookmark(paper.id)}
+                                            >
+                                                {bookmarkedIds.includes(paper.id)
+                                                    ? "Đã lưu"
+                                                    : "Bookmark"}
+                                            </Button>
+
+                                        </Col>
+
+                                    </Row>
+                                </Card>
+
+                            ))}
+                        </>
+            }
+            <Pagination
+                current={page}
+                pageSize={pageSize}
+                total={total}
+                showSizeChanger={false}
+                onChange={handlePageChange}
+                style={{
+                    marginTop: 24,
+                    textAlign: "center",
+                }}
+            />
         </div>
+
     );
+
 }
 
 export default SearchPapers;

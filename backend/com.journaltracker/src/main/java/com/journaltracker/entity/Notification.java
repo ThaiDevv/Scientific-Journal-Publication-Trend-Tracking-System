@@ -10,7 +10,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,19 +17,11 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(
-        name = "bookmarks",
-        uniqueConstraints = {
-                @UniqueConstraint(
-                        name = "uk_user_paper_bookmark",
-                        columnNames = {"user_id", "paper_id"}
-                )
-        }
-)
+@Table(name = "notifications")
 @Getter
 @Setter
 @NoArgsConstructor
-public class Bookmark {
+public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,15 +31,23 @@ public class Bookmark {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "paper_id")
-    private ResearchPaper paper;
+    @Column(nullable = false)
+    private String title;
 
-    @Column(name = "created_at")
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String message;
+
+    @Column(name = "is_read", nullable = false)
+    private Boolean isRead = false;
+
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @PrePersist
     void prePersist() {
+        if (isRead == null) {
+            isRead = false;
+        }
         if (createdAt == null) {
             createdAt = LocalDateTime.now();
         }

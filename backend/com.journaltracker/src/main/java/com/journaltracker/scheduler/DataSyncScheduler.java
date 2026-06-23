@@ -7,6 +7,7 @@ import com.journaltracker.entity.ResearchPaper;
 import com.journaltracker.properties.SyncProperties;
 import com.journaltracker.repository.ApiDataSourceRepository;
 import com.journaltracker.service.DataSyncService;
+import com.journaltracker.service.NotificationService;
 import com.journaltracker.service.TrendAnalysisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ public class DataSyncScheduler {
     private final DataSyncService dataSyncService;
     private final SyncProperties syncProperties;
     private final TrendAnalysisService trendAnalysisService;
+    private final NotificationService notificationService;
     private final ApiDataSourceRepository apiDataSourceRepository;
     @Scheduled(cron = "${sync.cron:0 0 13 * * ?}")
     public void syncData() {
@@ -86,6 +88,7 @@ public class DataSyncScheduler {
         }
         try {
             if (!allSyncedPapers.isEmpty()) {
+                notificationService.notifyFollowers(allSyncedPapers);
                 log.info("Notified followers about {} new papers.", allSyncedPapers.size());
             }
         } catch (Exception e) {
