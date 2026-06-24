@@ -1,10 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Card, Statistic, List, Typography, Skeleton } from 'antd';
-import { FileTextOutlined, BookOutlined, TeamOutlined, TagOutlined, ArrowUpOutlined } from '@ant-design/icons';
+import {
+    FileTextOutlined,
+    BookOutlined,
+    TeamOutlined,
+    TagOutlined,
+    ArrowUpOutlined,
+    StarOutlined,
+} from "@ant-design/icons";
 import { trendApi } from '../api/trendApi';
 import TrendLineChart from '../components/Charts/TrendLineChart';
 import { dashboardApi } from '../api/dashboardApi';
 import { useNavigate } from "react-router-dom";
+
+import { Badge } from "antd";
+import { BellOutlined } from "@ant-design/icons";
+
+import { getUnreadCount } from "../api/notificationApi";
+import { getMyBookmarks } from "../api/bookmarkApi";
+
 // === JP-37 THÊM MỚI: Import 2 Component biểu đồ mới ===
 import JournalBarChart from '../components/Charts/JournalBarChart';
 import FieldPieChart from '../components/Charts/FieldPieChart';
@@ -31,8 +45,40 @@ const Dashboard = () => {
     // 3. Dữ liệu cho Recent Papers (Kết nối API thực tế từ backend)
     const [recentPapers, setRecentPapers] = useState([]);
     const [loadingRecent, setLoadingRecent] = useState(true);
-
+    const [unreadCount, setUnreadCount] = useState(0);
+    const [bookmarkCount, setBookmarkCount] = useState(0);
+    const loadUnreadCount = async () => {
+        try {
+            const res = await getUnreadCount();
+            setUnreadCount(res.data.body);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+    const loadBookmarkCount = async () => {
+        try {
+            const res = await getMyBookmarks(0, 1);
+            setBookmarkCount(res.data.body.totalElements);
+        } catch (e) {
+            console.log(e);
+        }
+    };
     useEffect(() => {
+        async function init() {
+            try {
+                const [unreadRes, bookmarkRes] = await Promise.all([
+                    getUnreadCount(),
+                    getMyBookmarks(0, 1),
+                ]);
+
+                setUnreadCount(unreadRes.data.body);
+                setBookmarkCount(bookmarkRes.data.body.totalElements);
+            } catch (e) {
+                console.log(e);
+            }
+        }
+
+        init();
         // Lấy stats (JP-35) - có fallback mock data
         dashboardApi.getStats()
             .then(response => {
@@ -114,13 +160,61 @@ const Dashboard = () => {
                 ]);
                 setLoadingRecent(false);
             });
+        const interval = setInterval(() => {
+            loadUnreadCount();
+            loadBookmarkCount();
+        }, 60000);
+
+        return () => clearInterval(interval);
     }, []);
 
     if (loading) return <div style={{ padding: '24px' }}><Skeleton active paragraph={{ rows: 15 }} /></div>;
 
     return (
         <div style={{ padding: '24px', background: '#f5f5f5', minHeight: '100vh' }}>
-            <Title level={2}>Research Dashboard</Title>
+            <Row
+                justify="space-between"
+                align="middle"
+                style={{ marginBottom: 24 }}
+            >
+                <Col>
+                    <Title level={2} style={{ margin: 0 }}>
+                        Research Dashboard
+                    </Title>
+                </Col>
+
+                <Col>
+                    <div
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 24,
+                        }}
+                    >
+                        {/* Bookmark */}
+                        <Badge count={bookmarkCount} size="small">
+                            <StarOutlined
+                                style={{
+                                    fontSize: 24,
+                                    cursor: "pointer",
+                                }}
+                                onClick={() => navigate("/bookmarks")}
+                            />
+                        </Badge>
+
+                        {/* Notification */}
+                        <Badge count={unreadCount} size="small">
+                            <BellOutlined
+                                style={{
+                                    fontSize: 24,
+                                    cursor: "pointer",
+                                }}
+                                onClick={() => navigate("/notifications")}
+                            />
+                        </Badge>
+                    </div>
+                </Col>
+            </Row>
             <Row gutter={[16, 16]} style={{ marginBottom: "24px" }}>
                 <Col xs={24} md={8}>
                     <Card

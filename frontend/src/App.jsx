@@ -16,7 +16,7 @@ import { useAuth } from "./hooks/useAuth";
 import "./App.css";
 
 import Bookmarks from "./pages/Bookmarks";
-
+import Notifications from "./pages/Notifications";
 // ─── Root redirect ────────────────────────────────────────────────────────────
 function RootRedirect() {
     const { isAuthenticated, loading } = useAuth();
@@ -100,6 +100,14 @@ function App() {
                     element={
                         <ProtectedRoute>
                             <Bookmarks />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/notifications"
+                    element={
+                        <ProtectedRoute>
+                            <Notifications />
                         </ProtectedRoute>
                     }
                 />
