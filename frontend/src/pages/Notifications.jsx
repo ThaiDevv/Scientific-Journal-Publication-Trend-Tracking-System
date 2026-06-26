@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
     Card,
     List,
@@ -8,11 +8,12 @@ import {
     Empty,
     Spin,
     message,
+    Tag,
 } from "antd";
 
 import {
-    CheckCircleOutlined,
-    BellOutlined,
+    CheckCircleFilled,
+    BellFilled,
 } from "@ant-design/icons";
 
 import dayjs from "dayjs";
@@ -21,6 +22,7 @@ import "dayjs/locale/vi";
 
 import {
     getNotifications,
+    getUnreadCount,
     markAsRead,
     markAllAsRead,
 } from "../api/notificationApi";
@@ -30,77 +32,72 @@ dayjs.locale("vi");
 
 const { Title, Text } = Typography;
 
+/**
+ * Hàm helper để xác định trạng thái đã đọc của notification.
+ * Backend có thể serialize "Boolean isRead" của Lombok thành "read" hoặc "isRead"
+ * tùy vào phiên bản Jackson / cấu hình. Hàm này xử lý cả hai trường hợp.
+ */
+function isNotifRead(item) {
+    return item.read === true || item.isRead === true;
+}
+
 function Notifications() {
 
     const [loading, setLoading] = useState(false);
-
     const [notifications, setNotifications] = useState([]);
-
     const [page, setPage] = useState(1);
-
     const pageSize = 10;
-
     const [total, setTotal] = useState(0);
+    const [unreadCount, setUnreadCount] = useState(0);
+    const [markingAll, setMarkingAll] = useState(false);
 
-    const loadNotifications = async (currentPage = page) => {
-
+    const loadNotifications = useCallback(async (currentPage = 1) => {
         try {
-
             setLoading(true);
 
-            const res = await getNotifications(
-                currentPage - 1,
-                pageSize
-            );
+            const [notifyRes, countRes] = await Promise.all([
+                getNotifications(currentPage - 1, pageSize),
+                getUnreadCount(),
+            ]);
 
-            setNotifications(res.data.body.content);
-
-            setTotal(res.data.body.totalElements);
+            setNotifications(notifyRes.data.body?.content ?? []);
+            setTotal(notifyRes.data.body?.totalElements ?? 0);
+            setUnreadCount(countRes.data.body ?? 0);
 
         } catch (e) {
-
-            console.log(e);
-
+            console.error("Notifications loadNotifications error:", e);
             message.error("Không thể tải thông báo");
-
         } finally {
-
             setLoading(false);
-
         }
-
-    };
+    }, []);
 
     useEffect(() => {
-        const init = async () => {
+        (async () => {
             await loadNotifications(1);
-        };
-
-        init();
-    }, []);
+        })();
+    }, [loadNotifications]);
 
     const handleRead = async (notification) => {
 
-        if (notification.isRead) return;
+        if (isNotifRead(notification)) return;
 
         try {
-
             await markAsRead(notification.id);
 
             setNotifications((prev) =>
                 prev.map((item) =>
                     item.id === notification.id
-                        ? { ...item, isRead: true }
+                        ? { ...item, read: true, isRead: true }
                         : item
                 )
             );
 
+            setUnreadCount((prev) => Math.max(0, prev - 1));
+
         } catch (e) {
-
-            console.log(e);
-
-            message.error("Không thể cập nhật");
-
+            console.error("markAsRead error:", e);
+            message.error("Không thể cập nhật trạng thái thông báo");
         }
 
     };
@@ -108,7 +105,7 @@ function Notifications() {
     const handleReadAll = async () => {
 
         try {
-
+            setMarkingAll(true);
             await markAllAsRead();
 
             message.success("Đã đánh dấu tất cả đã đọc");
@@ -116,16 +113,17 @@ function Notifications() {
             setNotifications((prev) =>
                 prev.map((item) => ({
                     ...item,
+                    read: true,
                     isRead: true,
                 }))
             );
+            setUnreadCount(0);
 
         } catch (e) {
-
-            console.log(e);
-
-            message.error("Có lỗi xảy ra");
-
+            console.error("markAllAsRead error:", e);
+            message.error("Có lỗi xảy ra, vui lòng thử lại");
+        } finally {
+            setMarkingAll(false);
         }
 
     };
@@ -134,12 +132,13 @@ function Notifications() {
 
         <div
             style={{
-                maxWidth: 1200,
+                maxWidth: 860,
                 margin: "0 auto",
-                padding: 24,
+                padding: "32px 24px",
             }}
         >
 
+            {/* ─── Header ──────────────────────────────────────────── */}
             <div
                 style={{
                     display: "flex",
@@ -149,168 +148,196 @@ function Notifications() {
                 }}
             >
 
-                <Title level={2} style={{ margin: 0 }}>
-                    🔔 Thông báo
-                </Title>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <Title level={2} style={{ margin: 0 }}>
+                        Thông báo
+                    </Title>
+                    {unreadCount > 0 && (
+                        <Tag
+                            color="blue"
+                            style={{
+                                borderRadius: 99,
+                                fontWeight: 600,
+                                fontSize: 12,
+                                padding: "0 8px",
+                            }}
+                        >
+                            {unreadCount} chưa đọc
+                        </Tag>
+                    )}
+                </div>
 
                 <Button
                     type="primary"
                     onClick={handleReadAll}
+                    loading={markingAll}
+                    disabled={unreadCount === 0}
                 >
                     Đánh dấu tất cả đã đọc
                 </Button>
 
             </div>
 
-            {
+            {/* ─── Content ─────────────────────────────────────────── */}
+            {loading ? (
 
-                loading ?
+                <div
+                    style={{
+                        textAlign: "center",
+                        padding: "80px 0",
+                    }}
+                >
+                    <Spin size="large" />
+                </div>
 
-                    <div
-                        style={{
-                            textAlign: "center",
-                            padding: 100,
-                        }}
-                    >
-                        <Spin size="large" />
-                    </div>
+            ) : notifications.length === 0 ? (
 
-                    :
+                <Empty
+                    description="Chưa có thông báo nào"
+                    style={{ padding: "60px 0" }}
+                />
 
-                    notifications.length === 0 ?
+            ) : (
 
-                        <Empty
-                            description="Chưa có thông báo"
-                        />
+                <>
 
-                        :
+                    <List
+                        dataSource={notifications}
+                        renderItem={(item) => {
+                            const read = isNotifRead(item);
+                            return (
+                                <Card
+                                    key={item.id}
+                                    style={{
+                                        marginBottom: 12,
+                                        cursor: read ? "default" : "pointer",
+                                        background: read ? "#fff" : "#e6f4ff",
+                                        borderLeft: `4px solid ${read ? "#d9d9d9" : "#1677ff"}`,
+                                        borderRadius: 8,
+                                        transition:
+                                            "box-shadow 0.2s, background 0.2s",
+                                    }}
+                                    styles={{ body: { padding: "14px 18px" } }}
+                                    hoverable={!read}
+                                    onClick={() => handleRead(item)}
+                                >
 
-                        <>
-
-                            <List
-
-                                dataSource={notifications}
-
-                                renderItem={(item) => (
-
-                                    <Card
-
+                                    <div
                                         style={{
-                                            marginBottom: 16,
-                                            cursor: "pointer",
-                                            background: item.isRead
-                                                ? "#fff"
-                                                : "#e6f4ff",
-                                            borderLeft: item.isRead
-                                                ? "4px solid #d9d9d9"
-                                                : "4px solid #1677ff",
+                                            display: "flex",
+                                            alignItems: "flex-start",
+                                            gap: 14,
                                         }}
-
-                                        onClick={() =>
-                                            handleRead(item)
-                                        }
-
                                     >
 
-                                        <div
-                                            style={{
-                                                display: "flex",
-                                                alignItems: "flex-start",
-                                                gap: 16,
-                                            }}
-                                        >
+                                        {/* Icon trạng thái */}
+                                        {read ? (
+                                            <CheckCircleFilled
+                                                style={{
+                                                    color: "#52c41a",
+                                                    fontSize: 20,
+                                                    marginTop: 2,
+                                                    flexShrink: 0,
+                                                }}
+                                            />
+                                        ) : (
+                                            <BellFilled
+                                                style={{
+                                                    color: "#1677ff",
+                                                    fontSize: 20,
+                                                    marginTop: 2,
+                                                    flexShrink: 0,
+                                                }}
+                                            />
+                                        )}
 
-                                            {
-
-                                                item.isRead ?
-
-                                                    <CheckCircleOutlined
-                                                        style={{
-                                                            color: "#52c41a",
-                                                            fontSize: 20,
-                                                            marginTop: 5,
-                                                        }}
-                                                    />
-
-                                                    :
-
-                                                    <BellOutlined
-                                                        style={{
-                                                            color: "#1677ff",
-                                                            fontSize: 20,
-                                                            marginTop: 5,
-                                                        }}
-                                                    />
-
-                                            }
+                                        {/* Nội dung thông báo */}
+                                        <div style={{ flex: 1, minWidth: 0 }}>
 
                                             <div
                                                 style={{
-                                                    flex: 1,
+                                                    display: "flex",
+                                                    justifyContent: "space-between",
+                                                    alignItems: "flex-start",
+                                                    gap: 8,
+                                                    marginBottom: 4,
                                                 }}
                                             >
-
-                                                <Title
-                                                    level={5}
-                                                    style={{
-                                                        marginBottom: 6,
-                                                    }}
+                                                <Text
+                                                    strong={!read}
+                                                    style={{ fontSize: 14 }}
                                                 >
                                                     {item.title}
-                                                </Title>
-
-                                                <Text>
-                                                    {item.message}
                                                 </Text>
-
-                                                <br />
-
                                                 <Text
                                                     type="secondary"
+                                                    style={{
+                                                        fontSize: 11,
+                                                        whiteSpace: "nowrap",
+                                                        flexShrink: 0,
+                                                    }}
                                                 >
                                                     {dayjs(item.createdAt).fromNow()}
                                                 </Text>
-
                                             </div>
+
+                                            <Text
+                                                style={{
+                                                    fontSize: 13,
+                                                    color: "#555",
+                                                    display: "block",
+                                                }}
+                                            >
+                                                {item.message}
+                                            </Text>
+
+                                            {!read && (
+                                                <Text
+                                                    style={{
+                                                        fontSize: 11,
+                                                        color: "#1677ff",
+                                                        marginTop: 4,
+                                                        display: "block",
+                                                    }}
+                                                >
+                                                    Click để đánh dấu đã đọc
+                                                </Text>
+                                            )}
 
                                         </div>
 
-                                    </Card>
+                                    </div>
 
-                                )}
+                                </Card>
+                            );
+                        }}
+                    />
 
-                            />
-
-                            <div
-                                style={{
-                                    textAlign: "center",
-                                    marginTop: 30,
+                    {/* ─── Pagination ──────────────────────────────── */}
+                    {total > pageSize && (
+                        <div
+                            style={{
+                                textAlign: "center",
+                                marginTop: 24,
+                            }}
+                        >
+                            <Pagination
+                                current={page}
+                                total={total}
+                                pageSize={pageSize}
+                                showTotal={(t) => `Tổng ${t} thông báo`}
+                                onChange={(p) => {
+                                    setPage(p);
+                                    loadNotifications(p);
+                                    window.scrollTo({ top: 0, behavior: "smooth" });
                                 }}
-                            >
+                            />
+                        </div>
+                    )}
 
-                                <Pagination
+                </>
 
-                                    current={page}
-
-                                    total={total}
-
-                                    pageSize={pageSize}
-
-                                    onChange={(p) => {
-
-                                        setPage(p);
-
-                                        loadNotifications(p);
-
-                                    }}
-
-                                />
-
-                            </div>
-
-                        </>
-
-            }
+            )}
 
         </div>
 
