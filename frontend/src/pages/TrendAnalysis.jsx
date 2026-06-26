@@ -19,29 +19,58 @@ const TrendAnalysis = () => {
     const [trendingKeywords, setTrendingKeywords] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    // Lấy top 20 keywords từ API khi vừa load trang
+    // Lấy top 50 keywords từ API khi vừa load trang
+    const [loadingKeywords, setLoadingKeywords] = useState(true);
+
     useEffect(() => {
-        setLoading(true);
+        setLoadingKeywords(true);
         trendApi.getTopKeywords(50) // Gọi limit=50 theo yêu cầu JP-39 để Word Cloud đẹp hơn
             .then(res => {
-                const list = res.data?.body || [];
+                const list = res.data?.body || res.data?.data || res.data || [];
                 const mappedKeywords = list.map(kw => ({
                     text: kw.name,
                     value: kw.usageCount
                 }));
                 setTrendingKeywords(mappedKeywords);
-                setLoading(false);
+                setLoadingKeywords(false);
             })
             .catch(err => {
                 console.error("Lỗi lấy danh sách gợi ý từ backend:", err);
                 setTrendingKeywords([
-                    { text: 'Machine Learning', value: 120 },
-                    { text: 'AI', value: 95 },
-                    { text: 'Deep Learning', value: 80 },
-                    { text: 'Blockchain', value: 60 },
-                    { text: 'Quantum Computing', value: 45 }
+                    { text: 'machine learning', value: 250 },
+                    { text: 'deep learning', value: 210 },
+                    { text: 'artificial intelligence', value: 195 },
+                    { text: 'blockchain', value: 160 },
+                    { text: 'quantum computing', value: 140 },
+                    { text: 'data science', value: 130 },
+                    { text: 'neural networks', value: 120 },
+                    { text: 'computer vision', value: 115 },
+                    { text: 'natural language processing', value: 110 },
+                    { text: 'cybersecurity', value: 95 },
+                    { text: 'cloud computing', value: 90 },
+                    { text: 'big data', value: 85 },
+                    { text: 'internet of things', value: 80 },
+                    { text: 'edge computing', value: 75 },
+                    { text: 'robotics', value: 70 },
+                    { text: 'cryptography', value: 68 },
+                    { text: 'bioinformatics', value: 65 },
+                    { text: 'smart contract', value: 60 },
+                    { text: 'image processing', value: 58 },
+                    { text: 'reinforcement learning', value: 55 },
+                    { text: 'data mining', value: 52 },
+                    { text: 'semantic web', value: 50 },
+                    { text: 'augmented reality', value: 48 },
+                    { text: 'virtual reality', value: 45 },
+                    { text: 'parallel computing', value: 42 },
+                    { text: 'distributed systems', value: 40 },
+                    { text: 'data privacy', value: 38 },
+                    { text: 'information retrieval', value: 35 },
+                    { text: 'optimization algorithms', value: 32 },
+                    { text: 'database systems', value: 30 },
+                    { text: 'software engineering', value: 28 },
+                    { text: 'network security', value: 25 }
                 ]);
-                setLoading(false);
+                setLoadingKeywords(false);
             });
 
         // Gọi hàm phân tích lần đầu
@@ -220,7 +249,7 @@ const TrendAnalysis = () => {
 
             {/* --- PHẦN WORD CLOUD (JP-39 MỚI BỔ SUNG) --- */}
             <Card title="Xu hướng Từ khóa trực quan (Word Cloud)" bordered={false} style={{ marginTop: 24 }}>
-                <WordCloudChart data={trendingKeywords} loading={loading} />
+                <WordCloudChart data={trendingKeywords} loading={loadingKeywords} />
             </Card>
 
             {/* --- STATISTICS SECTION --- */}

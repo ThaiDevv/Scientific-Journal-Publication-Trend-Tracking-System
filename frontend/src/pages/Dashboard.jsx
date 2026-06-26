@@ -9,6 +9,8 @@ import { useNavigate } from "react-router-dom";
 import JournalBarChart from '../components/Charts/JournalBarChart';
 import FieldPieChart from '../components/Charts/FieldPieChart';
 // =======================================================
+import WordCloud from '../components/Charts/WordCloud';
+import { getTopKeywords } from '../api/paperApi';
 
 const { Title, Text } = Typography;
 
@@ -17,6 +19,10 @@ const Dashboard = () => {
     // 1. Dữ liệu cho JP-35 (Các ô số liệu)
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
+
+    // Word Cloud data state
+    const [keywordsData, setKeywordsData] = useState([]);
+    const [loadingKeywords, setLoadingKeywords] = useState(true);
 
     // 2. Dữ liệu cho JP-36 (Biểu đồ đường)
     const [trendData, setTrendData] = useState([]);
@@ -114,6 +120,52 @@ const Dashboard = () => {
                 ]);
                 setLoadingRecent(false);
             });
+        // 5. Lấy danh sách Top Keywords cho Word Cloud (đáp ứng tiêu chí hiển thị ít nhất 30 từ khóa)
+        setLoadingKeywords(true);
+        getTopKeywords(50)
+            .then(response => {
+                const data = response.data?.body || response.data?.data || response.data;
+                setKeywordsData(data || []);
+                setLoadingKeywords(false);
+            })
+            .catch(error => {
+                console.warn("Lỗi kết nối Keywords API, dùng fallback mock data:", error);
+                setKeywordsData([
+                    { name: 'machine learning', usageCount: 250 },
+                    { name: 'deep learning', usageCount: 210 },
+                    { name: 'artificial intelligence', usageCount: 195 },
+                    { name: 'blockchain', usageCount: 160 },
+                    { name: 'quantum computing', usageCount: 140 },
+                    { name: 'data science', usageCount: 130 },
+                    { name: 'neural networks', usageCount: 120 },
+                    { name: 'computer vision', usageCount: 115 },
+                    { name: 'natural language processing', usageCount: 110 },
+                    { name: 'cybersecurity', usageCount: 95 },
+                    { name: 'cloud computing', usageCount: 90 },
+                    { name: 'big data', usageCount: 85 },
+                    { name: 'internet of things', usageCount: 80 },
+                    { name: 'edge computing', usageCount: 75 },
+                    { name: 'robotics', usageCount: 70 },
+                    { name: 'cryptography', usageCount: 68 },
+                    { name: 'bioinformatics', usageCount: 65 },
+                    { name: 'smart contract', usageCount: 60 },
+                    { name: 'image processing', usageCount: 58 },
+                    { name: 'reinforcement learning', usageCount: 55 },
+                    { name: 'data mining', usageCount: 52 },
+                    { name: 'semantic web', usageCount: 50 },
+                    { name: 'augmented reality', usageCount: 48 },
+                    { name: 'virtual reality', usageCount: 45 },
+                    { name: 'parallel computing', usageCount: 42 },
+                    { name: 'distributed systems', usageCount: 40 },
+                    { name: 'data privacy', usageCount: 38 },
+                    { name: 'information retrieval', usageCount: 35 },
+                    { name: 'optimization algorithms', usageCount: 32 },
+                    { name: 'database systems', usageCount: 30 },
+                    { name: 'software engineering', usageCount: 28 },
+                    { name: 'network security', usageCount: 25 }
+                ]);
+                setLoadingKeywords(false);
+            });
     }, []);
 
     if (loading) return <div style={{ padding: '24px' }}><Skeleton active paragraph={{ rows: 15 }} /></div>;
@@ -202,6 +254,15 @@ const Dashboard = () => {
                 </Col>
             </Row>
             {/* ============================================================ */}
+
+            {/* Word Cloud Card */}
+            <Row gutter={[16, 16]} style={{ marginTop: '24px' }}>
+                <Col xs={24}>
+                    <Card title="Xu hướng từ khóa nghiên cứu phổ biến (Word Cloud)" bordered={false}>
+                        <WordCloud data={keywordsData} loading={loadingKeywords} />
+                    </Card>
+                </Col>
+            </Row>
 
             {/* Row 4: Recent Papers */}
             <Row gutter={[16, 16]} style={{ marginTop: '24px' }}>

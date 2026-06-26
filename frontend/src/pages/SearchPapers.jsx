@@ -20,7 +20,7 @@ import {
     StarFilled,
 } from "@ant-design/icons";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { searchPapers } from "../api/paperApi";
 import { getJournals } from "../api/journalApi";
@@ -37,6 +37,7 @@ const { Title, Text } = Typography;
 function SearchPapers() {
 
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
 
     const [loading, setLoading] = useState(false);
 
@@ -114,7 +115,7 @@ function SearchPapers() {
 
     }
 
-    async function loadPapers(currentPage = 1) {
+    async function loadPapers(currentPage = 1, searchKeyword = keyword) {
 
         try {
 
@@ -122,7 +123,7 @@ function SearchPapers() {
 
             const res = await searchPapers({
 
-                keyword,
+                keyword: searchKeyword,
 
                 author,
 
@@ -165,6 +166,10 @@ function SearchPapers() {
     useEffect(() => {
 
         const init = async () => {
+            const urlKeyword = searchParams.get("keyword") || "";
+            if (urlKeyword) {
+                setKeyword(urlKeyword);
+            }
 
             await loadBookmarks();
 
@@ -172,13 +177,13 @@ function SearchPapers() {
 
             await loadJournals();
 
-            await loadPapers(1);
+            await loadPapers(1, urlKeyword);
 
         };
 
         init();
 
-    }, []);
+    }, [searchParams]);
     const handleBookmark = async (paperId) => {
 
         try {
