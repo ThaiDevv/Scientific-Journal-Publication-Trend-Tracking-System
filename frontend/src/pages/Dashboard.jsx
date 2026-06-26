@@ -39,25 +39,25 @@ const Dashboard = () => {
     const [loadingRecent, setLoadingRecent] = useState(true);
 
     useEffect(() => {
-        // Lấy stats (JP-35) - có fallback mock data
+        // Lấy stats (JP-35)
         dashboardApi.getStats()
             .then(response => {
                 setStats(response.data?.body || response.data);
                 setLoading(false);
             })
             .catch(error => {
-                console.warn("Lỗi kết nối Stats (chưa có API), dùng fallback mock data:", error);
+                console.error("Lỗi kết nối Stats:", error);
                 setStats({
-                    totalPapers: 125,
-                    totalJournals: 12,
-                    totalAuthors: 48,
-                    totalKeywords: 89,
-                    growth: "+15 bài mới tháng này"
+                    totalPapers: 0,
+                    totalJournals: 0,
+                    totalAuthors: 0,
+                    totalKeywords: 0,
+                    growth: ""
                 });
                 setLoading(false);
             });
 
-        // Lấy Trend Data (JP-36) - có fallback mock data
+        // Lấy Trend Data (JP-36)
         const compareKeywords = ["AI", "Blockchain", "Quantum"];
         setLoadingTrend(true);
         trendApi.getCompareTrends(compareKeywords)
@@ -66,18 +66,12 @@ const Dashboard = () => {
                 setLoadingTrend(false);
             })
             .catch(error => {
-                console.warn("Lỗi kết nối Trend (chưa có API), dùng fallback mock data:", error);
-                setTrendData([
-                    { year: '2022', AI: 30, Blockchain: 10, Quantum: 5 },
-                    { year: '2023', AI: 45, Blockchain: 18, Quantum: 8 },
-                    { year: '2024', AI: 75, Blockchain: 25, Quantum: 12 },
-                    { year: '2025', AI: 110, Blockchain: 30, Quantum: 20 },
-                    { year: '2026', AI: 150, Blockchain: 45, Quantum: 35 }
-                ]);
+                console.error("Lỗi kết nối Trend:", error);
+                setTrendData([]);
                 setLoadingTrend(false);
             });
 
-        // === JP-37: Gọi API cho Bar và Pie Chart - có fallback mock data ===
+        // === JP-37: Gọi API cho Bar và Pie Chart ===
         setLoadingCharts(true);
         Promise.all([
             dashboardApi.getTopJournals(),
@@ -89,22 +83,13 @@ const Dashboard = () => {
                 setLoadingCharts(false);
             })
             .catch(error => {
-                console.warn("Lỗi kết nối Charts (chưa có API), dùng fallback mock data:", error);
-                setJournalData([
-                    { name: 'IEEE Access', paperCount: 45 },
-                    { name: 'ACM Computing Surveys', paperCount: 32 },
-                    { name: 'Nature', paperCount: 28 },
-                    { name: 'Springer Journal', paperCount: 20 }
-                ]);
-                setFieldData([
-                    { name: 'Computer Science', value: 65 },
-                    { name: 'Mathematics', value: 20 },
-                    { name: 'Physics', value: 15 }
-                ]);
+                console.error("Lỗi kết nối Charts:", error);
+                setJournalData([]);
+                setFieldData([]);
                 setLoadingCharts(false);
             });
 
-        // 4. Lấy Recent Papers (API thực tế từ backend)
+        // 4. Lấy Recent Papers
         setLoadingRecent(true);
         dashboardApi.getRecentPapers()
             .then(response => {
@@ -113,14 +98,12 @@ const Dashboard = () => {
                 setLoadingRecent(false);
             })
             .catch(error => {
-                console.warn("Lỗi kết nối Recent Papers:", error);
-                setRecentPapers([
-                    { id: 1, title: 'Deep Learning Approaches in Image Recognition', journalName: 'IEEE Access', publicationYear: 2026 },
-                    { id: 2, title: 'Blockchain Security in Smart IoT Systems', journalName: 'ACM Computing Surveys', publicationYear: 2025 }
-                ]);
+                console.error("Lỗi kết nối Recent Papers:", error);
+                setRecentPapers([]);
                 setLoadingRecent(false);
             });
-        // 5. Lấy danh sách Top Keywords cho Word Cloud (đáp ứng tiêu chí hiển thị ít nhất 30 từ khóa)
+
+        // 5. Lấy danh sách Top Keywords cho Word Cloud
         setLoadingKeywords(true);
         getTopKeywords(50)
             .then(response => {
@@ -129,41 +112,8 @@ const Dashboard = () => {
                 setLoadingKeywords(false);
             })
             .catch(error => {
-                console.warn("Lỗi kết nối Keywords API, dùng fallback mock data:", error);
-                setKeywordsData([
-                    { name: 'machine learning', usageCount: 250 },
-                    { name: 'deep learning', usageCount: 210 },
-                    { name: 'artificial intelligence', usageCount: 195 },
-                    { name: 'blockchain', usageCount: 160 },
-                    { name: 'quantum computing', usageCount: 140 },
-                    { name: 'data science', usageCount: 130 },
-                    { name: 'neural networks', usageCount: 120 },
-                    { name: 'computer vision', usageCount: 115 },
-                    { name: 'natural language processing', usageCount: 110 },
-                    { name: 'cybersecurity', usageCount: 95 },
-                    { name: 'cloud computing', usageCount: 90 },
-                    { name: 'big data', usageCount: 85 },
-                    { name: 'internet of things', usageCount: 80 },
-                    { name: 'edge computing', usageCount: 75 },
-                    { name: 'robotics', usageCount: 70 },
-                    { name: 'cryptography', usageCount: 68 },
-                    { name: 'bioinformatics', usageCount: 65 },
-                    { name: 'smart contract', usageCount: 60 },
-                    { name: 'image processing', usageCount: 58 },
-                    { name: 'reinforcement learning', usageCount: 55 },
-                    { name: 'data mining', usageCount: 52 },
-                    { name: 'semantic web', usageCount: 50 },
-                    { name: 'augmented reality', usageCount: 48 },
-                    { name: 'virtual reality', usageCount: 45 },
-                    { name: 'parallel computing', usageCount: 42 },
-                    { name: 'distributed systems', usageCount: 40 },
-                    { name: 'data privacy', usageCount: 38 },
-                    { name: 'information retrieval', usageCount: 35 },
-                    { name: 'optimization algorithms', usageCount: 32 },
-                    { name: 'database systems', usageCount: 30 },
-                    { name: 'software engineering', usageCount: 28 },
-                    { name: 'network security', usageCount: 25 }
-                ]);
+                console.error("Lỗi kết nối Keywords API:", error);
+                setKeywordsData([]);
                 setLoadingKeywords(false);
             });
     }, []);
