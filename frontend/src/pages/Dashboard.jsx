@@ -20,7 +20,6 @@ const Dashboard = () => {
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Word Cloud data state
     const [keywordsData, setKeywordsData] = useState([]);
     const [loadingKeywords, setLoadingKeywords] = useState(true);
 
@@ -103,7 +102,6 @@ const Dashboard = () => {
                 setLoadingRecent(false);
             });
 
-        // 5. Lấy danh sách Top Keywords cho Word Cloud
         setLoadingKeywords(true);
         getTopKeywords(50)
             .then(response => {
@@ -205,7 +203,6 @@ const Dashboard = () => {
             </Row>
             {/* ============================================================ */}
 
-            {/* Word Cloud Card */}
             <Row gutter={[16, 16]} style={{ marginTop: '24px' }}>
                 <Col xs={24}>
                     <Card title="Xu hướng từ khóa nghiên cứu phổ biến (Word Cloud)" bordered={false}>

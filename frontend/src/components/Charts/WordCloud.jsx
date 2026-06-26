@@ -2,25 +2,23 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Spin, Empty, Tooltip } from 'antd';
 
-// A curated, beautiful and vibrant color palette for modern designs
 const colors = [
-    '#1890ff', // primary blue
-    '#2f54eb', // geek blue
-    '#722ed1', // purple
-    '#13c2c2', // cyan
-    '#52c41a', // emerald green
-    '#faad14', // gold/amber
-    '#f5222d', // rose red
-    '#eb2f96', // magenta
-    '#fa8c16', // bright orange
-    '#096dd9', // cobalt blue
-    '#389e0d', // forest green
-    '#ad2102', // warm red-orange
-    '#10085a', // deep navy
-    '#02a8a8', // dark teal
+    '#1890ff',
+    '#2f54eb',
+    '#722ed1',
+    '#13c2c2',
+    '#52c41a',
+    '#faad14',
+    '#f5222d',
+    '#eb2f96',
+    '#fa8c16',
+    '#096dd9',
+    '#389e0d',
+    '#ad2102',
+    '#10085a',
+    '#02a8a8',
 ];
 
-// Helper function to get consistent color based on keyword name hash
 const getKeywordColor = (keyword) => {
     let hash = 0;
     for (let i = 0; i < keyword.length; i++) {
@@ -49,9 +47,7 @@ const WordCloud = ({ data, loading }) => {
         );
     }
 
-    // Map data to standardized { text, value } structure
     const words = data.map((item, index) => {
-        // Support KeywordResponse (id, name, usageCount) or direct text/value formats
         const text = item.name || item.text || item.keyword || `Keyword-${index}`;
         const value = item.usageCount !== undefined ? item.usageCount : (item.value || 0);
         return { text, value };
@@ -60,13 +56,11 @@ const WordCloud = ({ data, loading }) => {
     const minVal = Math.min(...words.map(w => w.value));
     const maxVal = Math.max(...words.map(w => w.value));
 
-    // Map value to font size between 14px and 60px
     const getFontSize = (value) => {
-        if (maxVal === minVal) return 24; // fallback if all keywords have same count
+        if (maxVal === minVal) return 24;
         return 14 + ((value - minVal) / (maxVal - minVal)) * (60 - 14);
     };
 
-    // Style block for staggered keyframe fade-in animation and hover scaling
     const styleSheet = `
         @keyframes wordCloudFadeIn {
             from {
