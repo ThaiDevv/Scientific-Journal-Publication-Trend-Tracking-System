@@ -8,7 +8,7 @@ import { trendApi } from '../api/trendApi';
 import { followApi } from '../api/followApi';
 
 /* ─── colour palette matching design system (dark academic tones) ─── */
-const PALETTE = ['#111827', '#0f766e', '#b91c1c', '#4f46e5', '#b45309'];
+const DARK_COLORS = ['#111827', '#0f766e', '#b91c1c'];
 
 /* ─── Growth Rate badge ─── */
 const GrowthBadge = ({ rate }) => {
@@ -659,7 +659,7 @@ const TrendAnalysis = () => {
                 {selectedKeywords.length > 0 && (
                     <div className="ta-tags-row">
                         {selectedKeywords.map((kw, i) => {
-                            const col = PALETTE[i % PALETTE.length];
+                            const col = DARK_COLORS[i % DARK_COLORS.length];
                             return (
                                 <span key={kw} className="ta-tag" style={{ borderColor: col, color: col, background: col + '14' }}>
                                     {kw}
@@ -686,7 +686,7 @@ const TrendAnalysis = () => {
                         Keyword Growth Comparison
                         {selectedKeywords.map((kw, i) => (
                             <span key={kw} className="ta-legend-pill">
-                                <span className="ta-legend-dot" style={{ background: PALETTE[i % PALETTE.length] }} />
+                                <span className="ta-legend-dot" style={{ background: DARK_COLORS[i % DARK_COLORS.length] }} />
                                 {kw}
                             </span>
                         ))}
@@ -721,19 +721,24 @@ const TrendAnalysis = () => {
                                         width={42}
                                     />
                                     <Tooltip content={<CustomTooltip />} />
-                                    {selectedKeywords.map((kw, i) => (
-                                        <Line
-                                            key={kw}
-                                            type="monotone"
-                                            dataKey={kw}
-                                            name={kw}
-                                            stroke={PALETTE[i % PALETTE.length]}
-                                            strokeWidth={2.5}
-                                            dot={{ r: 4, strokeWidth: 2, fill: '#fff', stroke: PALETTE[i % PALETTE.length] }}
-                                            activeDot={{ r: 6, strokeWidth: 0 }}
-                                            animationDuration={1200}
-                                        />
-                                    ))}
+                                    {selectedKeywords.map((kw, i) => {
+                                        const color = DARK_COLORS[i % DARK_COLORS.length];
+                                        const isDashed = i >= DARK_COLORS.length;
+                                        return (
+                                            <Line
+                                                key={kw}
+                                                type="monotone"
+                                                dataKey={kw}
+                                                name={kw}
+                                                stroke={color}
+                                                strokeDasharray={isDashed ? "5 5" : undefined}
+                                                strokeWidth={2.5}
+                                                dot={{ r: 4, strokeWidth: 2, fill: '#fff', stroke: color }}
+                                                activeDot={{ r: 6, strokeWidth: 0 }}
+                                                animationDuration={1200}
+                                            />
+                                        );
+                                    })}
                                 </LineChart>
                             </ResponsiveContainer>
                         </div>
