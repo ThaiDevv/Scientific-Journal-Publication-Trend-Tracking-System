@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Academic Forum - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&amp;family=Source+Serif+4:wght@600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-surface": "#2d3133",
+                    "secondary-container": "#86f2e4",
+                    "surface-dim": "#d8dadc",
+                    "tertiary-fixed": "#d3e4fe",
+                    "surface-container": "#eceef0",
+                    "primary-container": "#131b2e",
+                    "error": "#ba1a1a",
+                    "surface-container-low": "#f2f4f6",
+                    "tertiary-fixed-dim": "#b7c8e1",
+                    "surface-bright": "#f7f9fb",
+                    "tertiary": "#000000",
+                    "secondary-fixed": "#89f5e7",
+                    "on-primary-container": "#7c839b",
+                    "surface-tint": "#565e74",
+                    "surface-variant": "#e0e3e5",
+                    "secondary": "#006a61",
+                    "on-tertiary-fixed": "#0b1c30",
+                    "primary-fixed-dim": "#bec6e0",
+                    "on-primary-fixed-variant": "#3f465c",
+                    "surface": "#f7f9fb",
+                    "on-error-container": "#93000a",
+                    "on-secondary-fixed": "#00201d",
+                    "on-surface": "#191c1e",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-fixed": "#dae2fd",
+                    "on-primary-fixed": "#131b2e",
+                    "on-secondary-container": "#006f66",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed-dim": "#6bd8cb",
+                    "on-primary": "#ffffff",
+                    "primary": "#000000",
+                    "outline": "#76777d",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-high": "#e6e8ea",
+                    "on-error": "#ffffff",
+                    "surface-container-highest": "#e0e3e5",
+                    "tertiary-container": "#0b1c30",
+                    "on-tertiary-container": "#75859d",
+                    "on-secondary-fixed-variant": "#005049",
+                    "on-surface-variant": "#45464d",
+                    "outline-variant": "#c6c6cd",
+                    "on-tertiary-fixed-variant": "#38485d",
+                    "on-secondary": "#ffffff",
+                    "inverse-on-surface": "#eff1f3",
+                    "background": "#f7f9fb",
+                    "on-background": "#191c1e",
+                    "inverse-primary": "#bec6e0"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "container-max": "1440px",
+                    "margin-mobile": "16px",
+                    "gutter": "24px",
+                    "unit": "4px",
+                    "sidebar-width": "260px",
+                    "margin-desktop": "40px"
+            },
+            "fontFamily": {
+                    "body-sm": ["Work Sans"],
+                    "body-md": ["Work Sans"],
+                    "ui-label": ["Work Sans"],
+                    "headline-lg": ["\"Source Serif 4\""],
+                    "data-label": ["JetBrains Mono"],
+                    "headline-lg-mobile": ["\"Source Serif 4\""],
+                    "paper-title": ["\"Source Serif 4\""],
+                    "display-title": ["\"Source Serif 4\""]
+            },
+            "fontSize": {
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "ui-label": ["13px", {"lineHeight": "16px", "fontWeight": "600"}],
+                    "headline-lg": ["30px", {"lineHeight": "38px", "fontWeight": "600"}],
+                    "data-label": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "paper-title": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "display-title": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Work Sans', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar for clean academic feel */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #e2e8e0; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #c6c6cd; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-sidebar-width bg-surface-container-lowest border-r border-outline-variant flex flex-col py-margin-desktop px-4 z-50">
+<div class="mb-10 px-2">
+<h1 class="font-display-title text-display-title text-primary leading-tight">Academic Forum</h1>
+<p class="font-ui-label text-ui-label text-on-surface-variant mt-1">Journal Trend Tracking</p>
+</div>
+<nav class="flex-grow space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-primary font-bold border-r-4 border-primary bg-surface-container-low transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-ui-label text-ui-label">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant font-ui-label text-ui-label hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+<span>Search Papers</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant font-ui-label text-ui-label hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="trending_up">trending_up</span>
+<span>Trend Analysis</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant font-ui-label text-ui-label hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="explore">explore</span>
+<span>Topic Explorer</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant font-ui-label text-ui-label hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span>Following</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant font-ui-label text-ui-label hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+<span>Reports</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant font-ui-label text-ui-label hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="bookmark">bookmark</span>
+<span>Bookmarks</span>
+</a>
+</nav>
+<div class="mt-auto space-y-1 border-t border-outline-variant pt-4">
+<button class="w-full mb-4 bg-primary text-on-primary py-3 rounded-lg font-ui-label text-ui-label hover:opacity-90 active:scale-95 transition-all">
+                New Analysis
+            </button>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant font-ui-label text-ui-label hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span>Profile</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant font-ui-label text-ui-label hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-sidebar-width min-h-screen">
+<!-- TopAppBar -->
+<header class="h-16 flex justify-between items-center px-margin-desktop bg-surface border-b border-outline-variant sticky top-0 z-40">
+<h2 class="font-paper-title text-paper-title text-primary">Academic Forum</h2>
+<div class="flex items-center gap-6">
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm" data-icon="search">search</span>
+<input class="w-full pl-10 pr-4 py-1.5 bg-surface-container-low border-none rounded-full text-body-sm focus:ring-1 focus:ring-secondary" placeholder="Search keywords..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-secondary transition-colors" data-icon="notifications">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-secondary transition-colors" data-icon="settings">settings</button>
+<button class="bg-primary text-on-primary px-4 py-1.5 rounded font-ui-label text-ui-label hover:opacity-90 active:scale-95 transition-all">Publish Paper</button>
+<div class="w-8 h-8 bg-surface-variant rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a middle-aged academic researcher with glasses, wearing a neutral-toned blazer. The background is a blurred library setting with soft, warm lighting. The overall image has a clean, high-resolution finish and a professional tone that fits a sophisticated academic dashboard interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0z1QXXJlSqj__UhzjyY2nG2kAnRcv808QzEFHesKBJZHIK-4CFS_OxCwTRCx8YOCAjAyPO0qmLZht1588ru5FQWlIAtsSvwSKEPQelBynEuzkyJKK-_kPnnMwWR5cCifLv-gcGMHrjwHdCKQkmD-82Fgi9mbXyklN9NbHFKfxH-svytoLmVjEkzYoPwlI6jUr4d8pJKGHVH5gapxckysoytA988Uk0WmTTSXt3VoyeRvNBLnCZeb-vWH3ARZFsMj40r2_YbsQYXQ"/>
+</div>
+</div>
+</div>
+</header>
+<div class="p-margin-desktop max-w-container-max mx-auto space-y-gutter">
+<!-- Stat Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<div class="bg-surface-container-lowest p-6 border border-outline-variant rounded shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-secondary bg-secondary-container/20 p-2 rounded" data-icon="description">description</span>
+<span class="text-secondary font-data-label text-data-label">+12% YoY</span>
+</div>
+<p class="font-ui-label text-ui-label text-on-surface-variant uppercase tracking-wider">Tổng bài báo</p>
+<h3 class="font-headline-lg text-headline-lg mt-1">12,540</h3>
+</div>
+<div class="bg-surface-container-lowest p-6 border border-outline-variant rounded shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-secondary bg-secondary-container/20 p-2 rounded" data-icon="menu_book">menu_book</span>
+<span class="text-secondary font-data-label text-data-label">+5% YoY</span>
+</div>
+<p class="font-ui-label text-ui-label text-on-surface-variant uppercase tracking-wider">Tổng journals</p>
+<h3 class="font-headline-lg text-headline-lg mt-1">450</h3>
+</div>
+<div class="bg-surface-container-lowest p-6 border border-outline-variant rounded shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-secondary bg-secondary-container/20 p-2 rounded" data-icon="person">person</span>
+<span class="text-secondary font-data-label text-data-label">+8% YoY</span>
+</div>
+<p class="font-ui-label text-ui-label text-on-surface-variant uppercase tracking-wider">Tổng tác giả</p>
+<h3 class="font-headline-lg text-headline-lg mt-1">8,200</h3>
+</div>
+<div class="bg-surface-container-lowest p-6 border border-outline-variant rounded shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-secondary bg-secondary-container/20 p-2 rounded" data-icon="tag">tag</span>
+<span class="text-secondary font-data-label text-data-label">+24% YoY</span>
+</div>
+<p class="font-ui-label text-ui-label text-on-surface-variant uppercase tracking-wider">Tổng keywords</p>
+<h3 class="font-headline-lg text-headline-lg mt-1">15,000</h3>
+</div>
+</div>
+<!-- Main Analytics Grid -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Trend Line Chart -->
+<div class="col-span-12 lg:col-span-8 bg-surface-container-lowest border border-outline-variant p-6 rounded">
+<div class="flex justify-between items-center mb-8">
+<div>
+<h4 class="font-paper-title text-paper-title">Keyword Trend Analysis (2022-2026)</h4>
+<p class="text-on-surface-variant text-body-sm">Comparison of projected research density across emerging fields.</p>
+</div>
+<div class="flex gap-4">
+<div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-primary"></span><span class="text-body-sm">AI</span></div>
+<div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-secondary"></span><span class="text-body-sm">Blockchain</span></div>
+<div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-on-tertiary-container"></span><span class="text-body-sm">Quantum</span></div>
+</div>
+</div>
+<!-- Line Chart Visualization (CSS/SVG) -->
+<div class="relative h-[300px] w-full mt-4 flex items-end justify-between border-b border-l border-outline-variant">
+<!-- Y-Axis markers -->
+<div class="absolute -left-10 top-0 h-full flex flex-col justify-between text-on-surface-variant font-data-label text-data-label py-1">
+<span>100%</span><span>75%</span><span>50%</span><span>25%</span><span>0%</span>
+</div>
+<!-- Chart Lines (Simulated with SVGs) -->
+<svg class="absolute inset-0 w-full h-full overflow-visible" preserveaspectratio="none">
+<!-- AI Path -->
+<path class="w-full h-full" d="M0 240 L100 180 L200 120 L300 60 L400 20" fill="none" stroke="black" stroke-width="2"></path>
+<!-- Blockchain Path -->
+<path d="M0 220 L100 200 L200 210 L300 180 L400 150" fill="none" stroke="#006a61" stroke-dasharray="4" stroke-width="2"></path>
+<!-- Quantum Path -->
+<path d="M0 280 L100 270 L200 240 L300 210 L400 120" fill="none" stroke="#75859d" stroke-width="2"></path>
+</svg>
+<!-- X-Axis Labels -->
+<div class="absolute -bottom-8 w-full flex justify-between text-on-surface-variant font-data-label text-data-label">
+<span>2022</span><span>2023</span><span>2024</span><span>2025</span><span>2026</span>
+</div>
+</div>
+</div>
+<!-- Trending Topics List -->
+<div class="col-span-12 lg:col-span-4 bg-surface-container-lowest border border-outline-variant p-6 rounded">
+<h4 class="font-paper-title text-paper-title mb-6">Trending Topics</h4>
+<ul class="space-y-4">
+<li class="flex items-center justify-between p-3 bg-surface-container-low rounded border border-transparent hover:border-secondary transition-colors cursor-pointer group">
+<div class="flex items-center gap-3">
+<span class="font-data-label text-data-label text-on-surface-variant">01</span>
+<span class="font-ui-label text-ui-label">Large Language Models</span>
+</div>
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-sm" data-icon="trending_up">trending_up</span>
+<span class="font-data-label text-data-label">+48.2%</span>
+</div>
+</li>
+<li class="flex items-center justify-between p-3 bg-surface-container-low rounded border border-transparent hover:border-secondary transition-colors cursor-pointer group">
+<div class="flex items-center gap-3">
+<span class="font-data-label text-data-label text-on-surface-variant">02</span>
+<span class="font-ui-label text-ui-label">Sustainable Energy Systems</span>
+</div>
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-sm" data-icon="trending_up">trending_up</span>
+<span class="font-data-label text-data-label">+31.5%</span>
+</div>
+</li>
+<li class="flex items-center justify-between p-3 bg-surface-container-low rounded border border-transparent hover:border-secondary transition-colors cursor-pointer group">
+<div class="flex items-center gap-3">
+<span class="font-data-label text-data-label text-on-surface-variant">03</span>
+<span class="font-ui-label text-ui-label">Quantum Cryptography</span>
+</div>
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-sm" data-icon="trending_up">trending_up</span>
+<span class="font-data-label text-data-label">+22.1%</span>
+</div>
+</li>
+<li class="flex items-center justify-between p-3 bg-surface-container-low rounded border border-transparent hover:border-secondary transition-colors cursor-pointer group">
+<div class="flex items-center gap-3">
+<span class="font-data-label text-data-label text-on-surface-variant">04</span>
+<span class="font-ui-label text-ui-label">Bio-informatics Genomics</span>
+</div>
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-sm" data-icon="trending_up">trending_up</span>
+<span class="font-data-label text-data-label">+18.4%</span>
+</div>
+</li>
+</ul>
+<button class="w-full mt-6 text-on-surface-variant font-ui-label text-ui-label hover:text-primary transition-colors flex items-center justify-center gap-2">
+                        View Full Report <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Bottom Row: Bar Chart & Pie Chart -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Top Journals Bar Chart -->
+<div class="col-span-12 lg:col-span-7 bg-surface-container-lowest border border-outline-variant p-6 rounded">
+<h4 class="font-paper-title text-paper-title mb-8">Top Journals by Publication Count</h4>
+<div class="space-y-6">
+<div class="space-y-2">
+<div class="flex justify-between font-ui-label text-ui-label">
+<span>Nature Communications</span>
+<span class="font-data-label">2,450</span>
+</div>
+<div class="w-full h-2 bg-surface-container-low rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[90%] transition-all duration-1000"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between font-ui-label text-ui-label">
+<span>IEEE Transactions</span>
+<span class="font-data-label">1,820</span>
+</div>
+<div class="w-full h-2 bg-surface-container-low rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[75%] transition-all duration-1000"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between font-ui-label text-ui-label">
+<span>Journal of Neuroscience</span>
+<span class="font-data-label">1,400</span>
+</div>
+<div class="w-full h-2 bg-surface-container-low rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[60%] transition-all duration-1000"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between font-ui-label text-ui-label">
+<span>PLOS ONE</span>
+<span class="font-data-label">1,120</span>
+</div>
+<div class="w-full h-2 bg-surface-container-low rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[45%] transition-all duration-1000"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Research Distribution Pie Chart -->
+<div class="col-span-12 lg:col-span-5 bg-surface-container-lowest border border-outline-variant p-6 rounded flex flex-col">
+<h4 class="font-paper-title text-paper-title mb-6">Research Field Distribution</h4>
+<div class="flex-grow flex items-center justify-center py-4 relative">
+<!-- Simulated Pie Chart with CSS Conic Gradient -->
+<div class="w-48 h-48 rounded-full shadow-inner border border-outline-variant" style="background: conic-gradient(#000000 0% 45%, #006a61 45% 75%, #75859d 75% 100%)">
+</div>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-24 h-24 bg-surface-container-lowest rounded-full flex items-center justify-center shadow-sm">
+<span class="font-data-label text-data-label text-on-surface-variant">FIELDS</span>
+</div>
+</div>
+</div>
+<div class="mt-4 grid grid-cols-1 gap-2">
+<div class="flex items-center justify-between text-body-sm">
+<div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-primary"></span><span>Computer Science</span></div>
+<span class="font-bold">45%</span>
+</div>
+<div class="flex items-center justify-between text-body-sm">
+<div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-secondary"></span><span>Mathematics</span></div>
+<span class="font-bold">30%</span>
+</div>
+<div class="flex items-center justify-between text-body-sm">
+<div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-on-tertiary-container"></span><span>Physics</span></div>
+<span class="font-bold">25%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Papers Section -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded overflow-hidden">
+<div class="px-6 py-4 border-b border-outline-variant flex justify-between items-center">
+<h4 class="font-paper-title text-paper-title">Recent Papers</h4>
+<button class="text-secondary font-ui-label text-ui-label hover:underline">View All Papers</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container-low font-ui-label text-ui-label text-primary uppercase tracking-wider">
+<th class="px-6 py-4">Title</th>
+<th class="px-6 py-4">Journal</th>
+<th class="px-6 py-4">Year</th>
+<th class="px-6 py-4 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-secondary-container/5 transition-colors group">
+<td class="px-6 py-4 font-body-md text-on-surface">Neural Architecture Search for Vision Transformers</td>
+<td class="px-6 py-4 font-body-sm text-on-surface-variant italic">AI Research Journal</td>
+<td class="px-6 py-4 font-data-label text-data-label">2024</td>
+<td class="px-6 py-4 text-right">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" data-icon="visibility">visibility</button>
+</td>
+</tr>
+<tr class="hover:bg-secondary-container/5 transition-colors group">
+<td class="px-6 py-4 font-body-md text-on-surface">Blockchain-based Secure Data Sharing for Healthcare</td>
+<td class="px-6 py-4 font-body-sm text-on-surface-variant italic">Health-Tech Quarterly</td>
+<td class="px-6 py-4 font-data-label text-data-label">2024</td>
+<td class="px-6 py-4 text-right">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" data-icon="visibility">visibility</button>
+</td>
+</tr>
+<tr class="hover:bg-secondary-container/5 transition-colors group">
+<td class="px-6 py-4 font-body-md text-on-surface">Quantum Supremacy in High-Performance Computing</td>
+<td class="px-6 py-4 font-body-sm text-on-surface-variant italic">Quantum Science Review</td>
+<td class="px-6 py-4 font-data-label text-data-label">2023</td>
+<td class="px-6 py-4 text-right">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" data-icon="visibility">visibility</button>
+</td>
+</tr>
+<tr class="hover:bg-secondary-container/5 transition-colors group">
+<td class="px-6 py-4 font-body-md text-on-surface">Decentralized Finance: Market Efficiency Analysis</td>
+<td class="px-6 py-4 font-body-sm text-on-surface-variant italic">Economic Trends</td>
+<td class="px-6 py-4 font-data-label text-data-label">2023</td>
+<td class="px-6 py-4 text-right">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" data-icon="visibility">visibility</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="p-8 border-t border-outline-variant bg-surface-container-low text-center">
+<p class="text-body-sm text-on-surface-variant">© 2024 Academic Forum — Empowering Intellectual Rigor and Global Research Connectivity.</p>
+</footer>
+</main>
+<!-- Floating Action Button (FAB) -->
+<div class="fixed bottom-8 right-8 z-50">
+<button class="bg-primary text-on-primary w-14 h-14 rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all group">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+<span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-2 transition-all duration-300 font-ui-label text-ui-label whitespace-nowrap">Upload Paper</span>
+</button>
+</div>
+<script>
+        // Micro-interactions for analytics
+        document.querySelectorAll('.stat-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.classList.add('translate-y-[-4px]');
+            });
+            card.addEventListener('mouseleave', () => {
+                card.classList.remove('translate-y-[-4px]');
+            });
+        });
+
+        // Simple observer for chart animation entry
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('opacity-100');
+                    entry.target.style.width = entry.target.dataset.targetWidth || '100%';
+                }
+            });
+        });
+
+        document.querySelectorAll('.bar-fill').forEach(bar => {
+            observer.observe(bar);
+        });
+    </script>
+</body></html>

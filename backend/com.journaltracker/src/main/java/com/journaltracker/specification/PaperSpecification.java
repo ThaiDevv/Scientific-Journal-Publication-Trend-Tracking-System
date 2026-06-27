@@ -2,6 +2,7 @@ package com.journaltracker.specification;
 
 import com.journaltracker.entity.Author;
 import com.journaltracker.entity.Journal;
+import com.journaltracker.entity.Keyword;
 import com.journaltracker.entity.ResearchPaper;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -16,10 +17,14 @@ public class PaperSpecification {
             }
 
             String pattern = "%" + keyword.toLowerCase() + "%";
+            query.distinct(true);
+
+            Join<ResearchPaper, Keyword> keywordJoin = root.join("keywords", JoinType.LEFT);
 
             return cb.or(
                     cb.like(cb.lower(root.get("title")), pattern),
-                    cb.like(cb.lower(root.get("abstractText")), pattern)
+                    cb.like(cb.lower(root.get("abstractText")), pattern),
+                    cb.like(cb.lower(keywordJoin.get("name")), pattern)
             );
         };
     }

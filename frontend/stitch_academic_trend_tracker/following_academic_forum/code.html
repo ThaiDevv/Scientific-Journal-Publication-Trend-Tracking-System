@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Following | Academic Forum</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&amp;family=Source+Serif+4:wght@600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-tab-indicator {
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #000000;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#2d3133",
+                        "secondary-container": "#86f2e4",
+                        "surface-dim": "#d8dadc",
+                        "tertiary-fixed": "#d3e4fe",
+                        "surface-container": "#eceef0",
+                        "primary-container": "#131b2e",
+                        "error": "#ba1a1a",
+                        "surface-container-low": "#f2f4f6",
+                        "tertiary-fixed-dim": "#b7c8e1",
+                        "surface-bright": "#f7f9fb",
+                        "tertiary": "#000000",
+                        "secondary-fixed": "#89f5e7",
+                        "on-primary-container": "#7c839b",
+                        "surface-tint": "#565e74",
+                        "surface-variant": "#e0e3e5",
+                        "secondary": "#006a61",
+                        "on-tertiary-fixed": "#0b1c30",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "surface": "#f7f9fb",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed": "#00201d",
+                        "on-surface": "#191c1e",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#dae2fd",
+                        "on-primary-fixed": "#131b2e",
+                        "on-secondary-container": "#006f66",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#6bd8cb",
+                        "on-primary": "#ffffff",
+                        "primary": "#000000",
+                        "outline": "#76777d",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-high": "#e6e8ea",
+                        "on-error": "#ffffff",
+                        "surface-container-highest": "#e0e3e5",
+                        "tertiary-container": "#0b1c30",
+                        "on-tertiary-container": "#75859d",
+                        "on-secondary-fixed-variant": "#005049",
+                        "on-surface-variant": "#45464d",
+                        "outline-variant": "#c6c6cd",
+                        "on-tertiary-fixed-variant": "#38485d",
+                        "on-secondary": "#ffffff",
+                        "inverse-on-surface": "#eff1f3",
+                        "background": "#f7f9fb",
+                        "on-background": "#191c1e",
+                        "inverse-primary": "#bec6e0"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container-max": "1440px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "unit": "4px",
+                        "sidebar-width": "260px",
+                        "margin-desktop": "40px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Work Sans"],
+                        "body-md": ["Work Sans"],
+                        "ui-label": ["Work Sans"],
+                        "headline-lg": ["\"Source Serif 4\""],
+                        "data-label": ["JetBrains Mono"],
+                        "headline-lg-mobile": ["\"Source Serif 4\""],
+                        "paper-title": ["\"Source Serif 4\""],
+                        "display-title": ["\"Source Serif 4\""]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "ui-label": ["13px", { "lineHeight": "16px", "fontWeight": "600" }],
+                        "headline-lg": ["30px", { "lineHeight": "38px", "fontWeight": "600" }],
+                        "data-label": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "paper-title": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "display-title": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface font-body-md overflow-hidden">
+<!-- Confirmation Modal (Hidden by default) -->
+<div class="fixed inset-0 z-[100] hidden items-center justify-center bg-primary/20 backdrop-blur-sm" id="confirmModal">
+<div class="bg-surface-container-lowest w-full max-w-md border border-outline-variant p-gutter shadow-xl">
+<h3 class="font-headline-lg text-headline-lg mb-2">Unfollow Journal?</h3>
+<p class="text-on-surface-variant font-body-md mb-6">You will no longer receive updates from this publication in your feed.</p>
+<div class="flex justify-end gap-4">
+<button class="px-4 py-2 font-ui-label text-ui-label text-on-surface-variant hover:bg-surface-container transition-colors" onclick="closeModal()">Cancel</button>
+<button class="px-6 py-2 font-ui-label text-ui-label bg-primary text-on-primary hover:bg-primary-container transition-all" onclick="confirmUnfollow()">Unfollow</button>
+</div>
+</div>
+</div>
+<!-- SideNavBar Shell -->
+<aside class="fixed left-0 top-0 h-full w-sidebar-width bg-surface-container-lowest border-r border-outline-variant flex flex-col py-margin-desktop px-4 z-50">
+<div class="flex items-center gap-3 mb-10 px-2">
+<div class="w-10 h-10 bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary" style="font-variation-settings: 'FILL' 1;">school</span>
+</div>
+<div>
+<h1 class="font-display-title text-display-title text-primary leading-none" style="font-size: 20px;">Academic Forum</h1>
+<p class="font-ui-label text-[11px] text-on-surface-variant tracking-wider uppercase">Journal Trend Tracking</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Nav Item: Dashboard -->
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant font-ui-label text-ui-label hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+<!-- Nav Item: Search Papers -->
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant font-ui-label text-ui-label hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">search</span>
+<span>Search Papers</span>
+</a>
+<!-- Nav Item: Trend Analysis -->
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant font-ui-label text-ui-label hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">trending_up</span>
+<span>Trend Analysis</span>
+</a>
+<!-- Nav Item: Topic Explorer -->
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant font-ui-label text-ui-label hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">explore</span>
+<span>Topic Explorer</span>
+</a>
+<!-- Nav Item: Following (ACTIVE) -->
+<a class="flex items-center gap-3 px-3 py-2.5 text-primary font-bold border-r-4 border-primary bg-surface-container-low opacity-80" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">group</span>
+<span>Following</span>
+</a>
+<!-- Nav Item: Reports -->
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant font-ui-label text-ui-label hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">assessment</span>
+<span>Reports</span>
+</a>
+<!-- Nav Item: Bookmarks -->
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant font-ui-label text-ui-label hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">bookmark</span>
+<span>Bookmarks</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 border-t border-outline-variant space-y-1">
+<button class="w-full bg-primary text-on-primary py-3 mb-4 font-ui-label text-ui-label transition-transform active:scale-95">
+                New Analysis
+            </button>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant font-ui-label text-ui-label hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span>Profile</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant font-ui-label text-ui-label hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined text-error">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-sidebar-width min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="h-16 flex items-center justify-between px-margin-desktop bg-surface border-b border-outline-variant sticky top-0 z-40">
+<h2 class="font-paper-title text-paper-title text-primary">Following</h2>
+<div class="flex items-center gap-6">
+<div class="relative w-64 group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-secondary py-1.5 pl-9 pr-4 font-ui-label text-ui-label placeholder:text-outline" placeholder="Search my network..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-secondary transition-colors">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-secondary transition-colors">settings</button>
+<button class="bg-primary text-on-primary px-4 py-1.5 font-ui-label text-ui-label active:scale-95 transition-transform">Publish Paper</button>
+<div class="w-8 h-8 rounded-full border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a female academic researcher with glasses, wearing a neutral-colored blazer, set against a blurred background of a modern university library with warm, soft lighting. The style is clean, corporate, and intellectually serious, matching a professional research profile." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAG34Cl62Hw7wFrfO9hB7evr1PropIpFkr2SAUwx_QtiP1fAW3987gygwRfwfAUIKTxv3RqrHBrSpVQU5e54WFmJlmoHmXqmm6PR61zQ735V_07jFQAhc5aHK7CQNHwOPnYFG4laQTM3UQ0jiPP2t63errszfWz7sNNWsrvSlskiwSh8VW-DcSWzO9_gVsv5LgMxcfrP6yBErV1fTNA7lDiNFmExvJVxByl6vl_vx3UQYXAsWstWeE3vfuCmD68S941AxkUdtyP-QM"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<div class="flex-1 p-margin-desktop overflow-y-auto custom-scrollbar">
+<!-- Context Summary Bento Header -->
+<div class="grid grid-cols-12 gap-gutter mb-10">
+<div class="col-span-8 bg-surface-container-lowest border border-outline-variant p-6 flex items-center justify-between">
+<div>
+<h3 class="font-headline-lg text-headline-lg mb-1">My Research Ecosystem</h3>
+<p class="text-on-surface-variant font-body-sm">Tracking 24 journals, 12 topics, and 156 core keywords across Computational Neuroscience.</p>
+</div>
+<div class="flex gap-4">
+<div class="text-center">
+<span class="block font-data-label text-data-label text-secondary">+12%</span>
+<span class="block font-ui-label text-[10px] uppercase text-on-surface-variant">Activity</span>
+</div>
+<div class="w-px h-10 bg-outline-variant"></div>
+<div class="text-center">
+<span class="block font-data-label text-data-label text-primary">89</span>
+<span class="block font-ui-label text-[10px] uppercase text-on-surface-variant">Updates</span>
+</div>
+</div>
+</div>
+<div class="col-span-4 bg-primary text-on-primary p-6 relative overflow-hidden">
+<div class="relative z-10">
+<h4 class="font-ui-label text-ui-label mb-2">Discovery Alert</h4>
+<p class="text-body-sm opacity-80">3 New journals match your interest profile in "Neural Interfaces".</p>
+</div>
+<span class="material-symbols-outlined absolute -bottom-4 -right-4 text-7xl opacity-10">hub</span>
+</div>
+</div>
+<!-- Tabs Section -->
+<div class="border-b border-outline-variant flex items-center gap-10 mb-6">
+<button class="relative py-4 font-ui-label text-ui-label text-primary flex items-center gap-2 group transition-all" id="tab-journals" onclick="switchTab('journals')">
+<span class="material-symbols-outlined text-[18px]">menu_book</span>
+                    Journals
+                    <div class="active-tab-indicator" id="indicator-journals"></div>
+</button>
+<button class="relative py-4 font-ui-label text-ui-label text-on-surface-variant hover:text-primary flex items-center gap-2 group transition-all" id="tab-topics" onclick="switchTab('topics')">
+<span class="material-symbols-outlined text-[18px]">science</span>
+                    Topics
+                    <div class="active-tab-indicator hidden" id="indicator-topics"></div>
+</button>
+<button class="relative py-4 font-ui-label text-ui-label text-on-surface-variant hover:text-primary flex items-center gap-2 group transition-all" id="tab-keywords" onclick="switchTab('keywords')">
+<span class="material-symbols-outlined text-[18px]">key</span>
+                    Keywords
+                    <div class="active-tab-indicator hidden" id="indicator-keywords"></div>
+</button>
+</div>
+<!-- Tab Content: Journals (Default) -->
+<div class="tab-pane" id="content-journals">
+<div class="bg-surface-container-lowest border border-outline-variant overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="px-6 py-4 font-ui-label text-ui-label text-primary uppercase tracking-wider">Journal Name</th>
+<th class="px-6 py-4 font-ui-label text-ui-label text-primary uppercase tracking-wider">Publisher</th>
+<th class="px-6 py-4 font-ui-label text-ui-label text-primary uppercase tracking-wider">Lĩnh vực</th>
+<th class="px-6 py-4 font-ui-label text-ui-label text-primary uppercase tracking-wider">Số bài báo</th>
+<th class="px-6 py-4 font-ui-label text-ui-label text-primary uppercase tracking-wider text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-10 bg-surface-variant flex items-center justify-center font-display-title text-sm text-outline">N</div>
+<div>
+<p class="font-body-md text-primary font-semibold">Nature Neuroscience</p>
+<p class="text-[11px] font-ui-label text-on-surface-variant">ISSN: 1097-6256</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-5 font-body-sm text-on-surface-variant">Nature Portfolio</td>
+<td class="px-6 py-5">
+<span class="px-2 py-0.5 bg-secondary-container/20 text-on-secondary-container font-ui-label text-[11px] border border-secondary-container">Neuroscience</span>
+</td>
+<td class="px-6 py-5 font-data-label text-data-label text-primary">12,450</td>
+<td class="px-6 py-5 text-right">
+<button class="text-on-surface-variant hover:text-error font-ui-label text-ui-label transition-colors" onclick="openModal('Nature Neuroscience')">Unfollow</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-10 bg-surface-variant flex items-center justify-center font-display-title text-sm text-outline">L</div>
+<div>
+<p class="font-body-md text-primary font-semibold">The Lancet Digital Health</p>
+<p class="text-[11px] font-ui-label text-on-surface-variant">ISSN: 2589-7500</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-5 font-body-sm text-on-surface-variant">Elsevier</td>
+<td class="px-6 py-5">
+<span class="px-2 py-0.5 bg-secondary-container/20 text-on-secondary-container font-ui-label text-[11px] border border-secondary-container">Digital Health</span>
+</td>
+<td class="px-6 py-5 font-data-label text-data-label text-primary">3,821</td>
+<td class="px-6 py-5 text-right">
+<button class="text-on-surface-variant hover:text-error font-ui-label text-ui-label transition-colors" onclick="openModal('The Lancet Digital Health')">Unfollow</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-10 bg-surface-variant flex items-center justify-center font-display-title text-sm text-outline">J</div>
+<div>
+<p class="font-body-md text-primary font-semibold">Journal of AI Research</p>
+<p class="text-[11px] font-ui-label text-on-surface-variant">ISSN: 1076-9757</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-5 font-body-sm text-on-surface-variant">AI Access Foundation</td>
+<td class="px-6 py-5">
+<span class="px-2 py-0.5 bg-secondary-container/20 text-on-secondary-container font-ui-label text-[11px] border border-secondary-container">Artificial Intelligence</span>
+</td>
+<td class="px-6 py-5 font-data-label text-data-label text-primary">8,102</td>
+<td class="px-6 py-5 text-right">
+<button class="text-on-surface-variant hover:text-error font-ui-label text-ui-label transition-colors" onclick="openModal('Journal of AI Research')">Unfollow</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-10 bg-surface-variant flex items-center justify-center font-display-title text-sm text-outline">S</div>
+<div>
+<p class="font-body-md text-primary font-semibold">Science Robotics</p>
+<p class="text-[11px] font-ui-label text-on-surface-variant">ISSN: 2470-9476</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-5 font-body-sm text-on-surface-variant">AAAS</td>
+<td class="px-6 py-5">
+<span class="px-2 py-0.5 bg-secondary-container/20 text-on-secondary-container font-ui-label text-[11px] border border-secondary-container">Robotics</span>
+</td>
+<td class="px-6 py-5 font-data-label text-data-label text-primary">1,944</td>
+<td class="px-6 py-5 text-right">
+<button class="text-on-surface-variant hover:text-error font-ui-label text-ui-label transition-colors" onclick="openModal('Science Robotics')">Unfollow</button>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="p-4 bg-surface border-t border-outline-variant flex justify-between items-center">
+<p class="font-body-sm text-on-surface-variant">Showing 4 of 24 followed journals</p>
+<div class="flex gap-2">
+<button class="p-1 border border-outline-variant disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="p-1 border border-outline-variant hover:bg-surface-container">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Tab Content: Topics (Hidden) -->
+<div class="tab-pane hidden" id="content-topics">
+<div class="grid grid-cols-3 gap-gutter">
+<!-- Topic Card Example -->
+<div class="bg-surface-container-lowest border border-outline-variant p-6 relative group">
+<div class="flex justify-between items-start mb-4">
+<div class="w-12 h-12 bg-secondary-container/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary">neurology</span>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-error font-ui-label text-[11px] border border-error px-2 py-1" onclick="openModal('Neural Engineering')">UNFOLLOW</button>
+</div>
+<h4 class="font-paper-title text-paper-title mb-1">Neural Engineering</h4>
+<p class="text-body-sm text-on-surface-variant mb-4">Focus on brain-computer interfaces and neural rehabilitation technologies.</p>
+<div class="flex justify-between items-center text-data-label text-data-label border-t border-outline-variant pt-4">
+<span>452 Articles</span>
+<span class="text-secondary">+14 this week</span>
+</div>
+</div>
+<!-- Repeat Topic Cards -->
+<div class="bg-surface-container-lowest border border-outline-variant p-6 relative group">
+<div class="flex justify-between items-start mb-4">
+<div class="w-12 h-12 bg-secondary-container/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary">psychology_alt</span>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-error font-ui-label text-[11px] border border-error px-2 py-1" onclick="openModal('Cognitive Science')">UNFOLLOW</button>
+</div>
+<h4 class="font-paper-title text-paper-title mb-1">Cognitive Science</h4>
+<p class="text-body-sm text-on-surface-variant mb-4">Interdisciplinary study of mind and intelligence, embracing psychology and AI.</p>
+<div class="flex justify-between items-center text-data-label text-data-label border-t border-outline-variant pt-4">
+<span>1,209 Articles</span>
+<span class="text-secondary">+5 this week</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-6 relative group">
+<div class="flex justify-between items-start mb-4">
+<div class="w-12 h-12 bg-secondary-container/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary">memory</span>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-error font-ui-label text-[11px] border border-error px-2 py-1" onclick="openModal('Edge Computing')">UNFOLLOW</button>
+</div>
+<h4 class="font-paper-title text-paper-title mb-1">Edge Computing</h4>
+<p class="text-body-sm text-on-surface-variant mb-4">Distributed computing paradigm that brings computation closer to the data source.</p>
+<div class="flex justify-between items-center text-data-label text-data-label border-t border-outline-variant pt-4">
+<span>876 Articles</span>
+<span class="text-on-surface-variant">No new this week</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Tab Content: Keywords (Hidden) -->
+<div class="tab-pane hidden" id="content-keywords">
+<div class="bg-surface-container-lowest border border-outline-variant p-gutter">
+<div class="flex flex-wrap gap-3">
+<!-- Keyword Chip Example -->
+<div class="group flex items-center gap-3 bg-surface-container-low border border-outline-variant px-4 py-2 hover:bg-surface-container transition-all">
+<span class="font-ui-label text-ui-label text-primary">"LLM Interpretability"</span>
+<span class="w-px h-4 bg-outline-variant"></span>
+<span class="font-data-label text-[10px] text-on-surface-variant">32.4k Mentions</span>
+<button class="material-symbols-outlined text-[16px] text-on-surface-variant hover:text-error transition-colors" onclick="openModal('LLM Interpretability')">cancel</button>
+</div>
+<div class="group flex items-center gap-3 bg-surface-container-low border border-outline-variant px-4 py-2 hover:bg-surface-container transition-all">
+<span class="font-ui-label text-ui-label text-primary">"Graphene Supercapacitors"</span>
+<span class="w-px h-4 bg-outline-variant"></span>
+<span class="font-data-label text-[10px] text-on-surface-variant">12.1k Mentions</span>
+<button class="material-symbols-outlined text-[16px] text-on-surface-variant hover:text-error transition-colors" onclick="openModal('Graphene Supercapacitors')">cancel</button>
+</div>
+<div class="group flex items-center gap-3 bg-surface-container-low border border-outline-variant px-4 py-2 hover:bg-surface-container transition-all">
+<span class="font-ui-label text-ui-label text-primary">"Quantum Entanglement"</span>
+<span class="w-px h-4 bg-outline-variant"></span>
+<span class="font-data-label text-[10px] text-on-surface-variant">8.9k Mentions</span>
+<button class="material-symbols-outlined text-[16px] text-on-surface-variant hover:text-error transition-colors" onclick="openModal('Quantum Entanglement')">cancel</button>
+</div>
+<div class="group flex items-center gap-3 bg-surface-container-low border border-outline-variant px-4 py-2 hover:bg-surface-container transition-all">
+<span class="font-ui-label text-ui-label text-primary">"CRISPR Diagnostics"</span>
+<span class="w-px h-4 bg-outline-variant"></span>
+<span class="font-data-label text-[10px] text-on-surface-variant">5.6k Mentions</span>
+<button class="material-symbols-outlined text-[16px] text-on-surface-variant hover:text-error transition-colors" onclick="openModal('CRISPR Diagnostics')">cancel</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+        let currentTarget = '';
+
+        function switchTab(tabId) {
+            // Hide all panes
+            document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.add('hidden'));
+            // Remove active styles from all buttons
+            document.querySelectorAll('[id^="tab-"]').forEach(btn => {
+                btn.classList.remove('text-primary');
+                btn.classList.add('text-on-surface-variant');
+            });
+            // Hide all indicators
+            document.querySelectorAll('.active-tab-indicator').forEach(ind => ind.classList.add('hidden'));
+
+            // Show active pane
+            document.getElementById('content-' + tabId).classList.remove('hidden');
+            // Add active styles to clicked button
+            const activeBtn = document.getElementById('tab-' + tabId);
+            activeBtn.classList.add('text-primary');
+            activeBtn.classList.remove('text-on-surface-variant');
+            // Show indicator
+            document.getElementById('indicator-' + tabId).classList.remove('hidden');
+        }
+
+        function openModal(name) {
+            currentTarget = name;
+            const modal = document.getElementById('confirmModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            // Update text for context
+            modal.querySelector('h3').innerText = `Unfollow ${name}?`;
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('confirmModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            currentTarget = '';
+        }
+
+        function confirmUnfollow() {
+            console.log('Unfollowed:', currentTarget);
+            // In a real app, logic to remove the row/card would go here
+            closeModal();
+            // Subtle toast or notification could trigger here
+        }
+
+        // Close modal on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+</body></html>

@@ -1,461 +1,145 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* App.css — Legacy compatibility layer */
+/* Core design system is in index.css */
+/* This file is kept for Ant Design component overrides */
+
+/* ============================================================
+   ANT DESIGN OVERRIDES — Scholarly Precision Theme
+   ============================================================ */
+
+/* Override Ant Design primary color to match our palette */
+.ant-btn-primary {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  font-family: var(--font-ui) !important;
+  font-size: var(--fs-ui-label) !important;
+  font-weight: 600 !important;
+  border-radius: var(--radius-lg) !important;
 }
 
-body {
-  font-family: Inter, sans-serif;
-  background: #f5f7fa;
+.ant-btn-primary:hover {
+  opacity: 0.88 !important;
 }
 
-/* =========================
-   LOGIN PAGE
-========================= */
+.ant-card {
+  border: 1px solid var(--color-outline-variant) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: none !important;
+}
 
+.ant-card:hover {
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06) !important;
+}
+
+.ant-card-head {
+  border-bottom: 1px solid var(--color-outline-variant) !important;
+  font-family: var(--font-paper) !important;
+}
+
+.ant-card-head-title {
+  font-family: var(--font-paper) !important;
+  font-size: var(--fs-paper) !important;
+  font-weight: 600 !important;
+  color: var(--color-on-surface) !important;
+}
+
+.ant-input,
+.ant-input-affix-wrapper {
+  border-color: var(--color-outline) !important;
+  border-radius: var(--radius-lg) !important;
+  font-family: var(--font-body) !important;
+  font-size: var(--fs-body-md) !important;
+}
+
+.ant-input:focus,
+.ant-input-affix-wrapper:focus,
+.ant-input-affix-wrapper-focused {
+  border-color: var(--color-secondary) !important;
+  box-shadow: 0 0 0 1px var(--color-secondary) !important;
+}
+
+.ant-select-selector {
+  border-color: var(--color-outline) !important;
+  border-radius: var(--radius-lg) !important;
+  font-family: var(--font-body) !important;
+}
+
+.ant-select-focused .ant-select-selector {
+  border-color: var(--color-secondary) !important;
+  box-shadow: 0 0 0 1px var(--color-secondary) !important;
+}
+
+.ant-form-item-label > label {
+  font-family: var(--font-ui) !important;
+  font-size: var(--fs-ui-label) !important;
+  font-weight: 600 !important;
+  color: var(--color-on-surface-variant) !important;
+}
+
+.ant-statistic-title {
+  font-family: var(--font-ui) !important;
+  font-size: var(--fs-ui-label) !important;
+  font-weight: 600 !important;
+  color: var(--color-on-surface-variant) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ant-statistic-content {
+  font-family: var(--font-headline) !important;
+  font-size: var(--fs-headline) !important;
+  font-weight: 600 !important;
+  color: var(--color-on-surface) !important;
+}
+
+.ant-tag {
+  border-radius: var(--radius-full) !important;
+  font-family: var(--font-data) !important;
+  font-size: var(--fs-data) !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.ant-tabs-tab {
+  font-family: var(--font-ui) !important;
+  font-size: var(--fs-ui-label) !important;
+  font-weight: 600 !important;
+  color: var(--color-on-surface-variant) !important;
+}
+
+.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--color-primary) !important;
+}
+
+.ant-tabs-ink-bar {
+  background-color: var(--color-primary) !important;
+}
+
+.ant-table-thead > tr > th {
+  font-family: var(--font-ui) !important;
+  font-size: var(--fs-ui-label) !important;
+  font-weight: 600 !important;
+  color: var(--color-on-surface-variant) !important;
+  background-color: var(--color-surface-container-low) !important;
+  border-bottom: 1px solid var(--color-outline-variant) !important;
+}
+
+.ant-table-tbody > tr > td {
+  font-family: var(--font-body) !important;
+  font-size: var(--fs-body-sm) !important;
+  color: var(--color-on-surface) !important;
+  border-bottom: 1px solid var(--color-outline-variant) !important;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background-color: rgba(134, 242, 228, 0.06) !important;
+}
+
+/* Legacy class compatibility — kept for pages not yet redesigned */
 .login-page {
   min-height: 100vh;
-
   display: flex;
   justify-content: center;
   align-items: center;
-
   padding: 24px;
-
-  background: linear-gradient(135deg,
-      #eef4ff,
-      #f8fafc);
-}
-
-.login-container {
-  width: 100%;
-  max-width: 1500px;
-
-  min-height: 88vh;
-
-  background: white;
-
-  border-radius: 30px;
-
-  overflow: hidden;
-
-  display: grid;
-  grid-template-columns: 42% 58%;
-
-  box-shadow:
-    0 25px 60px rgba(15, 23, 42, 0.08);
-}
-
-/* =========================
-   LEFT
-========================= */
-
-.login-left {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  padding: 50px 70px;
-}
-
-.login-content {
-  width: 100%;
-  max-width: 470px;
-
-  animation: slideInLeft 0.7s ease;
-}
-
-@keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-35px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-/* =========================
-   LOGO
-========================= */
-
-.logo-section {
-  display: flex;
-  align-items: center;
-
-  gap: 16px;
-
-  margin-bottom: 36px;
-}
-
-.logo-circle {
-  width: 60px;
-  height: 60px;
-  font-size: 26px;
-
-  border-radius: 50%;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-
-  color: white;
-
-  background: linear-gradient(135deg,
-      #2563eb,
-      #1d4ed8);
-
-  box-shadow:
-    0 12px 24px rgba(37, 99, 235, 0.25);
-}
-
-.logo-title {
-  font-size: 28px;
-  font-weight: 700;
-  color: #111827;
-
-  margin: 0;
-}
-
-.logo-subtitle {
-  margin-top: 4px;
-
-  color: #64748b;
-
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-/* =========================
-   WELCOME
-========================= */
-
-.welcome-title {
-  margin-bottom: 12px !important;
-}
-
-.welcome-text {
-  display: block;
-
-  color: #64748b;
-
-  font-size: 17px;
-  line-height: 1.8;
-
-  margin-bottom: 32px;
-}
-
-/* =========================
-   FORM
-========================= */
-
-.login-form {
-  margin-top: 20px;
-}
-
-.ant-form-item {
-  margin-bottom: 22px;
-}
-
-.ant-input-affix-wrapper {
-  height: 56px !important;
-
-  border-radius: 14px !important;
-
-  display: flex;
-  align-items: center;
-}
-
-.ant-input-affix-wrapper input {
-  font-size: 16px;
-}
-
-.ant-input-prefix {
-  margin-right: 10px;
-}
-
-.ant-input-password-icon {
-  font-size: 18px;
-}
-
-.forgot-row {
-  display: flex;
-  justify-content: flex-end;
-
-  margin-top: -10px;
-  margin-bottom: 20px;
-}
-
-.forgot-row a {
-  color: #2563eb;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.forgot-row a:hover {
-  color: #1d4ed8;
-}
-
-/* =========================
-   BUTTON
-========================= */
-
-.signin-btn {
-  height: 56px !important;
-
-  border: none !important;
-
-  border-radius: 14px !important;
-
-  background: linear-gradient(135deg,
-      #2563eb,
-      #1d4ed8) !important;
-
-  font-size: 17px !important;
-  font-weight: 600 !important;
-
-  color: white !important;
-
-  box-shadow:
-    0 10px 24px rgba(37, 99, 235, 0.25);
-
-  transition: all 0.3s;
-}
-
-.signin-btn:hover {
-  transform: translateY(-2px);
-
-  box-shadow:
-    0 14px 28px rgba(37, 99, 235, 0.3);
-}
-
-/* =========================
-   FOOTER
-========================= */
-
-.signup-link {
-  margin-top: 28px;
-
-  text-align: center;
-
-  font-size: 16px;
-}
-
-.signup-link a {
-  color: #2563eb;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.signup-link a:hover {
-  text-decoration: underline;
-}
-
-.terms {
-  margin-top: 20px;
-
-  text-align: center;
-
-  color: #64748b;
-
-  font-size: 14px;
-  line-height: 1.7;
-}
-
-.terms a {
-  color: #2563eb;
-  text-decoration: none;
-}
-
-.terms a:hover {
-  text-decoration: underline;
-}
-
-.copyright {
-  margin-top: 24px;
-
-  text-align: center;
-
-  color: #94a3b8;
-
-  font-size: 14px;
-}
-
-/* =========================
-   RIGHT IMAGE
-========================= */
-
-.login-right {
-  position: relative;
-
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: #0f172a;
-}
-
-
-.slider-wrapper::after {
-  content: "";
-
-  position: absolute;
-  inset: 0;
-
-  border-radius: 20px;
-
-  background: linear-gradient(
-          to top,
-          rgba(0, 0, 0, 0.25),
-          rgba(0, 0, 0, 0.05)
-  );
-
-  pointer-events: none;
-  z-index: 1;
-}
-
-
-/* =========================
-   DASHBOARD
-========================= */
-
-.dashboard {
-  min-height: 100vh;
-
-  display: flex;
-  flex-direction: column;
-
-  justify-content: center;
-  align-items: center;
-
-  gap: 20px;
-}
-
-.logout-btn {
-  padding: 12px 24px;
-
-  border: none;
-  border-radius: 10px;
-
-  background: #dc2626;
-  color: white;
-
-  cursor: pointer;
-}
-
-.logout-btn:hover {
-  background: #b91c1c;
-}
-
-/* =========================
-   RESPONSIVE
-========================= */
-
-@media (max-width: 992px) {
-  .login-container {
-    grid-template-columns: 1fr;
-  }
-
-  .login-right {
-    display: none;
-  }
-
-  .login-left {
-    padding: 40px 30px;
-  }
-
-  .login-content {
-    max-width: 100%;
-  }
-
-  .logo-section {
-    flex-direction: column;
-    justify-content: center;
-
-    text-align: center;
-  }
-
-  .welcome-title,
-  .welcome-text {
-    text-align: center;
-  }
-}
-
-/* =========================
-   REGISTER PAGE
-========================= */
-
-.register-content {
-  max-width: 620px;
-}
-
-.register-title {
-  margin-bottom: 8px !important;
-}
-
-.register-form {
-  margin-top: 24px;
-}
-
-.register-form .ant-form-item {
-  margin-bottom: 14px;
-}
-
-.register-form .ant-input-affix-wrapper,
-.register-form .ant-input,
-.register-form .ant-input-password {
-  height: 50px !important;
-  border-radius: 12px !important;
-}
-
-.register-form .ant-select-selector {
-  height: 50px !important;
-  border-radius: 12px !important;
-  display: flex;
-  align-items: center;
-}
-
-.register-form .signin-btn {
-  margin-top: 12px;
-}
-
-.register-form .ant-row {
-  margin-bottom: 0;
-}
-
-.slider-wrapper {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-.slider-image {
-  position: absolute;
-  inset: 0;
-
-  width: 100%;
-  height: 100%;
-
-  object-fit: cover;
-
-  opacity: 0;
-
-  transform: scale(1.08);
-
-  transition:
-    opacity 1.5s ease-in-out,
-    transform 6s linear;
-}
-
-.slider-image.active {
-  opacity: 1;
-  transform: scale(1);
+  background-color: var(--color-background);
 }

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&amp;family=Source+Serif+4:wght@600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar for research-heavy interface */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+        
+        .paper-card:hover .bookmark-btn { opacity: 1; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#2d3133",
+                        "secondary-container": "#86f2e4",
+                        "surface-dim": "#d8dadc",
+                        "tertiary-fixed": "#d3e4fe",
+                        "surface-container": "#eceef0",
+                        "primary-container": "#131b2e",
+                        "error": "#ba1a1a",
+                        "surface-container-low": "#f2f4f6",
+                        "tertiary-fixed-dim": "#b7c8e1",
+                        "surface-bright": "#f7f9fb",
+                        "tertiary": "#000000",
+                        "secondary-fixed": "#89f5e7",
+                        "on-primary-container": "#7c839b",
+                        "surface-tint": "#565e74",
+                        "surface-variant": "#e0e3e5",
+                        "secondary": "#006a61",
+                        "on-tertiary-fixed": "#0b1c30",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "surface": "#f7f9fb",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed": "#00201d",
+                        "on-surface": "#191c1e",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#dae2fd",
+                        "on-primary-fixed": "#131b2e",
+                        "on-secondary-container": "#006f66",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#6bd8cb",
+                        "on-primary": "#ffffff",
+                        "primary": "#000000",
+                        "outline": "#76777d",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-high": "#e6e8ea",
+                        "on-error": "#ffffff",
+                        "surface-container-highest": "#e0e3e5",
+                        "tertiary-container": "#0b1c30",
+                        "on-tertiary-container": "#75859d",
+                        "on-secondary-fixed-variant": "#005049",
+                        "on-surface-variant": "#45464d",
+                        "outline-variant": "#c6c6cd",
+                        "on-tertiary-fixed-variant": "#38485d",
+                        "on-secondary": "#ffffff",
+                        "inverse-on-surface": "#eff1f3",
+                        "background": "#f7f9fb",
+                        "on-background": "#191c1e",
+                        "inverse-primary": "#bec6e0"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container-max": "1440px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "unit": "4px",
+                        "sidebar-width": "260px",
+                        "margin-desktop": "40px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Work Sans"],
+                        "body-md": ["Work Sans"],
+                        "ui-label": ["Work Sans"],
+                        "headline-lg": ["\"Source Serif 4\""],
+                        "data-label": ["JetBrains Mono"],
+                        "headline-lg-mobile": ["\"Source Serif 4\""],
+                        "paper-title": ["\"Source Serif 4\""],
+                        "display-title": ["\"Source Serif 4\""]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "ui-label": ["13px", {"lineHeight": "16px", "fontWeight": "600"}],
+                        "headline-lg": ["30px", {"lineHeight": "38px", "fontWeight": "600"}],
+                        "data-label": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "paper-title": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "display-title": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-screen w-sidebar-width bg-surface-container-lowest border-r border-outline-variant flex flex-col py-margin-desktop px-4 z-50">
+<div class="mb-10 px-2">
+<h1 class="font-display-title text-display-title text-primary leading-tight">Academic Forum</h1>
+<p class="font-body-md text-on-surface-variant mt-1">Journal Trend Tracking</p>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Dashboard -->
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant font-ui-label text-ui-label hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                Dashboard
+            </a>
+<!-- Search Papers (ACTIVE) -->
+<a class="flex items-center gap-3 px-3 py-2 text-primary font-bold border-r-4 border-primary bg-surface-container-low" href="#">
+<span class="material-symbols-outlined">search</span>
+                Search Papers
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant font-ui-label text-ui-label hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">trending_up</span>
+                Trend Analysis
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant font-ui-label text-ui-label hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">explore</span>
+                Topic Explorer
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant font-ui-label text-ui-label hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">group</span>
+                Following
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant font-ui-label text-ui-label hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">assessment</span>
+                Reports
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant font-ui-label text-ui-label hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">bookmark</span>
+                Bookmarks
+            </a>
+</nav>
+<div class="mt-auto space-y-4 pt-6 border-t border-outline-variant">
+<button class="w-full bg-primary text-on-primary py-3 px-4 font-ui-label text-ui-label flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                New Analysis
+            </button>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant font-ui-label text-ui-label hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+                    Profile
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant font-ui-label text-ui-label hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined">logout</span>
+                    Logout
+                </a>
+</div>
+</div>
+</aside>
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 left-sidebar-width h-16 bg-surface border-b border-outline-variant flex justify-between items-center px-margin-desktop z-40">
+<div class="flex items-center gap-4">
+<span class="font-paper-title text-paper-title text-primary">Academic Forum</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full pl-10 pr-4 py-1.5 bg-surface-container border border-outline-variant text-body-sm font-body-sm focus:outline-none focus:border-secondary transition-colors" placeholder="Global search..." type="text"/>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 text-on-surface-variant hover:text-secondary active:scale-95 transition-all">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-secondary active:scale-95 transition-all">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-surface-container-high overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a middle-aged academic researcher with glasses, smiling subtly against a blurred library background. The lighting is soft and natural, emphasizing a high-end corporate and intellectual aesthetic with cool blue and white tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3uyChgCo3tx3d0LjJSQoxBycl3CAauyLr47zGZVgVW1VCo7TFv0W_Sp1lOF7_dm1FFtXqHIMYLzElNWEG_dZnSnVjr-CxsonBQeeMgRQ8mMNFXwjT5xMYAPfB50ACkJbcro5ktz6HvNNjyY1JgS57RNBHLfGRb6Iq7HLD2D6RbsGqDa6rmvmksk1Im6ASvGusF0GiMH_DI9ZyyfF37L76jg1ePN0tCKKC-x_VrueAQ0wUGco7aCUa0FGBaF9tOryDIQnjsONyP9o"/>
+</div>
+<button class="bg-primary text-on-primary font-ui-label text-ui-label px-4 py-2 hover:opacity-90 active:scale-95 transition-all">
+                    Publish Paper
+                </button>
+</div>
+</div>
+</header>
+<!-- Main Workspace -->
+<main class="ml-sidebar-width mt-16 p-margin-desktop min-h-screen">
+<!-- Search Header Section -->
+<section class="max-w-container-max mx-auto mb-8">
+<div class="flex items-baseline gap-4 mb-8">
+<h2 class="font-headline-lg text-headline-lg text-primary">Search Papers</h2>
+<span class="font-data-label text-data-label text-on-secondary-container bg-secondary-container px-2 py-0.5">1,234 RESULTS FOUND</span>
+</div>
+<!-- Bento Filter Bar -->
+<div class="bg-surface-container-lowest border border-outline-variant p-6 grid grid-cols-12 gap-6 items-end">
+<!-- Search Box -->
+<div class="col-span-12 lg:col-span-4 space-y-2">
+<label class="font-ui-label text-ui-label text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">short_text</span> Keyword Search
+                    </label>
+<div class="relative">
+<input class="w-full py-2 px-3 border-b-2 border-outline-variant focus:border-secondary bg-transparent font-body-md outline-none transition-colors" placeholder="e.g. Transformers, Quantum Computing..." type="text"/>
+</div>
+</div>
+<!-- Author -->
+<div class="col-span-6 lg:col-span-2 space-y-2">
+<label class="font-ui-label text-ui-label text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">person</span> Author
+                    </label>
+<input class="w-full py-2 px-3 border-b-2 border-outline-variant focus:border-secondary bg-transparent font-body-md outline-none transition-colors" placeholder="Name" type="text"/>
+</div>
+<!-- Journal -->
+<div class="col-span-6 lg:col-span-3 space-y-2">
+<label class="font-ui-label text-ui-label text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">menu_book</span> Journal
+                    </label>
+<select class="w-full py-2 px-3 border-b-2 border-outline-variant focus:border-secondary bg-transparent font-body-md outline-none transition-colors appearance-none">
+<option>All Journals</option>
+<option>Nature Machine Intelligence</option>
+<option>IEEE Transactions</option>
+<option>Journal of AI Research</option>
+</select>
+</div>
+<!-- Year Range -->
+<div class="col-span-12 lg:col-span-3 flex gap-4">
+<div class="flex-1 space-y-2">
+<label class="font-ui-label text-ui-label text-on-surface-variant">Year From</label>
+<input class="w-full py-2 px-3 border-b-2 border-outline-variant focus:border-secondary bg-transparent font-body-md outline-none transition-colors" placeholder="2020" type="number"/>
+</div>
+<div class="flex-1 space-y-2">
+<label class="font-ui-label text-ui-label text-on-surface-variant">Year To</label>
+<input class="w-full py-2 px-3 border-b-2 border-outline-variant focus:border-secondary bg-transparent font-body-md outline-none transition-colors" placeholder="2024" type="number"/>
+</div>
+</div>
+<!-- Actions -->
+<div class="col-span-12 flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-outline-variant/30">
+<div class="flex gap-3">
+<button class="bg-primary text-on-primary font-ui-label text-ui-label px-6 py-2.5 flex items-center gap-2 hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[18px]">search</span> Tìm kiếm
+                        </button>
+<button class="border border-outline-variant text-on-surface-variant font-ui-label text-ui-label px-6 py-2.5 hover:bg-surface-container-low transition-colors">
+                            Xóa bộ lọc
+                        </button>
+</div>
+<button class="flex items-center gap-2 text-secondary font-ui-label text-ui-label hover:underline">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">bookmark</span>
+                        Bài báo đã lưu (12)
+                    </button>
+</div>
+</div>
+</section>
+<!-- Results List -->
+<section class="max-w-container-max mx-auto space-y-4">
+<!-- Paper Item 1 -->
+<div class="paper-card group bg-surface-container-lowest border border-outline-variant p-6 transition-all hover:bg-surface-bright flex gap-6">
+<div class="flex-1">
+<div class="flex items-start justify-between mb-2">
+<h3 class="font-paper-title text-paper-title text-primary group-hover:text-secondary transition-colors cursor-pointer leading-tight">
+                            Attention Is All You Need: Large Scale Transformer Architectures for Neural Machine Translation
+                        </h3>
+<button class="bookmark-btn opacity-0 transition-opacity p-2 text-on-surface-variant hover:text-secondary">
+<span class="material-symbols-outlined">bookmark</span>
+</button>
+</div>
+<div class="flex flex-wrap gap-x-6 gap-y-2 mb-4 text-body-sm font-body-sm text-on-surface-variant">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">person</span> Vaswani, A., et al.
+                        </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">menu_book</span> NeurIPS Proceedings
+                        </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span> 2017
+                        </span>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="bg-surface-container text-on-surface-variant font-data-label text-data-label px-3 py-1 uppercase tracking-wider">Deep Learning</span>
+<span class="bg-surface-container text-on-surface-variant font-data-label text-data-label px-3 py-1 uppercase tracking-wider">NLP</span>
+<span class="bg-surface-container text-on-surface-variant font-data-label text-data-label px-3 py-1 uppercase tracking-wider">Attention</span>
+</div>
+</div>
+</div>
+<!-- Paper Item 2 -->
+<div class="paper-card group bg-surface-container-lowest border border-outline-variant p-6 transition-all hover:bg-surface-bright flex gap-6">
+<div class="flex-1">
+<div class="flex items-start justify-between mb-2">
+<h3 class="font-paper-title text-paper-title text-primary group-hover:text-secondary transition-colors cursor-pointer leading-tight">
+                            Generative Adversarial Nets: A New Framework for Estimating Generative Models via an Adversarial Process
+                        </h3>
+<button class="bookmark-btn opacity-0 transition-opacity p-2 text-on-surface-variant hover:text-secondary">
+<span class="material-symbols-outlined">bookmark</span>
+</button>
+</div>
+<div class="flex flex-wrap gap-x-6 gap-y-2 mb-4 text-body-sm font-body-sm text-on-surface-variant">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">person</span> Goodfellow, I., et al.
+                        </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">menu_book</span> Journal of Machine Learning Research
+                        </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span> 2014
+                        </span>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="bg-surface-container text-on-surface-variant font-data-label text-data-label px-3 py-1 uppercase tracking-wider">GANs</span>
+<span class="bg-surface-container text-on-surface-variant font-data-label text-data-label px-3 py-1 uppercase tracking-wider">Generative Models</span>
+<span class="bg-surface-container text-on-surface-variant font-data-label text-data-label px-3 py-1 uppercase tracking-wider">Neural Networks</span>
+</div>
+</div>
+</div>
+<!-- Paper Item 3 -->
+<div class="paper-card group bg-surface-container-lowest border border-outline-variant p-6 transition-all hover:bg-surface-bright flex gap-6">
+<div class="flex-1">
+<div class="flex items-start justify-between mb-2">
+<h3 class="font-paper-title text-paper-title text-primary group-hover:text-secondary transition-colors cursor-pointer leading-tight">
+                            Deep Residual Learning for Image Recognition
+                        </h3>
+<button class="bookmark-btn opacity-0 transition-opacity p-2 text-on-surface-variant hover:text-secondary">
+<span class="material-symbols-outlined">bookmark</span>
+</button>
+</div>
+<div class="flex flex-wrap gap-x-6 gap-y-2 mb-4 text-body-sm font-body-sm text-on-surface-variant">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">person</span> He, K., et al.
+                        </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">menu_book</span> IEEE CVPR
+                        </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span> 2016
+                        </span>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="bg-surface-container text-on-surface-variant font-data-label text-data-label px-3 py-1 uppercase tracking-wider">Computer Vision</span>
+<span class="bg-surface-container text-on-surface-variant font-data-label text-data-label px-3 py-1 uppercase tracking-wider">ResNet</span>
+</div>
+</div>
+</div>
+<!-- Paper Item 4 (Abstract visualization) -->
+<div class="paper-card group bg-surface-container-lowest border border-outline-variant p-6 transition-all hover:bg-surface-bright flex gap-6">
+<div class="flex-1">
+<div class="flex items-start justify-between mb-2">
+<h3 class="font-paper-title text-paper-title text-primary group-hover:text-secondary transition-colors cursor-pointer leading-tight">
+                            BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding
+                        </h3>
+<button class="bookmark-btn opacity-0 transition-opacity p-2 text-on-surface-variant hover:text-secondary">
+<span class="material-symbols-outlined">bookmark</span>
+</button>
+</div>
+<div class="flex flex-wrap gap-x-6 gap-y-2 mb-4 text-body-sm font-body-sm text-on-surface-variant">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">person</span> Devlin, J., et al.
+                        </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">menu_book</span> NAACL-HLT
+                        </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span> 2019
+                        </span>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="bg-surface-container text-on-surface-variant font-data-label text-data-label px-3 py-1 uppercase tracking-wider">Language Models</span>
+<span class="bg-surface-container text-on-surface-variant font-data-label text-data-label px-3 py-1 uppercase tracking-wider">BERT</span>
+<span class="bg-surface-container text-on-surface-variant font-data-label text-data-label px-3 py-1 uppercase tracking-wider">Bidirectional</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Pagination -->
+<footer class="max-w-container-max mx-auto mt-12 mb-8 flex justify-between items-center border-t border-outline-variant pt-8">
+<span class="font-body-sm text-body-sm text-on-surface-variant">
+                Showing <span class="font-bold text-on-surface">1 - 10</span> of 1,234 results
+            </span>
+<div class="flex items-center gap-2">
+<button class="w-10 h-10 border border-outline-variant flex items-center justify-center hover:bg-surface-container-low text-on-surface-variant transition-colors disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-10 h-10 bg-primary text-on-primary font-ui-label text-ui-label flex items-center justify-center">1</button>
+<button class="w-10 h-10 border border-outline-variant font-ui-label text-ui-label flex items-center justify-center hover:bg-surface-container-low transition-colors">2</button>
+<button class="w-10 h-10 border border-outline-variant font-ui-label text-ui-label flex items-center justify-center hover:bg-surface-container-low transition-colors">3</button>
+<button class="w-10 h-10 border border-outline-variant font-ui-label text-ui-label flex items-center justify-center hover:bg-surface-container-low transition-colors">4</button>
+<span class="px-2 text-on-surface-variant">...</span>
+<button class="w-10 h-10 border border-outline-variant font-ui-label text-ui-label flex items-center justify-center hover:bg-surface-container-low transition-colors">124</button>
+<button class="w-10 h-10 border border-outline-variant flex items-center justify-center hover:bg-surface-container-low text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</footer>
+</main>
+<!-- Floating Atmosphere Micro-interaction script -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const bookmarkBtns = document.querySelectorAll('.bookmark-btn');
+            
+            bookmarkBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const icon = btn.querySelector('.material-symbols-outlined');
+                    const isFilled = icon.style.fontVariationSettings.includes("'FILL' 1");
+                    
+                    if (isFilled) {
+                        icon.style.fontVariationSettings = "'FILL' 0";
+                        btn.classList.remove('text-secondary');
+                        btn.classList.add('text-on-surface-variant');
+                    } else {
+                        icon.style.fontVariationSettings = "'FILL' 1";
+                        btn.classList.add('text-secondary');
+                        btn.classList.remove('text-on-surface-variant');
+                        
+                        // Micro-interaction splash
+                        const rect = btn.getBoundingClientRect();
+                        const splash = document.createElement('div');
+                        splash.style.position = 'fixed';
+                        splash.style.left = `${rect.left + 20}px`;
+                        splash.style.top = `${rect.top + 20}px`;
+                        splash.style.width = '10px';
+                        splash.style.height = '10px';
+                        splash.style.backgroundColor = '#006a61';
+                        splash.style.borderRadius = '50%';
+                        splash.style.pointerEvents = 'none';
+                        splash.style.transition = 'all 0.5s ease-out';
+                        splash.style.zIndex = '9999';
+                        document.body.appendChild(splash);
+                        
+                        requestAnimationFrame(() => {
+                            splash.style.transform = 'scale(4)';
+                            splash.style.opacity = '0';
+                        });
+                        
+                        setTimeout(() => splash.remove(), 500);
+                    }
+                });
+            });
+        });
+    </script>
+</body></html>
