@@ -77,7 +77,15 @@ public class ResearchTopicServiceImpl implements ResearchTopicService {
     @Override
     @Transactional(readOnly = true)
     public TopicDetailResponse getTopicById(Long id) {
-        return null;
+        ResearchTopic topic = topicRepository.findById(id)
+                .orElseThrow(() -> new BadRequestException("Topic không tồn tại"));
+
+        return TopicDetailResponse.builder()
+                .id(topic.getId())
+                .name(topic.getName())
+                .description(topic.getDescription())
+                .isTrending(topic.isTrending())
+                .build();
     }
 
     @Override
