@@ -1,5 +1,7 @@
 package com.journaltracker.service.impl;
 
+import java.util.Collections;
+import java.util.stream.Collectors;
 import com.journaltracker.dto.request.CreateTopicRequest;
 import com.journaltracker.dto.request.UpdateTopicRequest;
 import com.journaltracker.dto.response.TopicResponse;
@@ -9,6 +11,7 @@ import com.journaltracker.entity.ResearchTopic;
 import com.journaltracker.exception.BadRequestException;
 import com.journaltracker.repository.KeywordRepository;
 import com.journaltracker.repository.ResearchTopicRepository;
+import com.journaltracker.repository.PublicationTrendRepository;
 import com.journaltracker.service.ResearchTopicService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,6 +28,7 @@ public class ResearchTopicServiceImpl implements ResearchTopicService {
 
     private final ResearchTopicRepository topicRepository;
     private final KeywordRepository keywordRepository;
+    private final PublicationTrendRepository publicationTrendRepository;
 
     @Override
     @Transactional
@@ -52,7 +56,7 @@ public class ResearchTopicServiceImpl implements ResearchTopicService {
 
         topic.setName(request.getName());
         topic.setDescription(request.getDescription());
-        topic.setTrending(request.isTrending()); // Lombok generates setTrending for primitive boolean
+        topic.setTrending(request.isTrending());
 
         return mapToResponse(topicRepository.save(topic));
     }
@@ -118,11 +122,24 @@ public class ResearchTopicServiceImpl implements ResearchTopicService {
     }
 
     private TopicResponse mapToResponse(ResearchTopic topic) {
+        List<Long> keywordIds = topic.getKeywords() != null ?
+                topic.getKeywords().stream().map(Keyword::getId).collect(Collectors.toList()) :
+                Collections.emptyList();
+
+        long totalPaperCount = 0;
+        if (!keywordIds.isEmpty()) {
+            totalPaperCount = publicationTrendRepository.sumPaperCountByKeywordIds(keywordIds);
+        }
+
         return TopicResponse.builder()
                 .id(topic.getId())
                 .name(topic.getName())
                 .description(topic.getDescription())
                 .isTrending(topic.isTrending())
+                .paperCount((int) totalPaperCount)
+                .keywords(topic.getKeywords() != null ?
+                        topic.getKeywords().stream().map(Keyword::getName).collect(Collectors.toList()) :
+                        Collections.emptyList())
                 .build();
     }
 }

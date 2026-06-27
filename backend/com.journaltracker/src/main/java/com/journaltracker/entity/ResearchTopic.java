@@ -35,4 +35,7 @@ public class ResearchTopic {
     )
     @Builder.Default
     private Set<Keyword> keywords = new HashSet<>();
+    @OneToMany(mappedBy = "topic", fetch = FetchType.LAZY)
+    @Builder.Default
+    private Set<ResearchPaper> papers = new HashSet<>();
 }

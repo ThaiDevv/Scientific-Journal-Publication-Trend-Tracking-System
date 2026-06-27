@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface PublicationTrendRepository extends JpaRepository<PublicationTrend, Long> {
+    @Query("SELECT COALESCE(SUM(pt.paperCount), 0) FROM PublicationTrend pt WHERE pt.keyword.id IN :keywordIds")
+    Long sumPaperCountByKeywordIds(@Param("keywordIds") List<Long> keywordIds);
 
     @Query("SELECT MAX(t.year) FROM PublicationTrend t")
     Integer findMaxYear();
