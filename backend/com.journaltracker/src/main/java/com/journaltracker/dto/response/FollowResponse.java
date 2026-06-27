@@ -16,4 +16,5 @@ public class FollowResponse {
     private String targetName;
     private FollowType followType;
     private LocalDateTime createdAt;
+    private Integer paperCount;
 }

@@ -3,74 +3,10 @@ import { topicApi } from '../api/topicApi';
 import { useAuth } from '../hooks/useAuth';
 import { followApi } from '../api/followApi';
 
-// Mock/Default Topics based on mockup screenshot
-const defaultTopics = [
-    {
-        id: "default-1",
-        title: "Neural Architecture Search",
-        description: "Exploration of automated design of artificial neural networks to optimize performance and efficiency.",
-        isTrending: true,
-        keywords: ["Deep Learning", "Optimization", "AutoML"],
-        usageCountText: "1.2k+ Papers",
-        usageCount: 1250,
-        isDefault: true
-    },
-    {
-        id: "default-2",
-        title: "Quantum Error Correction",
-        description: "Methods to protect quantum information from errors due to decoherence and other quantum noise.",
-        isTrending: false,
-        keywords: ["Physics", "Computation"],
-        usageCountText: "840 Papers",
-        usageCount: 840,
-        isDefault: true
-    },
-    {
-        id: "default-3",
-        title: "Sustainable Urbanism",
-        description: "The study of urban spaces with a focus on ecological sustainability, green energy, and transit-oriented development.",
-        isTrending: true,
-        keywords: ["Ecology", "Design", "Planning"],
-        usageCountText: "2.5k+ Papers",
-        usageCount: 2500,
-        isDefault: true
-    },
-    {
-        id: "default-4",
-        title: "Ethical AI Frameworks",
-        description: "Developing global standards and guidelines for the fair, accountable, and transparent deployment of AI systems.",
-        isTrending: false,
-        keywords: ["Ethics", "Policy"],
-        usageCountText: "312 Papers",
-        usageCount: 312,
-        isDefault: true
-    },
-    {
-        id: "default-5",
-        title: "Microbiome & Health",
-        description: "Investigating the impact of gut bacteria on chronic diseases, immune systems, and overall human biology.",
-        isTrending: false,
-        keywords: ["Biology", "Medicine"],
-        usageCountText: "654 Papers",
-        usageCount: 654,
-        isDefault: true
-    },
-    {
-        id: "default-6",
-        title: "Renewable Energy Storage",
-        description: "Advances in battery technology, hydrogen storage systems, and mechanical energy recovery to support smart grids.",
-        isTrending: true,
-        keywords: ["Energy", "Sustainability", "Engineering"],
-        usageCountText: "4.1k+ Papers",
-        usageCount: 4100,
-        isDefault: true
-    }
-];
-
 const TopicExplorer = () => {
     const { isAuthenticated } = useAuth();
-    const [topics, setTopics] = useState(defaultTopics);
-    const [filteredTopics, setFilteredTopics] = useState(defaultTopics);
+    const [topics, setTopics] = useState([]);
+    const [filteredTopics, setFilteredTopics] = useState([]);
     const [loading, setLoading] = useState(false);
     const [searchText, setSearchText] = useState('');
     const [isTrendingOnly, setIsTrendingOnly] = useState(false);
@@ -78,10 +14,9 @@ const TopicExplorer = () => {
     // Detail Modal states
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedTopic, setSelectedTopic] = useState(null);
-    
+
     // Follow states
     const [followMap, setFollowMap] = useState({});
-    const [simulatedFollows, setSimulatedFollows] = useState({});
 
     useEffect(() => {
         fetchTopics();
@@ -96,13 +31,13 @@ const TopicExplorer = () => {
             const list = res.data?.body || [];
             const map = {};
             list.forEach(item => {
-                if (item.followType === 'KEYWORD') {
+                if (item.followType === 'TOPIC') {
                     map[item.targetId] = item.id;
                 }
             });
             setFollowMap(map);
         } catch (error) {
-            console.error("Không thể tải trạng thái follow:", error);
+            console.error("Failed to load follow status:", error);
         }
     };
 
@@ -110,31 +45,28 @@ const TopicExplorer = () => {
         setLoading(true);
         try {
             const res = await topicApi.getTopics();
-            const rawKeywords = res.data?.body || [];
-            
-            const dbTopics = rawKeywords.map(kw => ({
-                id: kw.id,
-                title: kw.name.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
-                description: `Exploration of emerging trends, research methodologies, and active publications relating to the field of "${kw.name}".`,
-                isTrending: kw.usageCount > 10,
-                keywords: [kw.name],
-                usageCountText: `${kw.usageCount} Papers`,
-                usageCount: kw.usageCount,
-                isDefault: false
-            }));
-            
-            // Merge default mock topics + DB topics
-            const combined = [...defaultTopics];
-            dbTopics.forEach(dt => {
-                if (!combined.some(c => c.title.toLowerCase() === dt.title.toLowerCase())) {
-                    combined.push(dt);
-                }
+            const content = res.data?.content || [];
+
+            const dbTopics = content.map(topic => {
+                const isTrending = topic.isTrending !== undefined ? topic.isTrending : topic.trending;
+                return {
+                    id: topic.id,
+                    title: topic.name,
+                    description: topic.description || `Exploration of emerging trends in the field of "${topic.name}".`,
+                    isTrending: !!isTrending,
+                    keywords: [topic.name], // Fallback keyword is the topic name itself
+                    usageCountText: isTrending ? "Active Trend" : "Standard Topic",
+                    usageCount: 0,
+                    isDefault: false
+                };
             });
 
-            setTopics(combined);
-            setFilteredTopics(combined);
+            setTopics(dbTopics);
+            setFilteredTopics(dbTopics);
         } catch (error) {
-            console.error("Không thể tải danh sách chủ đề!", error);
+            console.error("Failed to load topics list!", error);
+            setTopics([]);
+            setFilteredTopics([]);
         } finally {
             setLoading(false);
         }
@@ -145,7 +77,7 @@ const TopicExplorer = () => {
         let result = topics;
         if (searchText) {
             result = result.filter(t => t.title.toLowerCase().includes(searchText.toLowerCase()) ||
-                                        t.description.toLowerCase().includes(searchText.toLowerCase()));
+                t.description.toLowerCase().includes(searchText.toLowerCase()));
         }
         if (isTrendingOnly) {
             result = result.filter(t => t.isTrending);
@@ -153,22 +85,32 @@ const TopicExplorer = () => {
         setFilteredTopics(result);
     }, [searchText, isTrendingOnly, topics]);
 
-    const showDetail = (topic) => {
-        setSelectedTopic(topic);
+    const showDetail = async (topic) => {
+        try {
+            const res = await topicApi.getTopicById(topic.id);
+            const detail = res.data || {};
+            const isTrending = detail.isTrending !== undefined ? detail.isTrending : detail.trending;
+            setSelectedTopic({
+                ...topic,
+                description: detail.description || topic.description,
+                isTrending: !!isTrending,
+                keywords: (detail.keywords || []).map(k => k.name),
+                usageCount: detail.trendData ? detail.trendData.reduce((acc, t) => acc + t.paperCount, 0) : 0
+            });
+        } catch (error) {
+            console.error("Failed to load topic details:", error);
+            setSelectedTopic({
+                ...topic,
+                keywords: [topic.title],
+                usageCount: 0
+            });
+        }
         setIsModalOpen(true);
     };
 
     const toggleFollow = async (topic) => {
         if (!isAuthenticated) {
-            alert("Vui lòng đăng nhập để thực hiện chức năng này!");
-            return;
-        }
-
-        if (topic.isDefault) {
-            setSimulatedFollows(prev => ({
-                ...prev,
-                [topic.id]: !prev[topic.id]
-            }));
+            alert("Please login to perform this action!");
             return;
         }
 
@@ -183,7 +125,7 @@ const TopicExplorer = () => {
                     return copy;
                 });
             } else {
-                const res = await followApi.followKeyword(topic.id);
+                const res = await followApi.followTopic(topic.id);
                 const followObj = res.data?.body;
                 if (followObj) {
                     setFollowMap(prev => ({
@@ -193,7 +135,7 @@ const TopicExplorer = () => {
                 }
             }
         } catch (error) {
-            console.error("Thao tác thất bại!", error);
+            console.error("Action failed!", error);
         }
     };
 
@@ -304,27 +246,6 @@ const TopicExplorer = () => {
                     transform: translateX(20px);
                 }
                 
-                .te-adv-btn {
-                    height: 44px;
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 8px;
-                    border: 1.5px solid var(--color-outline-variant);
-                    border-radius: var(--radius-lg);
-                    background: #fff;
-                    padding: 0 16px;
-                    cursor: pointer;
-                    font-family: var(--font-ui);
-                    font-size: var(--fs-body-sm);
-                    font-weight: 600;
-                    color: var(--color-on-surface);
-                    box-sizing: border-box;
-                    transition: background 0.15s;
-                }
-                .te-adv-btn:hover {
-                    background: var(--color-surface-container-low);
-                }
-                
                 /* Grid of Cards */
                 .te-grid {
                     display: grid;
@@ -339,17 +260,19 @@ const TopicExplorer = () => {
                 
                 .te-card {
                     background: #fff;
-                    border: 1px solid var(--color-outline-variant);
+                    border: 1.5px solid var(--color-outline-variant);
                     border-radius: var(--radius-xl);
                     padding: 24px;
                     display: flex;
                     flex-direction: column;
                     min-height: 290px;
                     box-sizing: border-box;
-                    transition: box-shadow 0.2s;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 }
                 .te-card:hover {
-                    box-shadow: 0 4px 16px rgba(0,0,0,0.02);
+                    transform: translateY(-4px);
+                    box-shadow: 0 12px 24px -10px rgba(15, 118, 110, 0.15);
+                    border-color: #0f766e;
                 }
                 
                 .te-card-top {
@@ -359,18 +282,19 @@ const TopicExplorer = () => {
                     min-height: 24px;
                 }
                 .te-trending-badge {
-                    background: #2bd9c4;
-                    color: #004d40;
+                    background: linear-gradient(135deg, #111827 0%, #0f766e 100%);
+                    color: #fff;
                     font-family: var(--font-data);
                     font-size: 10px;
                     font-weight: 800;
-                    padding: 3px 8px;
-                    border-radius: 4px;
+                    padding: 3px 10px;
+                    border-radius: 9999px;
                     text-transform: uppercase;
                     letter-spacing: 0.05em;
                     display: inline-flex;
                     align-items: center;
                     gap: 4px;
+                    box-shadow: 0 4px 10px rgba(15, 118, 110, 0.2);
                 }
                 .te-trending-badge span { font-size: 13px; }
                 .te-papers-count {
@@ -410,13 +334,19 @@ const TopicExplorer = () => {
                     margin-top: 14px;
                 }
                 .te-tag-pill {
-                    background: #f1f5f9;
-                    color: #475569;
-                    font-family: var(--font-data);
-                    font-size: 10.5px;
+                    background: #f0fdfa;
+                    color: #0f766e;
+                    border: 1.5px dashed #ccfbf1;
+                    font-family: var(--font-ui);
+                    font-size: 11px;
                     font-weight: 700;
-                    padding: 3px 8px;
-                    border-radius: 4px;
+                    padding: 4px 10px;
+                    border-radius: 6px;
+                    transition: all 0.2s;
+                }
+                .te-tag-pill:hover {
+                    background: #ccfbf1;
+                    border-color: #0f766e;
                 }
                 
                 .te-divider {
@@ -432,7 +362,7 @@ const TopicExplorer = () => {
                     align-items: center;
                 }
                 .te-detail-link {
-                    color: var(--color-secondary);
+                    color: #475569;
                     font-family: var(--font-ui);
                     font-size: 13.5px;
                     font-weight: 700;
@@ -440,10 +370,12 @@ const TopicExplorer = () => {
                     background: transparent;
                     cursor: pointer;
                     padding: 0;
-                    transition: opacity 0.15s;
+                    border-bottom: 2px solid transparent;
+                    transition: all 0.2s;
                 }
                 .te-detail-link:hover {
-                    opacity: 0.8;
+                    color: #0f766e;
+                    border-bottom-color: #0f766e;
                 }
                 
                 /* Follow buttons */
@@ -451,8 +383,8 @@ const TopicExplorer = () => {
                     height: 34px;
                     padding: 0 16px;
                     background: transparent;
-                    color: var(--color-on-surface);
-                    border: 1.5px solid var(--color-outline-variant);
+                    color: #0f766e;
+                    border: 1.5px solid #0f766e;
                     border-radius: 6px;
                     font-family: var(--font-ui);
                     font-size: 13px;
@@ -461,17 +393,19 @@ const TopicExplorer = () => {
                     display: inline-flex;
                     align-items: center;
                     gap: 6px;
-                    transition: background 0.15s;
+                    transition: all 0.2s;
                 }
                 .te-btn-follow:hover {
-                    background: var(--color-surface-container-low);
+                    background: #f0fdfa;
+                    color: #0d6059;
+                    border-color: #0d6059;
                 }
                 .te-btn-followed {
                     height: 34px;
                     padding: 0 16px;
-                    background: #111827;
+                    background: #0f766e;
                     color: #fff;
-                    border: none;
+                    border: 1.5px solid #0f766e;
                     border-radius: 6px;
                     font-family: var(--font-ui);
                     font-size: 13px;
@@ -480,6 +414,11 @@ const TopicExplorer = () => {
                     display: inline-flex;
                     align-items: center;
                     gap: 6px;
+                    transition: all 0.2s;
+                }
+                .te-btn-followed:hover {
+                    background: #0d6059;
+                    border-color: #0d6059;
                 }
                 
                 /* Modal Overlay & Card Details popup */
@@ -596,19 +535,13 @@ const TopicExplorer = () => {
                     </label>
                 </div>
 
-                {/* Advanced Filters */}
-                <button className="te-adv-btn">
-                    <span className="material-symbols-outlined">tune</span>
-                    Advanced Filters
-                </button>
+
             </div>
 
             {/* Grid list of topics */}
             <div className="te-grid">
                 {filteredTopics.map((topic) => {
-                    const isFollowed = topic.isDefault 
-                        ? !!simulatedFollows[topic.id]
-                        : !!followMap[topic.id];
+                    const isFollowed = !!followMap[topic.id];
 
                     return (
                         <div key={topic.id} className="te-card">
@@ -641,9 +574,9 @@ const TopicExplorer = () => {
 
                             <div className="te-card-bottom">
                                 <button className="te-detail-link" onClick={() => showDetail(topic)}>
-                                    Xem chi tiết
+                                    View Details
                                 </button>
-                                
+
                                 {isFollowed ? (
                                     <button className="te-btn-followed" onClick={() => toggleFollow(topic)}>
                                         <span className="material-symbols-outlined" style={{ fontSize: 18 }}>check</span>
@@ -673,12 +606,12 @@ const TopicExplorer = () => {
                         </div>
                         <div className="te-modal-body">
                             <div className="te-modal-section">
-                                <h4>Mô tả chủ đề</h4>
+                                <h4>Topic Description</h4>
                                 <p>{selectedTopic.description}</p>
                             </div>
 
                             <div className="te-modal-section">
-                                <h4>Keywords liên quan</h4>
+                                <h4>Related Keywords</h4>
                                 <div className="te-card-tags">
                                     {selectedTopic.keywords.map((kw) => (
                                         <span key={kw} className="te-tag-pill">
@@ -689,13 +622,13 @@ const TopicExplorer = () => {
                             </div>
 
                             <div className="te-modal-section">
-                                <h4>Thống kê mức độ quan tâm</h4>
-                                <p>Có khoảng <strong>{selectedTopic.usageCount.toLocaleString()}</strong> bài báo nghiên cứu khoa học liên quan đến lĩnh vực này trong cơ sở dữ liệu.</p>
+                                <h4>Interest Statistics</h4>
+                                <p>There are approximately <strong>{selectedTopic.usageCount.toLocaleString()}</strong> scientific research papers related to this field in the database.</p>
                             </div>
                         </div>
                         <div className="te-modal-footer">
                             <button className="te-btn-close" onClick={() => setIsModalOpen(false)}>
-                                Đóng
+                                Close
                             </button>
                         </div>
                     </div>

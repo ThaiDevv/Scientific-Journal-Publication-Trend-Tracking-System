@@ -42,7 +42,8 @@ public class NotificationServiceImpl implements NotificationService {
         for (ResearchPaper paper : newPapers) {
             Set<Follow> matchingFollows = new LinkedHashSet<>();
             if (paper.getJournalId() != null) {
-                matchingFollows.addAll(followRepository.findByFollowTypeAndTargetId(FollowType.JOURNAL, paper.getJournalId()));
+                matchingFollows
+                        .addAll(followRepository.findByFollowTypeAndTargetId(FollowType.JOURNAL, paper.getJournalId()));
             }
 
             List<Long> keywordIds = paper.getKeywords().stream()

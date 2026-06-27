@@ -127,11 +127,11 @@ const Reports = () => {
     const handleGenerate = async (e) => {
         e.preventDefault();
         if (!title.trim()) {
-            alert("Vui lòng nhập tiêu đề báo cáo!");
+            alert("Please enter a report title!");
             return;
         }
         if (selectedKeywords.length === 0) {
-            alert("Vui lòng chọn ít nhất một keyword!");
+            alert("Please select at least one keyword!");
             return;
         }
 
@@ -176,7 +176,7 @@ const Reports = () => {
             });
             fetchHistory();
         } catch (err) {
-            console.warn("Lỗi API, tạo mock report:", err);
+            console.warn("API Error, generating mock report:", err);
             const mockGen = {
                 id: Date.now(),
                 title: payload.title,
@@ -296,7 +296,7 @@ const Reports = () => {
 
     const copyJson = () => {
         navigator.clipboard.writeText(JSON.stringify(currentReport.rawJson || {}));
-        alert("Đã copy dữ liệu JSON vào clipboard!");
+        alert("JSON data copied to clipboard!");
     };
 
     // Filter autocompletes suggestions for keyword input
@@ -843,16 +843,16 @@ const Reports = () => {
                     <div className="rep-section-header">
                         <h2 className="rep-section-title">
                             <span className="material-symbols-outlined">post_add</span>
-                            Tạo báo cáo mới
+                            Create New Report
                         </h2>
                     </div>
                     <form onSubmit={handleGenerate} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                         {/* Title input */}
                         <div className="rep-field-group">
-                            <span className="rep-field-label">Tiêu đề báo cáo</span>
+                            <span className="rep-field-label">Report Title</span>
                             <input
                                 className="rep-input"
-                                placeholder="VD: Xu hướng Deep Learning 20"
+                                placeholder="e.g. Deep Learning Evolution & Trends"
                                 value={title}
                                 onChange={e => setTitle(e.target.value)}
                             />
@@ -860,7 +860,7 @@ const Reports = () => {
 
                         {/* Export format radios */}
                         <div className="rep-field-group">
-                            <span className="rep-field-label">Định dạng xuất</span>
+                            <span className="rep-field-label">Export Format</span>
                             <div className="rep-radio-group">
                                 <span className="rep-radio-label" onClick={() => setExportFormat('PDF')}>
                                     <span className={`rep-radio-dot ${exportFormat === 'PDF' ? 'selected' : ''}`}>
@@ -879,7 +879,7 @@ const Reports = () => {
 
                         {/* Custom keywords multiselect box */}
                         <div className="rep-field-group" style={{ position: 'relative' }}>
-                            <span className="rep-field-label">Chọn keywords (Multi-select)</span>
+                            <span className="rep-field-label">Choose Keywords (Multi-select)</span>
                             <div className="rep-multiselect-container">
                                 {selectedKeywords.map((kw) => (
                                     <span key={kw} className="rep-keyword-tag">
@@ -889,7 +889,7 @@ const Reports = () => {
                                 ))}
                                 <input
                                     className="rep-multiselect-input"
-                                    placeholder={selectedKeywords.length === 0 ? "Thêm keyword..." : ""}
+                                    placeholder={selectedKeywords.length === 0 ? "Add keyword..." : ""}
                                     value={keywordInput}
                                     onChange={e => { setKeywordInput(e.target.value); setShowSuggestions(true); }}
                                     onFocus={() => setShowSuggestions(true)}
@@ -920,7 +920,7 @@ const Reports = () => {
                         {/* Year Range side-by-side dropdown selectors */}
                         <div className="rep-dropdown-row">
                             <div className="rep-dropdown-col">
-                                <span className="rep-field-label">Từ năm</span>
+                                <span className="rep-field-label">From Year</span>
                                 <div className="rep-select-wrapper">
                                     <select className="rep-select" value={fromYear} onChange={e => setFromYear(e.target.value)}>
                                         <option value="2015">2015</option>
@@ -932,7 +932,7 @@ const Reports = () => {
                                 </div>
                             </div>
                             <div className="rep-dropdown-col">
-                                <span className="rep-field-label">Đến năm</span>
+                                <span className="rep-field-label">To Year</span>
                                 <div className="rep-select-wrapper">
                                     <select className="rep-select" value={toYear} onChange={e => setToYear(e.target.value)}>
                                         <option value="2023">2023</option>
@@ -948,7 +948,7 @@ const Reports = () => {
                         {/* Submit button */}
                         <button className="rep-submit-btn" type="submit" disabled={loading}>
                             <span className="material-symbols-outlined">analytics</span>
-                            Tạo báo cáo
+                            Generate Report
                         </button>
                     </form>
                 </div>
@@ -957,14 +957,14 @@ const Reports = () => {
                 <div className="rep-card rep-history-card">
                     <div className="rep-section-header">
                         <h2 className="rep-section-title">
-                            Lịch sử báo cáo
+                            Report History
                         </h2>
-                        <span className="rep-history-badge">{history.length} Mục</span>
+                        <span className="rep-history-badge">{history.length} items</span>
                     </div>
 
                     {historyLoading ? (
                         <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-outline)' }}>
-                            Đang tải lịch sử...
+                            Loading history...
                         </div>
                     ) : (
                         <div className="rep-history-list">
@@ -977,7 +977,7 @@ const Reports = () => {
                                     <div className="rep-hist-bot">
                                         <span>{item.format} Format • {item.keywordsCount} Tags</span>
                                         <span className="rep-hist-xem" onClick={() => loadOldReport(item.id)}>
-                                            Xem
+                                            View
                                             <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>visibility</span>
                                         </span>
                                     </div>
@@ -996,7 +996,7 @@ const Reports = () => {
                         <div className="rep-view-header-left">
                             <span className="rep-view-header-tag">
                                 <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>description</span>
-                                Đang xem báo cáo
+                                Viewing Report
                             </span>
                             <h1 className="rep-view-header-title">
                                 {currentReport.title} ({currentReport.fromYear || 2018} - {currentReport.toYear || 2024})
@@ -1007,9 +1007,9 @@ const Reports = () => {
                                 <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>content_copy</span>
                                 Copy JSON
                             </button>
-                            <button className="rep-btn-dl" onClick={() => alert("Chức năng tải PDF đang được xử lý...")}>
+                            <button className="rep-btn-dl" onClick={() => alert("PDF download feature is being processed...")}>
                                 <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>download</span>
-                                Tải PDF
+                                Download PDF
                             </button>
                         </div>
                     </div>
@@ -1018,7 +1018,7 @@ const Reports = () => {
                     <div className="rep-chart-section">
                         <div className="rep-chart-title-row">
                             <div className="rep-green-indicator">
-                                Xu hướng công bố (Papers Published)
+                                Publication Trends (Papers Published)
                             </div>
                             <div className="rep-legend-row">
                                 <div className="rep-legend-item">
@@ -1080,9 +1080,9 @@ const Reports = () => {
                             <table className="rep-table">
                                 <thead>
                                     <tr>
-                                        <th style={{ width: '50%' }}>Tên tác giả</th>
-                                        <th style={{ width: '25%', textAlign: 'right' }}>Bài báo</th>
-                                        <th style={{ width: '25%', textAlign: 'right' }}>Trích dẫn</th>
+                                        <th style={{ width: '50%' }}>Author Name</th>
+                                        <th style={{ width: '25%', textAlign: 'right' }}>Papers</th>
+                                        <th style={{ width: '25%', textAlign: 'right' }}>Citations</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1109,8 +1109,8 @@ const Reports = () => {
                             <table className="rep-table">
                                 <thead>
                                     <tr>
-                                        <th style={{ width: '50%' }}>Tạp chí / Hội thảo</th>
-                                        <th style={{ width: '25%', textAlign: 'right' }}>Tỷ lệ</th>
+                                        <th style={{ width: '50%' }}>Journal / Conference</th>
+                                        <th style={{ width: '25%', textAlign: 'right' }}>Ratio</th>
                                         <th style={{ width: '25%', textAlign: 'right' }}>Trend</th>
                                     </tr>
                                 </thead>
@@ -1139,7 +1139,7 @@ const Reports = () => {
                     {/* Report Footer */}
                     <div className="rep-view-footer">
                         <div>
-                            Dữ liệu tổng hợp từ 12,450 nguồn lưu trữ học thuật.
+                                    Data compiled from 12,450 academic repository sources.
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                             <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>lock</span>

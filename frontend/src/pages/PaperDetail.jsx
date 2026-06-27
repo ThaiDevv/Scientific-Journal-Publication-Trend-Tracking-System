@@ -37,7 +37,7 @@ function PaperDetail() {
                     setBookmarked(isSaved);
                 }
             } catch (err) {
-                console.warn("Lỗi kết nối API Paper Detail, dùng fallback mock data:", err);
+                console.warn("Error connecting to Paper Detail API, using fallback mock data:", err);
                 // Fallback mock data matching the reference design details
                 setPaper({
                     id: Number(id) || 2,
@@ -81,15 +81,15 @@ function PaperDetail() {
             if (bookmarked) {
                 await removeBookmark(paper.id);
                 setBookmarked(false);
-                triggerToast("Đã bỏ lưu bài báo");
+                triggerToast("Paper removed from bookmarks");
             } else {
                 await addBookmark(paper.id);
                 setBookmarked(true);
-                triggerToast("Đã lưu bài báo thành công");
+                triggerToast("Paper bookmarked successfully");
             }
         } catch (err) {
             console.error("Bookmark toggle failed:", err);
-            triggerToast(err?.response?.data?.message || "Thao tác thất bại");
+            triggerToast(err?.response?.data?.message || "Action failed");
         } finally {
             setActionLoading(false);
         }
@@ -111,9 +111,9 @@ function PaperDetail() {
     if (!paper) {
         return (
             <div className="af-paper-canvas" style={{ padding: "80px 0", textAlign: "center" }}>
-                <h3 className="af-paper-title-main" style={{ marginBottom: "24px" }}>404 - Bài báo không tồn tại</h3>
+                <h3 className="af-paper-title-main" style={{ marginBottom: "24px" }}>404 - Paper not found</h3>
                 <button className="af-btn-primary" onClick={() => navigate("/papers/search")}>
-                    Quay lại tìm kiếm
+                    Back to Search
                 </button>
             </div>
         );
@@ -321,7 +321,7 @@ function PaperDetail() {
                         <button
                             className="af-footer-btn"
                             title="Report Error"
-                            onClick={() => triggerToast("Cảm ơn! Phản hồi lỗi đã được ghi nhận.")}
+                            onClick={() => triggerToast("Thank you! Error feedback has been recorded.")}
                         >
                             <span className="material-symbols-outlined" style={{ fontSize: "20px" }}>flag</span>
                         </button>
@@ -330,7 +330,7 @@ function PaperDetail() {
                             title="Copy link to clipboard"
                             onClick={() => {
                                 navigator.clipboard.writeText(window.location.href);
-                                triggerToast("Đã sao chép link liên kết!");
+                                triggerToast("Link copied to clipboard!");
                             }}
                         >
                             <span className="material-symbols-outlined" style={{ fontSize: "20px" }}>share</span>

@@ -30,7 +30,7 @@ function Bookmarks() {
             setPapers(mappedDb);
             setTotal(body.totalElements || 0);
         } catch (e) {
-            console.error("Không tải được danh sách bookmark", e);
+            console.error("Failed to load bookmarks list", e);
             setPapers([]);
             setTotal(0);
         } finally {
@@ -43,14 +43,14 @@ function Bookmarks() {
     }, []);
 
     const handleRemove = async (item) => {
-        const confirmRemove = window.confirm(`Bạn có chắc chắn muốn bỏ lưu bài báo "${item.title}"?`);
+        const confirmRemove = window.confirm(`Are you sure you want to remove the paper "${item.title}" from bookmarks?`);
         if (!confirmRemove) return;
 
         try {
             await removeBookmark(item.id);
             loadBookmarks(page);
         } catch {
-            console.error("Bỏ bookmark thất bại");
+            console.error("Bookmark removal failed");
         }
     };
 
@@ -369,7 +369,7 @@ function Bookmarks() {
                 </div>
             ) : papers.length === 0 ? (
                 <div className="bm-paper-card" style={{ padding: '60px 24px', textAlign: 'center', color: 'var(--color-on-surface-variant)' }}>
-                    Bạn chưa lưu bài báo nào. Hãy tìm kiếm và lưu bài báo quan tâm!
+                    You have not bookmarked any papers yet. Search and bookmark publications of your interest!
                 </div>
             ) : (
                 <>
@@ -400,7 +400,7 @@ function Bookmarks() {
                                         <button
                                             className="bm-btn-bookmark"
                                             onClick={() => handleRemove(paper)}
-                                            title="Bỏ lưu bài báo"
+                                            title="Remove from bookmarks"
                                         >
                                             <span className="material-symbols-outlined" style={{ fontVariationSettings: '"FILL" 1' }}>bookmark</span>
                                         </button>

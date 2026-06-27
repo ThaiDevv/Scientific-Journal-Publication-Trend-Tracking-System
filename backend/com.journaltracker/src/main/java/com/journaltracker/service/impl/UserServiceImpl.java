@@ -70,18 +70,8 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public UserPageResponse getAdminUsers(int page, int size, String search, String role) {
         Pageable pageable = PageRequest.of(page, size);
+        Page<User> userPage = userRepository.searchAndFilterUsers(search, role, pageable);
 
-        Role roleEnum = null;
-        if (role != null && !role.trim().isEmpty()) {
-            try {
-                roleEnum = Role.valueOf(role.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                // Nếu trên Postman cố tình gõ role bậy bạ (ví dụ: role=ABC) thì chặn luôn
-                throw new BadRequestException("Role không hợp lệ: " + role);
-            }
-        }
-
-        Page<User> userPage = userRepository.searchAndFilterUsers(search, roleEnum, pageable);
 
         List<UserResponse> userResponses = userPage.getContent().stream()
                 .map(this::toResponse)
@@ -100,7 +90,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public UserResponse getUserById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException("User không tồn tại với ID: " + id));
+                .orElseThrow(() -> new BadRequestException("User does not exist with ID: " + id));
         return toResponse(user);
     }
 
@@ -108,17 +98,17 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void changeUserStatus(Long id, boolean isActive) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException("User không tồn tại với ID: " + id));
+                .orElseThrow(() -> new BadRequestException("User does not exist with ID: " + id));
 
-        // Lấy tên của Admin đang đăng nhập hệ thống hiện tại
+        // Get the username of the currently logged-in Admin
         String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        // BẪY LOGIC: Nếu đang tự khóa tài khoản của chính mình -> Chặn luôn!
+        // Prevent admin from disabling their own account
         if (user.getUsername().equals(currentUsername) && !isActive) {
-            throw new BadRequestException("Bạn không thể tự vô hiệu hóa tài khoản Admin của chính mình!");
+            throw new BadRequestException("You cannot disable your own Admin account!");
         }
 
-        user.setIsActive(isActive); // Note: Đảm bảo field trong Entity User của ông là active (hoặc chỉnh lại theo thực tế)
+        user.setIsActive(isActive); // Note: Ensure the active field exists in User entity (or modify accordingly)
         userRepository.save(user);
     }
 
@@ -126,9 +116,10 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void changeUserRole(Long id, String role) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException("User không tồn tại với ID: " + id));
+                .orElseThrow(() -> new BadRequestException("User does not exist with ID: " + id));
 
-        user.setRole(com.journaltracker.entity.Role.valueOf(role.toUpperCase()));        userRepository.save(user);
+        user.setRole(com.journaltracker.entity.Role.valueOf(role.toUpperCase()));
+        userRepository.save(user);
     }
 
     // =========================================================================
@@ -145,6 +136,7 @@ public class UserServiceImpl implements UserService {
                 .email(user.getEmail())
                 .fullName(user.getFullName())
                 .role(user.getRole())
+                .isActive(user.getIsActive())
                 .createdAt(user.getCreatedAt())
                 .build();
     }

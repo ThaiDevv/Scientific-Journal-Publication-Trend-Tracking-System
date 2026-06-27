@@ -15,6 +15,11 @@ export const followJournal = (journalId) =>
 export const followKeyword = (keywordId) =>
     axiosInstance.post('/follows', { followType: 'KEYWORD', targetId: keywordId });
 
+// ── Follow Topic ──────────────────────────────────────────────────────────────
+// POST /api/follows  body: { followType: "TOPIC", targetId: 2 }
+export const followTopic = (topicId) =>
+    axiosInstance.post('/follows', { followType: 'TOPIC', targetId: topicId });
+
 // ── Unfollow ──────────────────────────────────────────────────────────────────
 // DELETE /api/follows/{id}
 export const unfollow = (followId) =>
@@ -26,5 +31,6 @@ export const followApi = {
     getMyFollows,
     followJournal,
     followKeyword,
+    followTopic,
     unfollow,
 };

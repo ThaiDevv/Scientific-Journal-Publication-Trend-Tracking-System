@@ -13,11 +13,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/admin/users")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')")
+
+@PreAuthorize("hasAuthority('ADMIN')")
+
 public class AdminUserController {
 
     private final UserService userService;
-
 
     @GetMapping
     public ResponseEntity<UserPageResponse> getAdminUsers(
@@ -44,7 +45,6 @@ public class AdminUserController {
         userService.changeUserStatus(id, request.isActive());
         return ResponseEntity.ok().build();
     }
-
 
     @PutMapping("/{id}/role")
     public ResponseEntity<Void> changeUserRole(

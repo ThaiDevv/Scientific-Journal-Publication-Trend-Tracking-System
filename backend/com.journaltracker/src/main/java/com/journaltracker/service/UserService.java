@@ -13,7 +13,6 @@ public interface UserService {
 
     void changePassword(String username, ChangePasswordRequest request);
 
-
     UserPageResponse getAdminUsers(int page, int size, String search, String role);
 
     UserResponse getUserById(Long id);

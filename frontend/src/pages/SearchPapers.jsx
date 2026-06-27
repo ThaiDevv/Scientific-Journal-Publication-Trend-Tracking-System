@@ -87,7 +87,7 @@ function SearchPapers() {
                 }
             }
         } catch (e) {
-            console.error("Follow journal thất bại", e);
+            console.error("Follow journal failed", e);
         }
     };
 
@@ -109,7 +109,7 @@ function SearchPapers() {
             setPapers(body.content || []);
             setTotal(body.totalElements || 0);
         } catch (e) {
-            console.error("Không tải được bài báo", e);
+            console.error("Failed to load papers", e);
         } finally {
             setLoading(false);
         }
@@ -142,7 +142,7 @@ function SearchPapers() {
                 setBookmarkCount(prev => prev + 1);
             }
         } catch (e) {
-            console.error("Bookmark thất bại", e);
+            console.error("Bookmark failed", e);
         }
     };
 
@@ -631,15 +631,15 @@ function SearchPapers() {
                 <div className="sp-filter-actions">
                     <div className="sp-left-btns">
                         <button className="sp-btn-primary" onClick={handleSearch}>
-                            <span className="material-symbols-outlined">search</span> Tìm kiếm
+                            <span className="material-symbols-outlined">search</span> Search
                         </button>
                         <button className="sp-btn-secondary" onClick={handleReset}>
-                            Xóa bộ lọc
+                            Clear Filters
                         </button>
                     </div>
 
                     <button className="sp-btn-link" onClick={() => navigate("/bookmarks")}>
-                        <span className="material-symbols-outlined">bookmark</span> Bài báo đã lưu ({bookmarkCount})
+                        <span className="material-symbols-outlined">bookmark</span> Bookmarked Papers ({bookmarkCount})
                     </button>
                 </div>
             </div>
@@ -703,7 +703,7 @@ function SearchPapers() {
                                                         fontFamily: "var(--font-ui)",
                                                         textTransform: "uppercase"
                                                     }}
-                                                    title={followedJournals.some(f => f.targetName === paper.journalName) ? "Ngừng theo dõi tạp chí" : "Theo dõi tạp chí"}
+                                                    title={followedJournals.some(f => f.targetName === paper.journalName) ? "Unfollow journal" : "Follow journal"}
                                                 >
                                                     <span className="material-symbols-outlined" style={{ fontSize: "14px", marginRight: "2px" }}>
                                                         {followedJournals.some(f => f.targetName === paper.journalName) ? "check" : "add"}

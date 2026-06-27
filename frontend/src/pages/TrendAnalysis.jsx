@@ -178,7 +178,7 @@ const TrendAnalysis = () => {
                 }
             }
         } catch (err) {
-            console.error("Follow keyword thất bại", err);
+            console.error("Follow keyword failed", err);
         }
     };
 
@@ -609,7 +609,7 @@ const TrendAnalysis = () => {
                                 onFocus={() => setShowSuggest(true)}
                                 onBlur={() => setTimeout(() => setShowSuggest(false), 160)}
                             />
-                            <button className="ta-btn-add" onClick={() => addKeyword()}>Thêm</button>
+                            <button className="ta-btn-add" onClick={() => addKeyword()}>Add</button>
                             {showSuggest && filtered.length > 0 && (
                                 <div className="ta-suggest">
                                     {filtered.slice(0, 8).map(s => (
@@ -650,7 +650,7 @@ const TrendAnalysis = () => {
                             disabled={loading || selectedKeywords.length === 0}
                         >
                             <span className="material-symbols-outlined" style={{ fontSize: 18 }}>bar_chart</span>
-                            Phân tích
+                            Analyze
                         </button>
                     </div>
                 </div>
@@ -701,7 +701,7 @@ const TrendAnalysis = () => {
                     ) : chartData.length === 0 ? (
                         <div className="ta-chart-empty">
                             <span className="material-symbols-outlined" style={{ fontSize: 40, color: 'var(--color-outline-variant)' }}>show_chart</span>
-                            <span>Click "Phân tích" to generate the chart</span>
+                            <span>Click "Analyze" to generate the chart</span>
                         </div>
                     ) : (
                         <div style={{ width: '100%', height: 340 }}>
@@ -776,7 +776,7 @@ const TrendAnalysis = () => {
                                             borderRadius: "4px",
                                             transition: "all 0.2s"
                                         }}
-                                        title={followedKeywords.some(f => f.targetName === item.name) ? "Ngừng theo dõi từ khóa" : "Theo dõi từ khóa"}
+                                        title={followedKeywords.some(f => f.targetName === item.name) ? "Unfollow keyword" : "Follow keyword"}
                                     >
                                         <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>
                                             {followedKeywords.some(f => f.targetName === item.name) ? "check_circle" : "add_circle"}
@@ -809,7 +809,7 @@ const TrendAnalysis = () => {
                         </div>
                     ) : tableData.length === 0 ? (
                         <div style={{ textAlign: 'center', color: 'var(--color-on-surface-variant)', padding: 40, fontSize: 14, fontFamily: 'var(--font-body)' }}>
-                            No data — click "Phân tích" to load statistics
+                            No data — click "Analyze" to load statistics
                         </div>
                     ) : (
                         <table className="ta-table">

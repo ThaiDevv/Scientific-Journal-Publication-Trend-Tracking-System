@@ -27,27 +27,27 @@ const Following = () => {
                 name: item.targetName,
                 publisher: item.followType === 'JOURNAL' ? 'Academic Source' : 'System Metadata',
                 field: item.followType === 'JOURNAL' ? 'Scientific Field' : 'Research Field',
-                paperCount: Math.floor(Math.random() * 500) + 10,
+                paperCount: item.paperCount !== undefined && item.paperCount !== null ? item.paperCount : 0,
                 issn: item.followType === 'JOURNAL' ? 'Online Version' : ''
             }));
             
             setFollows(dbFollows);
         } catch (error) {
-            console.error("Không thể tải danh sách theo dõi!", error);
+            console.error("Failed to load followed list!", error);
         } finally {
             setLoading(false);
         }
     };
 
     const handleUnfollow = async (item) => {
-        const confirmDelete = window.confirm(`Bạn có chắc chắn muốn ngừng theo dõi "${item.name}" không?`);
+        const confirmDelete = window.confirm(`Are you sure you want to unfollow "${item.name}"?`);
         if (!confirmDelete) return;
 
         try {
             await followApi.unfollow(item.id);
             setFollows(prev => prev.filter(f => f.id !== item.id));
         } catch (error) {
-            console.error("Có lỗi xảy ra khi hủy theo dõi.", error);
+            console.error("An error occurred when unfollowing.", error);
         }
     };
 
@@ -502,7 +502,7 @@ const Following = () => {
             ) : filteredFollows.length === 0 ? (
                 <div className="fol-table-container">
                     <div className="fol-empty-state">
-                        Bạn chưa theo dõi {activeTab === 'JOURNAL' ? 'tạp chí' : activeTab === 'TOPIC' ? 'chủ đề' : 'từ khóa'} nào.
+                        You have not followed any {activeTab === 'JOURNAL' ? 'journal' : activeTab === 'TOPIC' ? 'topic' : 'keyword'} yet.
                     </div>
                 </div>
             ) : (
@@ -517,8 +517,8 @@ const Following = () => {
                                     <th className="fol-th" style={{ width: '25%' }}>
                                         {activeTab === 'JOURNAL' ? 'Publisher' : 'Source / Category'}
                                     </th>
-                                    <th className="fol-th" style={{ width: '15%' }}>Lĩnh vực</th>
-                                    <th className="fol-th" style={{ width: '10%' }}>Số bài báo</th>
+                                    <th className="fol-th" style={{ width: '15%' }}>Field</th>
+                                    <th className="fol-th" style={{ width: '10%' }}>Papers Count</th>
                                     <th className="fol-th" style={{ width: '10%', textAlign: 'right' }}>Action</th>
                                 </tr>
                             </thead>
