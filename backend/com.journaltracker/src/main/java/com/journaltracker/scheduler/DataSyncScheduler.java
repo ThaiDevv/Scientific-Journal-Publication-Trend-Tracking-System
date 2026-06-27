@@ -1,5 +1,14 @@
 package com.journaltracker.scheduler;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
 import com.journaltracker.client.ExternalApiClient;
 import com.journaltracker.dto.SyncResult;
 import com.journaltracker.entity.ApiDataSource;
@@ -8,17 +17,11 @@ import com.journaltracker.properties.SyncProperties;
 import com.journaltracker.repository.ApiDataSourceRepository;
 import com.journaltracker.service.DataSyncService;
 import com.journaltracker.service.NotificationService;
+import com.journaltracker.service.SyncStatusService;
 import com.journaltracker.service.TrendAnalysisService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -31,6 +34,7 @@ public class DataSyncScheduler {
     private final TrendAnalysisService trendAnalysisService;
     private final NotificationService notificationService;
     private final ApiDataSourceRepository apiDataSourceRepository;
+    private final SyncStatusService syncStatusService;
     @Scheduled(cron = "${sync.cron:0 0 13 * * ?}")
     public void syncData() {
         if (!syncProperties.isEnabled()) {
@@ -96,5 +100,17 @@ public class DataSyncScheduler {
         }
 
         log.info("Scheduled data sync job completed. Results: {}", resultList);
+        try {
+            com.journaltracker.dto.SyncResult aggregated = new com.journaltracker.dto.SyncResult();
+            int totalNew = resultList.stream().mapToInt(r -> r.getNewPapers()).sum();
+            int totalErrors = resultList.stream().mapToInt(r -> r.getErrors()).sum();
+            aggregated.setNewPapers(totalNew);
+            aggregated.setErrors(totalErrors);
+            aggregated.setSyncedAt(java.time.LocalDate.now());
+            aggregated.setSourceName("ALL");
+            syncStatusService.setLast(aggregated);
+        } catch (Exception e) {
+            log.error("Failed to set last sync status", e);
+        }
     }
 }
