@@ -36,6 +36,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenRepository refreshTokenRepository;
+
     @Override
     @Transactional
     public AuthResponse register(RegisterRequest request) {
@@ -82,9 +83,7 @@ public class AuthServiceImpl implements AuthService {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             request.getUsername(),
-                            request.getPassword()
-                    )
-            );
+                            request.getPassword()));
         } catch (AuthenticationException ex) {
             throw new UnauthorizedException("Invalid username or password");
         }
@@ -122,7 +121,7 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new UnauthorizedException("Invalid or expired token"));
         RefreshToken dbToken = refreshTokenRepository.findByToken(request.getToken())
                 .orElseThrow(() -> new UnauthorizedException("Invalid or expired token"));
-        if(dbToken.isRevoked()){
+        if (dbToken.isRevoked()) {
             if (dbToken.getGracePeriodEnd() != null && dbToken.getGracePeriodEnd().isAfter(LocalDateTime.now())) {
                 log.info("Token cũ được chấp nhận lại do nằm trong khoảng ân hạn.");
             } else {
@@ -159,7 +158,6 @@ public class AuthServiceImpl implements AuthService {
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPasswordHash(),
-                List.of(new SimpleGrantedAuthority(user.getRole().name()))
-        );
+                List.of(new SimpleGrantedAuthority(user.getRole().name())));
     }
 }

@@ -16,12 +16,15 @@ import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 @Service
 @AllArgsConstructor
 @Builder
+@Transactional
 public class FollowServiceImpl implements FollowService {
     private final FollowRepository followRepository;
     private final UserServiceImpl userService;
@@ -37,19 +40,12 @@ public class FollowServiceImpl implements FollowService {
                 request.getTargetId())) {
             throw new DuplicateResourceException("Already followed");
         }
-        String name = getTargetName(request.getTargetId(),request.getFollowType());
         Follow follow = new Follow();
         follow.setUser(user);
         follow.setTargetId(request.getTargetId());
         follow.setFollowType(request.getFollowType());
         Follow savedFollow = followRepository.save(follow);
-        FollowResponse response = FollowResponse.builder()
-                .id(savedFollow.getId())
-                .targetId(savedFollow.getTargetId())
-                .targetName(name)
-                .followType(savedFollow.getFollowType())
-                .build();
-        return response;
+        return toResponse(savedFollow);
     }
 
     @Override
@@ -93,6 +89,33 @@ public class FollowServiceImpl implements FollowService {
     }
 
     private FollowResponse toResponse(Follow follow) {
+        Integer count = 0;
+        try {
+            switch (follow.getFollowType()) {
+                case JOURNAL:
+                    count = journalRepository.findById(follow.getTargetId())
+                            .map(Journal::getPaperCount)
+                            .orElse(0);
+                    break;
+                case KEYWORD:
+                    count = keywordRepository.findById(follow.getTargetId())
+                            .map(Keyword::getUsageCount)
+                            .orElse(0);
+                    break;
+                case TOPIC:
+                    ResearchTopic topic = researchTopicRepository.findById(follow.getTargetId()).orElse(null);
+                    if (topic != null) {
+                        count = topic.getKeywords().stream()
+                                .map(k -> k.getUsageCount() != null ? k.getUsageCount() : 0)
+                                .mapToInt(Integer::intValue)
+                                .sum();
+                    }
+                    break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return FollowResponse.builder()
                 .id(follow.getId())
                 .followType(follow.getFollowType())
@@ -102,6 +125,7 @@ public class FollowServiceImpl implements FollowService {
                                 follow.getTargetId(),
                                 follow.getFollowType()))
                 .createdAt(follow.getCreatedAt())
+                .paperCount(count)
                 .build();
     }
 

@@ -21,21 +21,18 @@ public class TrendController {
     public ApiResponse<List<TrendDataPoint>> getKeywordTrend(
             @PathVariable String keyword,
             @RequestParam(defaultValue = "2015") int fromYear,
-            @RequestParam(required = false) Integer toYear
-    ) {
+            @RequestParam(required = false) Integer toYear) {
         int endYear = toYear != null ? toYear : LocalDate.now().getYear();
         return ApiResponse.success(
                 "Get keyword trend successfully",
-                trendAnalysisService.getTrendByKeyword(keyword, fromYear, endYear)
-        );
+                trendAnalysisService.getTrendByKeyword(keyword, fromYear, endYear));
     }
 
     @GetMapping("/compare")
     public ApiResponse<List<Map<String, Object>>> compareTrends(
             @RequestParam List<String> keywords,
             @RequestParam(defaultValue = "2015") int fromYear,
-            @RequestParam(required = false) Integer toYear
-    ) {
+            @RequestParam(required = false) Integer toYear) {
         int endYear = toYear != null ? toYear : LocalDate.now().getYear();
         List<TrendComparison> comparisons = trendAnalysisService.compareTrends(keywords, fromYear, endYear);
 
@@ -56,16 +53,14 @@ public class TrendController {
 
         return ApiResponse.success(
                 "Compare trends successfully",
-                new ArrayList<>(yearData.values())
-        );
+                new ArrayList<>(yearData.values()));
     }
 
     @GetMapping("/analyze")
     public ApiResponse<Map<String, Object>> analyzeTrends(
             @RequestParam List<String> keywords,
             @RequestParam(name = "fromYear", defaultValue = "2020") int fromYear,
-            @RequestParam(name = "toYear", required = false) Integer toYear
-    ) {
+            @RequestParam(name = "toYear", required = false) Integer toYear) {
         int endYear = toYear != null ? toYear : LocalDate.now().getYear();
         List<TrendComparison> comparisons = trendAnalysisService.compareTrends(keywords, fromYear, endYear);
 
@@ -128,7 +123,6 @@ public class TrendController {
 
         return ApiResponse.success(
                 "Analyze trends successfully",
-                result
-        );
+                result);
     }
 }

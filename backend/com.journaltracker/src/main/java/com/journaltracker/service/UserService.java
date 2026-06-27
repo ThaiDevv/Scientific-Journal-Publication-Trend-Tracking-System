@@ -13,7 +13,6 @@ public interface UserService {
 
     void changePassword(String username, ChangePasswordRequest request);
 
-    // 🔥 CÁC HÀM MỚI CHO TASK JP-13: ADMIN QUẢN LÝ USERS
     UserPageResponse getAdminUsers(int page, int size, String search, String role);
 
     UserResponse getUserById(Long id);

@@ -152,8 +152,6 @@ public class DataSyncServiceImpl implements DataSyncService {
                 });
     }
 
-
-
     public ExternalApiClient findExternalApiClient(String nameClient) {
         return clientList.stream()
                 .filter(name -> name.getSourceName().equalsIgnoreCase(nameClient))

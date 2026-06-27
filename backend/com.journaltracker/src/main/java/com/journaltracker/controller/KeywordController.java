@@ -18,14 +18,12 @@ public class KeywordController {
 
     private final KeywordService keywordService;
 
-    // GET /api/keywords/top?limit=20 → top keywords phổ biến nhất
     @GetMapping("/top")
     public ResponseEntity<List<KeywordResponse>> getTopKeywords(
             @RequestParam(defaultValue = "20") int limit) {
         return ResponseEntity.ok(keywordService.getTopKeywords(limit));
     }
 
-    // GET /api/keywords/{name}/papers → papers chứa keyword cụ thể
     @GetMapping("/{name}/papers")
     public ResponseEntity<Page<PaperSummaryResponse>> getPapersByKeyword(
             @PathVariable String name,

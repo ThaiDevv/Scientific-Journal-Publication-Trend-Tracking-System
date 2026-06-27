@@ -10,12 +10,13 @@ import TrendAnalysis from "./pages/TrendAnalysis";
 import TopicExplorer from "./pages/TopicExplorer";
 import Following from "./pages/Following";
 import Reports from "./pages/Reports";
+import Bookmarks from "./pages/Bookmarks";
+import AdminPanel from "./pages/AdminPanel.jsx";
 
 import ProtectedRoute from "./components/ProtectedRoute";
+import Layout from "./components/Layout/Layout";
 import { useAuth } from "./hooks/useAuth";
 import "./App.css";
-
-import Bookmarks from "./pages/Bookmarks";
 
 // ─── Root redirect ────────────────────────────────────────────────────────────
 function RootRedirect() {
@@ -30,6 +31,15 @@ function RootRedirect() {
     );
 }
 
+// ─── Wrap a page in ProtectedRoute + Layout ───────────────────────────────────
+function Protected({ children, role }) {
+    return (
+        <ProtectedRoute role={role}>
+            <Layout>{children}</Layout>
+        </ProtectedRoute>
+    );
+}
+
 // ─── App ──────────────────────────────────────────────────────────────────────
 function App() {
     return (
@@ -37,70 +47,81 @@ function App() {
             <Routes>
                 <Route path="/" element={<RootRedirect />} />
 
-                <Route path="/login" element={<Login />} />
+                {/* Public routes */}
+                <Route path="/login"    element={<Login />} />
                 <Route path="/register" element={<Register />} />
 
-                {/* --- KHU VỰC ĐƯỢC BẢO VỆ CỦA ÔNG --- */}
-                {/* Phải đăng nhập thành công mới được vào xem mấy trang này */}
-
+                {/* Protected routes — wrapped in Layout */}
                 <Route
                     path="/dashboard"
                     element={
-                        <ProtectedRoute>
+                        <Protected>
                             <Dashboard />
-                        </ProtectedRoute>
+                        </Protected>
                     }
                 />
-                <Route path="/papers/:id" element={<PaperDetail />} />
                 <Route
                     path="/trends"
                     element={
-                        <ProtectedRoute>
+                        <Protected>
                             <TrendAnalysis />
-                        </ProtectedRoute>
+                        </Protected>
                     }
                 />
-
                 <Route
                     path="/topics"
                     element={
-                        <ProtectedRoute>
+                        <Protected>
                             <TopicExplorer />
-                        </ProtectedRoute>
+                        </Protected>
                     }
                 />
-
                 <Route
                     path="/following"
                     element={
-                        <ProtectedRoute>
+                        <Protected>
                             <Following />
-                        </ProtectedRoute>
+                        </Protected>
                     }
                 />
-
                 <Route
                     path="/reports"
                     element={
-                        <ProtectedRoute>
+                        <Protected>
                             <Reports />
-                        </ProtectedRoute>
+                        </Protected>
                     }
                 />
                 <Route
                     path="/papers/search"
                     element={
-                        <ProtectedRoute>
+                        <Protected>
                             <SearchPapers />
-                        </ProtectedRoute>
+                        </Protected>
                     }
                 />
                 <Route
                     path="/bookmarks"
                     element={
-                        <ProtectedRoute>
+                        <Protected>
                             <Bookmarks />
-                        </ProtectedRoute>
+                        </Protected>
+                    }
+                />
+                <Route
+                    path="/admin"
+                    element={
+                        <Protected role="ADMIN">
+                            <AdminPanel />
+                        </Protected>
+                    }
+                />
+                <Route
+                    path="/papers/:id"
+                    element={
+                        <Protected>
+                            <PaperDetail />
+                        </Protected>
                     }
                 />
             </Routes>

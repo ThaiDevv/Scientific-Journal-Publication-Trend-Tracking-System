@@ -16,13 +16,11 @@ public class AuthorController {
 
     private final AuthorService authorService;
 
-    // GET /api/authors/{id} → thông tin tác giả + số lượng bài báo
     @GetMapping("/{id}")
     public ResponseEntity<AuthorDetailResponse> getAuthorById(@PathVariable Long id) {
         return ResponseEntity.ok(authorService.getAuthorById(id));
     }
 
-    // GET /api/authors/{id}/papers → danh sách papers của tác giả, phân trang
     @GetMapping("/{id}/papers")
     public ResponseEntity<Page<PaperSummaryResponse>> getPapersByAuthor(
             @PathVariable Long id,

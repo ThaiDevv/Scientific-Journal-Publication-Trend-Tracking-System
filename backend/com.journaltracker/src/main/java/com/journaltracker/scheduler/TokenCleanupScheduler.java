@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class TokenCleanupScheduler {
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
+
     @Scheduled(cron = "0 0 2 * * ?")
     @Transactional
     public void purgeExpiredTokens() {

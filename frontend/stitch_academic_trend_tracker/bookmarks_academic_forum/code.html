@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bookmarks - Academic Forum</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&amp;family=Source+Serif+4:wght@600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#2d3133",
+                        "secondary-container": "#86f2e4",
+                        "surface-dim": "#d8dadc",
+                        "tertiary-fixed": "#d3e4fe",
+                        "surface-container": "#eceef0",
+                        "primary-container": "#131b2e",
+                        "error": "#ba1a1a",
+                        "surface-container-low": "#f2f4f6",
+                        "tertiary-fixed-dim": "#b7c8e1",
+                        "surface-bright": "#f7f9fb",
+                        "tertiary": "#000000",
+                        "secondary-fixed": "#89f5e7",
+                        "on-primary-container": "#7c839b",
+                        "surface-tint": "#565e74",
+                        "surface-variant": "#e0e3e5",
+                        "secondary": "#006a61",
+                        "on-tertiary-fixed": "#0b1c30",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "surface": "#f7f9fb",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed": "#00201d",
+                        "on-surface": "#191c1e",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#dae2fd",
+                        "on-primary-fixed": "#131b2e",
+                        "on-secondary-container": "#006f66",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#6bd8cb",
+                        "on-primary": "#ffffff",
+                        "primary": "#000000",
+                        "outline": "#76777d",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-high": "#e6e8ea",
+                        "on-error": "#ffffff",
+                        "surface-container-highest": "#e0e3e5",
+                        "tertiary-container": "#0b1c30",
+                        "on-tertiary-container": "#75859d",
+                        "on-secondary-fixed-variant": "#005049",
+                        "on-surface-variant": "#45464d",
+                        "outline-variant": "#c6c6cd",
+                        "on-tertiary-fixed-variant": "#38485d",
+                        "on-secondary": "#ffffff",
+                        "inverse-on-surface": "#eff1f3",
+                        "background": "#f7f9fb",
+                        "on-background": "#191c1e",
+                        "inverse-primary": "#bec6e0"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container-max": "1440px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "unit": "4px",
+                        "sidebar-width": "260px",
+                        "margin-desktop": "40px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Work Sans"],
+                        "body-md": ["Work Sans"],
+                        "ui-label": ["Work Sans"],
+                        "headline-lg": ["\"Source Serif 4\""],
+                        "data-label": ["JetBrains Mono"],
+                        "headline-lg-mobile": ["\"Source Serif 4\""],
+                        "paper-title": ["\"Source Serif 4\""],
+                        "display-title": ["\"Source Serif 4\""]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "ui-label": ["13px", {"lineHeight": "16px", "fontWeight": "600"}],
+                        "headline-lg": ["30px", {"lineHeight": "38px", "fontWeight": "600"}],
+                        "data-label": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "paper-title": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "display-title": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .paper-card:hover .remove-btn {
+            opacity: 1;
+        }
+        .zebra-stripe:nth-child(even) {
+            background-color: rgba(241, 245, 249, 0.5);
+        }
+        .active-nav-border {
+            border-right-width: 4px;
+        }
+    </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface">
+<!-- SideNavBar Shell -->
+<aside class="fixed left-0 top-0 h-full w-sidebar-width bg-surface-container-lowest dark:bg-inverse-surface border-r border-outline-variant dark:border-outline flex flex-col py-margin-desktop px-4 z-50">
+<div class="mb-10 px-2">
+<h1 class="font-display-title text-display-title text-primary dark:text-inverse-primary leading-none">Academic Forum</h1>
+<p class="font-ui-label text-ui-label text-on-surface-variant mt-2">Journal Trend Tracking</p>
+</div>
+<nav class="flex-grow space-y-1">
+<a class="flex items-center px-3 py-3 font-ui-label text-ui-label text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center px-3 py-3 font-ui-label text-ui-label text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="search">search</span>
+                Search Papers
+            </a>
+<a class="flex items-center px-3 py-3 font-ui-label text-ui-label text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="trending_up">trending_up</span>
+                Trend Analysis
+            </a>
+<a class="flex items-center px-3 py-3 font-ui-label text-ui-label text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="explore">explore</span>
+                Topic Explorer
+            </a>
+<a class="flex items-center px-3 py-3 font-ui-label text-ui-label text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="group">group</span>
+                Following
+            </a>
+<a class="flex items-center px-3 py-3 font-ui-label text-ui-label text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="assessment">assessment</span>
+                Reports
+            </a>
+<!-- Active State -->
+<a class="flex items-center px-3 py-3 text-primary dark:text-inverse-primary font-bold border-r-4 border-primary dark:border-inverse-primary bg-surface-container-low dark:bg-surface-container-highest" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="bookmark" style="font-variation-settings: 'FILL' 1;">bookmark</span>
+                Bookmarks
+            </a>
+</nav>
+<button class="mt-8 mx-2 py-3 bg-primary text-on-primary font-ui-label text-ui-label rounded-lg transition-transform active:scale-95">
+            New Analysis
+        </button>
+<div class="mt-auto pt-6 border-t border-outline-variant space-y-1">
+<a class="flex items-center px-3 py-3 font-ui-label text-ui-label text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="account_circle">account_circle</span>
+                Profile
+            </a>
+<a class="flex items-center px-3 py-3 font-ui-label text-ui-label text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="logout">logout</span>
+                Logout
+            </a>
+</div>
+</aside>
+<!-- TopAppBar Shell -->
+<header class="fixed top-0 right-0 left-0 ml-sidebar-width h-16 bg-surface dark:bg-background border-b border-outline-variant dark:border-outline flex justify-between items-center px-margin-desktop z-40">
+<div class="flex items-center space-x-4">
+<span class="font-paper-title text-paper-title text-primary dark:text-inverse-primary">Bookmarks</span>
+<div class="h-4 w-px bg-outline-variant"></div>
+<span class="text-on-surface-variant font-ui-label text-ui-label">Research Workspace</span>
+</div>
+<div class="flex items-center space-x-6">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" data-icon="search">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-full font-ui-label text-ui-label w-64 focus:ring-2 focus:ring-secondary transition-all" placeholder="Search bookmarks..." type="text"/>
+</div>
+<div class="flex items-center space-x-3">
+<button class="p-2 text-on-surface-variant hover:text-secondary transition-colors relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-surface"></span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-secondary transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional close-up headshot of a female academic researcher in a minimalist studio. Soft, neutral lighting enhances the calm, focused expression. The aesthetic is clean and modern, featuring muted tones of Slate and Ivory that align with a sophisticated corporate dashboard identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkNPczxGtBPblZxRQuhc1IidsJG01PW4eNDInBWFthYsrRH6TUl_iElJtXNab5zD02w7tcibampRs_DR8hqPkhPqGtXdF-sTjiNelXtYasvQJR3CNC_nDBw2YegF0eVeaNlDc_5CV23GnEd6VugweP0ArhQSXVFVs9376HS9qgPzfPuXgUqUosH5lOOo4Nv7IRcI90V2BCV8FEtOiM3zyvQS21jVaSr-LJnwJLdnVCMyi2b6UrFjgTaIvRVftRECSfXmZ6BgCLUPs"/>
+</div>
+</div>
+<button class="bg-primary text-on-primary px-6 py-2 rounded-lg font-ui-label text-ui-label hover:opacity-90 transition-opacity">
+                Publish Paper
+            </button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-sidebar-width pt-16 min-h-screen">
+<div class="max-w-container-max mx-auto p-margin-desktop">
+<!-- Page Header -->
+<div class="flex items-end justify-between mb-8">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary">Saved Papers</h2>
+<p class="text-on-surface-variant mt-1">You have <span class="font-bold text-primary" id="count-display">12</span> items in your collection.</p>
+</div>
+<div class="flex space-x-2">
+<button class="flex items-center px-4 py-2 border border-outline-variant rounded hover:bg-surface-container-low transition-colors font-ui-label text-ui-label text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px] mr-2" data-icon="filter_list">filter_list</span>
+                        Filter
+                    </button>
+<button class="flex items-center px-4 py-2 border border-outline-variant rounded hover:bg-surface-container-low transition-colors font-ui-label text-ui-label text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px] mr-2" data-icon="sort">sort</span>
+                        Sort by Date
+                    </button>
+</div>
+</div>
+<!-- Content Grid / Table -->
+<div class="space-y-4" id="bookmarks-container">
+<!-- Paper Card 1 -->
+<div class="paper-card bg-surface-container-lowest border border-outline-variant p-6 flex justify-between items-start group hover:shadow-md transition-shadow relative">
+<div class="flex-grow">
+<div class="flex items-center space-x-3 mb-2">
+<span class="bg-secondary-container/20 text-on-secondary-container px-2 py-0.5 font-data-label text-data-label rounded">Nature Communications</span>
+<span class="text-on-surface-variant font-data-label text-data-label">Oct 2023</span>
+</div>
+<h3 class="font-paper-title text-paper-title text-primary hover:text-secondary cursor-pointer transition-colors mb-2">Generative AI in High-Performance Computing: Architectural Paradigms</h3>
+<p class="text-on-surface-variant font-body-sm text-body-sm mb-4">Dr. Alistair Vance, Sarah L. Miller, et al.</p>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-full font-ui-label text-[11px]">Artificial Intelligence</span>
+<span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-full font-ui-label text-[11px]">HPC</span>
+<span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-full font-ui-label text-[11px]">System Architecture</span>
+</div>
+</div>
+<div class="flex flex-col items-end space-y-4">
+<button class="remove-btn md:opacity-0 p-2 text-outline hover:text-error transition-all duration-200" onclick="confirmRemove(this)">
+<span class="material-symbols-outlined" data-icon="delete">delete</span>
+</button>
+<button class="px-4 py-2 border border-primary text-primary hover:bg-primary hover:text-on-primary transition-colors font-ui-label text-ui-label rounded">
+                            Read Paper
+                        </button>
+</div>
+</div>
+<!-- Paper Card 2 -->
+<div class="paper-card bg-surface-container-lowest border border-outline-variant p-6 flex justify-between items-start group hover:shadow-md transition-shadow relative">
+<div class="flex-grow">
+<div class="flex items-center space-x-3 mb-2">
+<span class="bg-secondary-container/20 text-on-secondary-container px-2 py-0.5 font-data-label text-data-label rounded">The Lancet Digital Health</span>
+<span class="text-on-surface-variant font-data-label text-data-label">Nov 2023</span>
+</div>
+<h3 class="font-paper-title text-paper-title text-primary hover:text-secondary cursor-pointer transition-colors mb-2">Scalable Privacy-Preserving Machine Learning for Multi-Institutional Genomic Analysis</h3>
+<p class="text-on-surface-variant font-body-sm text-body-sm mb-4">Chen, X., Rodriguez, J., &amp; Gupta, A.</p>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-full font-ui-label text-[11px]">Genomics</span>
+<span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-full font-ui-label text-[11px]">Privacy</span>
+<span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-full font-ui-label text-[11px]">Federated Learning</span>
+</div>
+</div>
+<div class="flex flex-col items-end space-y-4">
+<button class="remove-btn md:opacity-0 p-2 text-outline hover:text-error transition-all duration-200" onclick="confirmRemove(this)">
+<span class="material-symbols-outlined" data-icon="delete">delete</span>
+</button>
+<button class="px-4 py-2 border border-primary text-primary hover:bg-primary hover:text-on-primary transition-colors font-ui-label text-ui-label rounded">
+                            Read Paper
+                        </button>
+</div>
+</div>
+<!-- Paper Card 3 -->
+<div class="paper-card bg-surface-container-lowest border border-outline-variant p-6 flex justify-between items-start group hover:shadow-md transition-shadow relative">
+<div class="flex-grow">
+<div class="flex items-center space-x-3 mb-2">
+<span class="bg-secondary-container/20 text-on-secondary-container px-2 py-0.5 font-data-label text-data-label rounded">IEEE Transactions</span>
+<span class="text-on-surface-variant font-data-label text-data-label">Dec 2023</span>
+</div>
+<h3 class="font-paper-title text-paper-title text-primary hover:text-secondary cursor-pointer transition-colors mb-2">Quantizing Large Language Models for Edge Device Deployment: A Systematic Review</h3>
+<p class="text-on-surface-variant font-body-sm text-body-sm mb-4">Li, W., Yamamoto, K., &amp; Smith, R.</p>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-full font-ui-label text-[11px]">Edge Computing</span>
+<span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-full font-ui-label text-[11px]">LLM</span>
+<span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-full font-ui-label text-[11px]">Quantization</span>
+</div>
+</div>
+<div class="flex flex-col items-end space-y-4">
+<button class="remove-btn md:opacity-0 p-2 text-outline hover:text-error transition-all duration-200" onclick="confirmRemove(this)">
+<span class="material-symbols-outlined" data-icon="delete">delete</span>
+</button>
+<button class="px-4 py-2 border border-primary text-primary hover:bg-primary hover:text-on-primary transition-colors font-ui-label text-ui-label rounded">
+                            Read Paper
+                        </button>
+</div>
+</div>
+</div>
+<!-- Pagination -->
+<div class="mt-12 flex items-center justify-between border-t border-outline-variant pt-6" id="pagination-nav">
+<button class="flex items-center text-on-surface-variant font-ui-label text-ui-label hover:text-primary transition-colors disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined mr-2" data-icon="chevron_left">chevron_left</span>
+                    Previous
+                </button>
+<div class="flex space-x-2">
+<button class="w-8 h-8 flex items-center justify-center bg-primary text-on-primary rounded font-ui-label text-ui-label">1</button>
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low rounded font-ui-label text-ui-label">2</button>
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low rounded font-ui-label text-ui-label">3</button>
+<span class="w-8 h-8 flex items-center justify-center text-on-surface-variant">...</span>
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low rounded font-ui-label text-ui-label">12</button>
+</div>
+<button class="flex items-center text-on-surface-variant font-ui-label text-ui-label hover:text-primary transition-colors">
+                    Next
+                    <span class="material-symbols-outlined ml-2" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+<!-- Empty State (Hidden by default) -->
+<div class="hidden flex-col items-center justify-center py-24 text-center" id="empty-state">
+<div class="w-24 h-24 bg-surface-container-low rounded-full flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-outline text-5xl opacity-40" data-icon="bookmark">bookmark</span>
+</div>
+<h3 class="font-headline-lg text-headline-lg text-primary">No bookmarks yet</h3>
+<p class="text-on-surface-variant max-w-sm mx-auto mt-2">Start exploring papers and use the bookmark icon to save them for later research.</p>
+<button class="mt-8 px-8 py-3 bg-primary text-on-primary rounded-lg font-ui-label text-ui-label">Explore Papers</button>
+</div>
+</div>
+</main>
+<!-- Confirmation Modal Overlay -->
+<div class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] hidden flex items-center justify-center" id="modal-overlay">
+<div class="bg-surface p-8 max-w-md w-full rounded-xl shadow-2xl animate-in fade-in zoom-in duration-200">
+<h3 class="font-paper-title text-paper-title text-primary mb-4">Remove Bookmark?</h3>
+<p class="text-on-surface-variant mb-8">Are you sure you want to remove this paper from your saved collection? You can find it again via search.</p>
+<div class="flex justify-end space-x-3">
+<button class="px-6 py-2 text-on-surface-variant font-ui-label text-ui-label hover:bg-surface-container-low rounded transition-colors" onclick="closeModal()">Cancel</button>
+<button class="px-6 py-2 bg-error text-on-error font-ui-label text-ui-label rounded hover:opacity-90 transition-opacity" id="confirm-remove-btn">Remove</button>
+</div>
+</div>
+</div>
+<script>
+        let currentTarget = null;
+        let paperCount = 12;
+
+        function confirmRemove(button) {
+            currentTarget = button.closest('.paper-card');
+            document.getElementById('modal-overlay').classList.remove('hidden');
+            document.getElementById('modal-overlay').classList.add('flex');
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').classList.add('hidden');
+            document.getElementById('modal-overlay').classList.remove('flex');
+            currentTarget = null;
+        }
+
+        document.getElementById('confirm-remove-btn').addEventListener('click', () => {
+            if (currentTarget) {
+                currentTarget.style.opacity = '0';
+                currentTarget.style.transform = 'translateX(20px)';
+                currentTarget.style.transition = 'all 0.3s ease';
+                
+                setTimeout(() => {
+                    currentTarget.remove();
+                    paperCount--;
+                    updateView();
+                }, 300);
+            }
+            closeModal();
+        });
+
+        function updateView() {
+            document.getElementById('count-display').textContent = paperCount;
+            const container = document.getElementById('bookmarks-container');
+            if (container.children.length === 0) {
+                container.classList.add('hidden');
+                document.getElementById('pagination-nav').classList.add('hidden');
+                document.getElementById('empty-state').classList.remove('hidden');
+                document.getElementById('empty-state').classList.add('flex');
+            }
+        }
+
+        // Search highlight micro-interaction
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('w-80');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('w-80');
+        });
+    </script>
+</body></html>

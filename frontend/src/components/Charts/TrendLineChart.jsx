@@ -7,7 +7,7 @@ const TrendLineChart = ({ data, keywords = [], loading }) => {
 
     if (!data || data.length === 0) return <Empty description="Không có dữ liệu cho keyword này" />;
 
-    const colors = ["#1890ff", "#f5222d", "#52c41a", "#722ed1", "#faad14"];
+    const colors = ["#111827", "#0f766e", "#b91c1c"];
 
     return (
         <div style={{ width: '100%', height: 350 }}>
@@ -38,26 +38,31 @@ const TrendLineChart = ({ data, keywords = [], loading }) => {
                     {/* === CHỈNH SỬA: Logic vẽ đường thông minh === */}
                     {keywords.length > 0 ? (
                         // Nếu có danh sách keywords (Compare Mode) -> Vẽ từng đường theo tên keyword
-                        keywords.map((kw, index) => (
-                            <Line
-                                key={kw}
-                                type="monotone"
-                                dataKey={kw} // Khớp với key "AI", "Blockchain", "Quantum" trong JSON
-                                name={kw}    // Hiển thị tên keyword trên Legend
-                                stroke={colors[index % colors.length]}
-                                strokeWidth={3}
-                                dot={{ r: 5, strokeWidth: 2, fill: '#fff' }}
-                                activeDot={{ r: 8 }}
-                                animationDuration={1500}
-                            />
-                        ))
+                        keywords.map((kw, index) => {
+                            const color = colors[index % colors.length];
+                            const isDashed = index >= colors.length;
+                            return (
+                                <Line
+                                    key={kw}
+                                    type="monotone"
+                                    dataKey={kw}
+                                    name={kw}
+                                    stroke={color}
+                                    strokeDasharray={isDashed ? "5 5" : undefined}
+                                    strokeWidth={3}
+                                    dot={{ r: 5, strokeWidth: 2, fill: '#fff', stroke: color }}
+                                    activeDot={{ r: 8 }}
+                                    animationDuration={1500}
+                                />
+                            );
+                        })
                     ) : (
                         // Nếu không có keywords -> Vẽ 1 đường mặc định (Single Mode)
                         <Line
                             type="monotone"
                             dataKey="paperCount"
                             name="Số lượng bài báo"
-                            stroke="#1890ff"
+                            stroke="#0f766e"
                             strokeWidth={3}
                             dot={{ r: 5 }}
                         />

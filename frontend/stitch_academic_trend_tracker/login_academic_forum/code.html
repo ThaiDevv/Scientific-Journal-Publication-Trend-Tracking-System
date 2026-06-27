@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Login | Academic Forum</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;family=Work+Sans:ital,wght@0,100..900;1,100..900&amp;family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-surface": "#2d3133",
+                    "secondary-container": "#86f2e4",
+                    "surface-dim": "#d8dadc",
+                    "tertiary-fixed": "#d3e4fe",
+                    "surface-container": "#eceef0",
+                    "primary-container": "#131b2e",
+                    "error": "#ba1a1a",
+                    "surface-container-low": "#f2f4f6",
+                    "tertiary-fixed-dim": "#b7c8e1",
+                    "surface-bright": "#f7f9fb",
+                    "tertiary": "#000000",
+                    "secondary-fixed": "#89f5e7",
+                    "on-primary-container": "#7c839b",
+                    "surface-tint": "#565e74",
+                    "surface-variant": "#e0e3e5",
+                    "secondary": "#006a61",
+                    "on-tertiary-fixed": "#0b1c30",
+                    "primary-fixed-dim": "#bec6e0",
+                    "on-primary-fixed-variant": "#3f465c",
+                    "surface": "#f7f9fb",
+                    "on-error-container": "#93000a",
+                    "on-secondary-fixed": "#00201d",
+                    "on-surface": "#191c1e",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-fixed": "#dae2fd",
+                    "on-primary-fixed": "#131b2e",
+                    "on-secondary-container": "#006f66",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed-dim": "#6bd8cb",
+                    "on-primary": "#ffffff",
+                    "primary": "#000000",
+                    "outline": "#76777d",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-high": "#e6e8ea",
+                    "on-error": "#ffffff",
+                    "surface-container-highest": "#e0e3e5",
+                    "tertiary-container": "#0b1c30",
+                    "on-tertiary-container": "#75859d",
+                    "on-secondary-fixed-variant": "#005049",
+                    "on-surface-variant": "#45464d",
+                    "outline-variant": "#c6c6cd",
+                    "on-tertiary-fixed-variant": "#38485d",
+                    "on-secondary": "#ffffff",
+                    "inverse-on-surface": "#eff1f3",
+                    "background": "#f7f9fb",
+                    "on-background": "#191c1e",
+                    "inverse-primary": "#bec6e0"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "container-max": "1440px",
+                    "margin-mobile": "16px",
+                    "gutter": "24px",
+                    "unit": "4px",
+                    "sidebar-width": "260px",
+                    "margin-desktop": "40px"
+            },
+            "fontFamily": {
+                    "body-sm": ["Work Sans"],
+                    "body-md": ["Work Sans"],
+                    "ui-label": ["Work Sans"],
+                    "headline-lg": ["\"Source Serif 4\""],
+                    "data-label": ["JetBrains Mono"],
+                    "headline-lg-mobile": ["\"Source Serif 4\""],
+                    "paper-title": ["\"Source Serif 4\""],
+                    "display-title": ["\"Source Serif 4\""]
+            },
+            "fontSize": {
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "ui-label": ["13px", {"lineHeight": "16px", "fontWeight": "600"}],
+                    "headline-lg": ["30px", {"lineHeight": "38px", "fontWeight": "600"}],
+                    "data-label": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "paper-title": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "display-title": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .form-focus-teal:focus-within {
+            border-color: #006a61;
+            box-shadow: 0 0 0 1px #006a61;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
+<!-- Background Pattern/Animation Placeholder -->
+<div class="absolute inset-0 z-0 pointer-events-none opacity-40">
+
+</div>
+<!-- Layout Container -->
+<main class="relative z-10 w-full max-w-[480px] px-margin-mobile md:px-0">
+<!-- Identity & Branding Section -->
+<header class="text-center mb-10">
+<div class="inline-flex items-center justify-center w-16 h-16 bg-primary text-on-primary rounded-lg mb-6 shadow-sm">
+<span class="material-symbols-outlined !text-4xl" data-icon="menu_book">menu_book</span>
+</div>
+<h1 class="font-display-title text-display-title text-primary tracking-tight mb-2">Academic Forum</h1>
+<p class="font-body-md text-on-surface-variant max-w-sm mx-auto leading-relaxed">
+                Scientific Journal Publication Trend Tracking System
+            </p>
+</header>
+<!-- Login Card -->
+<div class="bg-surface-container-lowest border border-outline-variant p-8 md:p-10 rounded-lg shadow-sm">
+<form class="space-y-6" onsubmit="event.preventDefault();">
+<!-- Username Field -->
+<div class="space-y-2">
+<label class="font-ui-label text-ui-label text-on-surface-variant" for="username">Username</label>
+<div class="relative flex items-center border border-outline rounded-lg transition-all duration-200 form-focus-teal">
+<span class="material-symbols-outlined absolute left-3 text-on-surface-variant" data-icon="person">person</span>
+<input class="w-full pl-10 pr-4 py-3 bg-transparent border-none focus:ring-0 font-body-md text-on-surface placeholder:text-outline/50" id="username" name="username" placeholder="e.g. researcher_01" type="text"/>
+</div>
+</div>
+<!-- Password Field -->
+<div class="space-y-2">
+<div class="flex justify-between items-center">
+<label class="font-ui-label text-ui-label text-on-surface-variant" for="password">Password</label>
+</div>
+<div class="relative flex items-center border border-outline rounded-lg transition-all duration-200 form-focus-teal">
+<span class="material-symbols-outlined absolute left-3 text-on-surface-variant" data-icon="lock">lock</span>
+<input class="w-full pl-10 pr-12 py-3 bg-transparent border-none focus:ring-0 font-body-md text-on-surface placeholder:text-outline/50" id="password" name="password" placeholder="••••••••" type="password"/>
+<button class="absolute right-3 p-1 hover:text-primary transition-colors text-on-surface-variant" type="button">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+</div>
+</div>
+<!-- Remember & Forgot -->
+<div class="flex items-center justify-between">
+<label class="flex items-center space-x-2 cursor-pointer group">
+<input class="w-4 h-4 border-outline rounded-sm text-secondary focus:ring-secondary cursor-pointer" type="checkbox"/>
+<span class="font-body-sm text-on-surface-variant group-hover:text-primary transition-colors">Remember me</span>
+</label>
+<a class="font-ui-label text-ui-label text-secondary hover:underline transition-all" href="#">Forgot Password?</a>
+</div>
+<!-- Submit Button -->
+<button class="w-full py-4 bg-primary text-on-primary font-ui-label text-ui-label rounded-lg hover:bg-opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 group" type="submit">
+                    Sign In
+                    <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</form>
+<!-- Sign Up CTA -->
+<div class="mt-8 pt-6 border-t border-outline-variant text-center">
+<p class="font-body-sm text-on-surface-variant">
+                    New to Academic Forum? 
+                    <a class="font-ui-label text-ui-label text-secondary hover:underline ml-1" href="#">Sign Up</a>
+</p>
+</div>
+</div>
+<!-- Secondary Info Cards (Bento Style hints) -->
+<div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="bg-surface-container-low/50 border border-outline-variant p-4 rounded-lg flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary" data-icon="verified">verified</span>
+<div>
+<h3 class="font-ui-label text-ui-label text-on-surface">Peer Reviewed</h3>
+<p class="text-[11px] font-body-sm text-on-surface-variant">Access 2M+ verified citations.</p>
+</div>
+</div>
+<div class="bg-surface-container-low/50 border border-outline-variant p-4 rounded-lg flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary" data-icon="trending_up">trending_up</span>
+<div>
+<h3 class="font-ui-label text-ui-label text-on-surface">Live Analytics</h3>
+<p class="text-[11px] font-body-sm text-on-surface-variant">Real-time journal trend mapping.</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="relative z-10 mt-12 mb-8 text-center px-4">
+<div class="flex justify-center space-x-6 mb-4">
+<a class="font-ui-label text-[11px] text-on-surface-variant hover:text-primary transition-colors uppercase tracking-widest" href="#">Privacy Policy</a>
+<a class="font-ui-label text-[11px] text-on-surface-variant hover:text-primary transition-colors uppercase tracking-widest" href="#">Terms of Service</a>
+<a class="font-ui-label text-[11px] text-on-surface-variant hover:text-primary transition-colors uppercase tracking-widest" href="#">Support</a>
+</div>
+<p class="font-data-label text-data-label text-on-surface-variant/60">
+            © 2024 Academic Forum — Journal Trend Tracking. All rights reserved.
+        </p>
+</footer>
+<!-- Decorative Image for Aesthetic Depth (Desktop Only) -->
+<div class="hidden lg:block fixed bottom-0 right-0 w-1/3 h-1/2 opacity-10 pointer-events-none grayscale contrast-125">
+<div class="w-full h-full" data-alt="A macro photograph of stacked vintage scientific journals in a dimly lit library. The focus is on the textured edges of the pages and gold-leaf lettering on the spines. The lighting is low-key with a single warm spotlight, creating a sense of history, prestige, and academic depth in a minimalist, corporate aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAP2mTEyETObgViOHt_FyaP1lrEyhr7QeWw8tjMZGdxRis9QqHK4iJ71cJmK6L_88d6c-Z3E1gvxN-xgyY952T5Ms0mmxMF8pUQgPvVwF3gO3XwstycLByna9y2oCLwDpM1irMhXOubLlyE4QOz9kkSyXNDO3qiPcryMiGb3rKZsr0BEbcEvlEXnzlNLW7nulk3ing5k-D7RDh2YrV_XjgOznfdl4VyOHES7sFQCPi9ToCWh2uZNGryWKh3pu7WLG2F9x3bBQ_-BZE')"></div>
+</div>
+<script>
+        // Micro-interactions for inputs
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.classList.add('border-primary');
+            });
+            input.addEventListener('blur', () => {
+                input.parentElement.classList.remove('border-primary');
+            });
+        });
+
+        // Simple password visibility toggle
+        const toggleBtn = document.querySelector('button[type="button"]');
+        const passInput = document.querySelector('input[type="password"]');
+        if (toggleBtn && passInput) {
+            toggleBtn.addEventListener('click', () => {
+                const type = passInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passInput.setAttribute('type', type);
+                const icon = toggleBtn.querySelector('.material-symbols-outlined');
+                icon.textContent = type === 'password' ? 'visibility' : 'visibility_off';
+            });
+        }
+    </script>
+</body></html>
