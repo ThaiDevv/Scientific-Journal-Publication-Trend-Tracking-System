@@ -1,6 +1,5 @@
 package com.journaltracker.repository;
 
-import com.journaltracker.dto.response.FollowResponse;
 import com.journaltracker.entity.Follow;
 import com.journaltracker.entity.FollowType;
 import com.journaltracker.entity.User;
@@ -14,7 +13,7 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
 
     boolean existsByUserUsernameAndFollowTypeAndTargetId(
             String username,
-            String followType,
+            FollowType followType,
             Long targetId
     );
 

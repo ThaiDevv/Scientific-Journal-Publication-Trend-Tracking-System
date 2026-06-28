@@ -10,6 +10,16 @@ public interface JournalMapper {
 
     JournalResponse toResponse(Journal journal);
 
+    default JournalResponse toResponse(
+            Journal journal,
+            boolean isFollowed
+    ) {
+
+        JournalResponse response = toResponse(journal);
+        response.setIsFollowed(isFollowed);
+        return response;
+    }
+
     default JournalDetailResponse toDetailResponse(
             Journal journal,
             boolean isFollowed) {

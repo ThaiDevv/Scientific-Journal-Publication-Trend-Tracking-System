@@ -10,10 +10,22 @@ public interface JournalService {
 
     Page<JournalResponse> getAllJournals(Pageable pageable);
 
+    Page<JournalResponse> getAllJournals(
+            Pageable pageable,
+            String currentUsername
+    );
+
     Page<JournalResponse> searchJournals(
             String search,
             String field,
             Pageable pageable
+    );
+
+    Page<JournalResponse> searchJournals(
+            String search,
+            String field,
+            Pageable pageable,
+            String currentUsername
     );
 
     JournalDetailResponse getJournalById(Long id);

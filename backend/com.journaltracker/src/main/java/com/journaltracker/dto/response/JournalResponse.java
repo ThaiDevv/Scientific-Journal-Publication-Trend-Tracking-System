@@ -9,4 +9,5 @@ public class JournalResponse {
     String publisher;
     String field;
     Integer paperCount;
+    Boolean isFollowed;
 }
