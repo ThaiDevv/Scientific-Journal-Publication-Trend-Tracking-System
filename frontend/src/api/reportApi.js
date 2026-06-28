@@ -15,10 +15,17 @@ export const generateReport = (data) =>
 export const getReportDetail = (id) =>
     axiosInstance.get(`/reports/${id}`);
 
+// ── Download Report PDF ───────────────────────────────────────────────────────
+// GET /api/reports/{id}/download
+export const downloadReportPdf = (id) =>
+    axiosInstance.get(`/reports/${id}/download`, { responseType: 'blob' });
+
 // ── Namespace object export (for pages using reportApi.method()) ──────────────
 export const reportApi = {
     getHistory: getReportHistory,      // alias: Reports.jsx calls reportApi.getHistory()
     getReportHistory,
     generateReport,
     getReportDetail,
+    downloadPdf: downloadReportPdf,
+    downloadReportPdf,
 };
