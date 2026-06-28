@@ -6,33 +6,67 @@ import {
 import { reportApi } from '../api/reportApi';
 import { trendApi } from '../api/trendApi';
 
-// Initial default report matching mockup screenshot exactly
-const defaultReport = {
-    id: "default-rep-1",
-    title: "Deep Learning Evolution & Trends",
-    fromYear: 2018,
-    toYear: 2024,
-    format: "PDF",
-    chartData: [
-        { year: "2018", mlResearch: 10, industryPapers: 5 },
-        { year: "2020", mlResearch: 22, industryPapers: 12 },
-        { year: "2022", mlResearch: 35, industryPapers: 18 },
-        { year: "2023", mlResearch: 38, industryPapers: 20 },
-        { year: "2024", mlResearch: 48, industryPapers: 25 }
-    ],
-    topAuthors: [
-        { name: "Yoshua Bengio", paperCount: 142, citations: "48.2k" },
-        { name: "Geoffrey Hinton", paperCount: 98, citations: "55.1k" },
-        { name: "Yann LeCun", paperCount: 115, citations: "32.9k" },
-        { name: "Fei-Fei Li", paperCount: 87, citations: "21.5k" }
-    ],
-    topJournals: [
-        { name: "NeurIPS", ratio: "28%", trend: 12 },
-        { name: "ICML", ratio: "22%", trend: 8 },
-        { name: "CVPR", ratio: "19%", trend: -2 },
-        { name: "Nature Machine Intelligence", ratio: "14%", trend: 15 }
-    ],
-    rawJson: { status: "success", data: "Sample Report Raw Data" }
+const transformReportResponse = (body, payload) => {
+    if (!body) return null;
+    // Determine title
+    const title = body.title || payload?.title || "Trend Report";
+    
+    // Determine years from timeRange (e.g. "2024-2026")
+    let fromYear = payload?.yearFrom || 2018;
+    let toYear = payload?.yearTo || 2024;
+    if (body.summary?.timeRange) {
+        const parts = body.summary.timeRange.split('-');
+        if (parts.length === 2) {
+            fromYear = parseInt(parts[0]) || fromYear;
+            toYear = parseInt(parts[1]) || toYear;
+        }
+    }
+
+    // Extract keywords list
+    const trendData = body.trendData || [];
+    const keywordsList = trendData.map(t => t.keyword);
+
+    // Transform trendData into pivoted chart data
+    const chartMap = {};
+    trendData.forEach(item => {
+        const kw = item.keyword;
+        const pts = item.dataPoints || [];
+        pts.forEach(pt => {
+            const yr = String(pt.year);
+            if (!chartMap[yr]) {
+                chartMap[yr] = { year: yr };
+            }
+            chartMap[yr][kw] = pt.count;
+        });
+    });
+
+    const chartData = Object.values(chartMap).sort((a, b) => a.year.localeCompare(b.year));
+
+    const topAuthors = (body.topAuthors || []).map(author => ({
+        name: author.name,
+        paperCount: author.paperCount,
+        citations: author.citations || "N/A"
+    }));
+
+    const topJournals = (body.topJournals || []).map(journal => ({
+        name: journal.name,
+        paperCount: journal.paperCount,
+        ratio: journal.ratio || `${journal.paperCount} papers`,
+        trend: journal.trend !== undefined ? journal.trend : 0
+    }));
+
+    return {
+        id: body.id || Date.now(),
+        title,
+        fromYear,
+        toYear,
+        format: body.format || payload?.format || "PDF",
+        keywordsList,
+        chartData,
+        topAuthors,
+        topJournals,
+        rawJson: body
+    };
 };
 
 const Reports = () => {
@@ -47,7 +81,7 @@ const Reports = () => {
 
     // UI Loading & Data states
     const [history, setHistory] = useState([]);
-    const [currentReport, setCurrentReport] = useState(defaultReport);
+    const [currentReport, setCurrentReport] = useState(null);
     const [keywordOptions, setKeywordOptions] = useState([]);
     const [loading, setLoading] = useState(false);
     const [historyLoading, setHistoryLoading] = useState(false);
@@ -61,31 +95,21 @@ const Reports = () => {
         setHistoryLoading(true);
         try {
             const res = await reportApi.getHistory();
-            const list = res.data?.body || [];
+            const list = res.data?.body?.content || res.data?.body || [];
             
             const dbList = list.map(item => ({
                 id: item.id,
                 title: item.title,
-                createdAt: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : '12/05/2024',
+                createdAt: item.generatedAt ? new Date(item.generatedAt).toLocaleDateString() : new Date().toLocaleDateString(),
                 format: item.format || 'PDF',
-                keywordsCount: item.keywords ? item.keywords.split(',').length : 3,
+                keywordsCount: item.keywordsAnalyzed !== undefined ? item.keywordsAnalyzed : 0,
                 isMock: false
             }));
 
-            // Hardcoded mock histories matching screenshot mockup
-            const mockHistory = [
-                { id: 1, title: 'Quantum Computing Trends', createdAt: '12/05/2024', format: 'PDF', keywordsCount: 3, isMock: true },
-                { id: 2, title: 'Biotech Ethics in AI', createdAt: '08/05/2024', format: 'JSON', keywordsCount: 5, isMock: true },
-                { id: 3, title: 'Sustainability Metrics', createdAt: '01/05/2024', format: 'PDF', keywordsCount: 2, isMock: true }
-            ];
-
-            setHistory([...dbList, ...mockHistory]);
+            setHistory(dbList);
         } catch (err) {
-            setHistory([
-                { id: 1, title: 'Quantum Computing Trends', createdAt: '12/05/2024', format: 'PDF', keywordsCount: 3, isMock: true },
-                { id: 2, title: 'Biotech Ethics in AI', createdAt: '08/05/2024', format: 'JSON', keywordsCount: 5, isMock: true },
-                { id: 3, title: 'Sustainability Metrics', createdAt: '01/05/2024', format: 'PDF', keywordsCount: 2, isMock: true }
-            ]);
+            console.error("Failed to fetch report history:", err);
+            setHistory([]);
         } finally {
             setHistoryLoading(false);
         }
@@ -138,75 +162,20 @@ const Reports = () => {
         setLoading(true);
         const payload = {
             title: title.trim(),
-            keywords: selectedKeywords.join(','),
-            fromYear: Number(fromYear),
-            toYear: Number(toYear),
+            keywords: selectedKeywords,
+            yearFrom: Number(fromYear),
+            yearTo: Number(toYear),
             format: exportFormat
         };
 
         try {
             const res = await reportApi.generateReport(payload);
             const body = res.data?.body || res.data;
-            
-            setCurrentReport({
-                id: body.id || Date.now(),
-                title: body.title || payload.title,
-                fromYear: body.fromYear || payload.fromYear,
-                toYear: body.toYear || payload.toYear,
-                format: body.format || payload.format,
-                chartData: body.chartData || [
-                    { year: "2018", mlResearch: 12, industryPapers: 6 },
-                    { year: "2020", mlResearch: 25, industryPapers: 15 },
-                    { year: "2022", mlResearch: 39, industryPapers: 20 },
-                    { year: "2024", mlResearch: 52, industryPapers: 27 }
-                ],
-                topAuthors: body.topAuthors || [
-                    { name: "Yoshua Bengio", paperCount: 142, citations: "48.2k" },
-                    { name: "Geoffrey Hinton", paperCount: 98, citations: "55.1k" },
-                    { name: "Yann LeCun", paperCount: 115, citations: "32.9k" },
-                    { name: "Fei-Fei Li", paperCount: 87, citations: "21.5k" }
-                ],
-                topJournals: body.topJournals || [
-                    { name: "NeurIPS", ratio: "28%", trend: 12 },
-                    { name: "ICML", ratio: "22%", trend: 8 },
-                    { name: "CVPR", ratio: "19%", trend: -2 },
-                    { name: "Nature Machine Intelligence", ratio: "14%", trend: 15 }
-                ],
-                rawJson: body.rawJson || payload
-            });
+            setCurrentReport(transformReportResponse(body, payload));
             fetchHistory();
         } catch (err) {
-            console.warn("API Error, generating mock report:", err);
-            const mockGen = {
-                id: Date.now(),
-                title: payload.title,
-                fromYear: payload.fromYear,
-                toYear: payload.toYear,
-                format: payload.format,
-                chartData: [
-                    { year: String(payload.fromYear), mlResearch: 15, industryPapers: 8 },
-                    { year: String(Math.floor((payload.fromYear + payload.toYear) / 2)), mlResearch: 34, industryPapers: 16 },
-                    { year: String(payload.toYear), mlResearch: 55, industryPapers: 26 }
-                ],
-                topAuthors: [
-                    { name: "Yoshua Bengio", paperCount: 142, citations: "48.2k" },
-                    { name: "Geoffrey Hinton", paperCount: 98, citations: "55.1k" },
-                    { name: "Yann LeCun", paperCount: 115, citations: "32.9k" },
-                    { name: "Fei-Fei Li", paperCount: 87, citations: "21.5k" }
-                ],
-                topJournals: [
-                    { name: "NeurIPS", ratio: "28%", trend: 12 },
-                    { name: "ICML", ratio: "22%", trend: 8 },
-                    { name: "CVPR", ratio: "19%", trend: -2 },
-                    { name: "Nature Machine Intelligence", ratio: "14%", trend: 15 }
-                ],
-                rawJson: payload
-            };
-            setCurrentReport(mockGen);
-            setHistory(prev => [
-                { id: mockGen.id, title: mockGen.title, createdAt: new Date().toLocaleDateString(), format: mockGen.format, keywordsCount: selectedKeywords.length, isMock: true },
-                ...prev
-            ]);
+            console.error("API Error generating report:", err);
+            alert("Failed to generate report!");
         } finally {
             setLoading(false);
         }
@@ -217,80 +186,38 @@ const Reports = () => {
         try {
             const res = await reportApi.getReportDetail(id);
             const body = res.data?.body || res.data;
-            setCurrentReport(body);
+            setCurrentReport(transformReportResponse(body, null));
         } catch (err) {
-            const matched = id === 1 ? {
-                id: 1,
-                title: "Quantum Computing Trends",
-                fromYear: 2018,
-                toYear: 2024,
-                format: "PDF",
-                chartData: [
-                    { year: "2018", mlResearch: 5, industryPapers: 2 },
-                    { year: "2020", mlResearch: 15, industryPapers: 8 },
-                    { year: "2022", mlResearch: 28, industryPapers: 16 },
-                    { year: "2024", mlResearch: 42, industryPapers: 24 }
-                ],
-                topAuthors: [
-                    { name: "Dr. Helena Chen", paperCount: 42, citations: "12.8k" },
-                    { name: "Marcus Sterling", paperCount: 38, citations: "9.5k" },
-                    { name: "Isabella Russo", paperCount: 29, citations: "7.1k" }
-                ],
-                topJournals: [
-                    { name: "Nature Quantum", ratio: "32%", trend: 18 },
-                    { name: "IEEE Transactions", ratio: "25%", trend: 10 },
-                    { name: "Quantum Science", ratio: "18%", trend: 5 }
-                ],
-                rawJson: { status: "success", id: 1 }
-            } : id === 2 ? {
-                id: 2,
-                title: "Biotech Ethics in AI",
-                fromYear: 2018,
-                toYear: 2024,
-                format: "JSON",
-                chartData: [
-                    { year: "2018", mlResearch: 12, industryPapers: 8 },
-                    { year: "2020", mlResearch: 20, industryPapers: 12 },
-                    { year: "2022", mlResearch: 34, industryPapers: 18 },
-                    { year: "2024", mlResearch: 45, industryPapers: 22 }
-                ],
-                topAuthors: [
-                    { name: "Prof. Sarah Connor", paperCount: 24, citations: "5.8k" },
-                    { name: "Dr. Alan Turing", paperCount: 18, citations: "8.2k" }
-                ],
-                topJournals: [
-                    { name: "Neural Networks", ratio: "20%", trend: 12 },
-                    { name: "IEEE Transactions", ratio: "15%", trend: 6 }
-                ],
-                rawJson: { status: "success", id: 2 }
-            } : {
-                id: 3,
-                title: "Sustainability Metrics",
-                fromYear: 2018,
-                toYear: 2024,
-                format: "PDF",
-                chartData: [
-                    { year: "2018", mlResearch: 8, industryPapers: 4 },
-                    { year: "2020", mlResearch: 18, industryPapers: 10 },
-                    { year: "2022", mlResearch: 30, industryPapers: 15 },
-                    { year: "2024", mlResearch: 40, industryPapers: 20 }
-                ],
-                topAuthors: [
-                    { name: "Prof. John Doe", paperCount: 15, citations: "4.2k" }
-                ],
-                topJournals: [
-                    { name: "IEEE Access", ratio: "18%", trend: 10 },
-                    { name: "ACM Surveys", ratio: "10%", trend: -2 }
-                ],
-                rawJson: { status: "success", id: 3 }
-            };
-            setCurrentReport(matched);
+            console.error("API Error loading report:", err);
+            alert("Failed to load report detail!");
         } finally {
             setLoading(false);
             const viewer = document.getElementById("report-viewer");
             if (viewer) {
                 viewer.scrollIntoView({ behavior: 'smooth' });
             }
+        }
+    };
+
+    const handleDownloadPdf = async () => {
+        if (!currentReport || !currentReport.id) return;
+        setLoading(true);
+        try {
+            const res = await reportApi.downloadPdf(currentReport.id);
+            const blob = new Blob([res.data], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `report_${currentReport.id}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error("Failed to download PDF:", err);
+            alert("Failed to download report PDF!");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -835,6 +762,38 @@ const Reports = () => {
                     border-top: 1.5px solid var(--color-outline-variant);
                     padding-top: 16px;
                 }
+                .rep-empty-state {
+                    background: #fff;
+                    border: 1.5px dashed var(--color-outline-variant);
+                    border-radius: var(--radius-xl);
+                    padding: 60px 24px;
+                    text-align: center;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 12px;
+                    color: var(--color-on-surface-variant);
+                    margin-top: 24px;
+                }
+                .rep-empty-icon {
+                    font-size: 64px;
+                    color: var(--color-outline);
+                }
+                .rep-empty-state h3 {
+                    margin: 0;
+                    font-family: var(--font-headline);
+                    font-size: 20px;
+                    font-weight: 700;
+                    color: var(--color-primary);
+                }
+                .rep-empty-state p {
+                    margin: 0;
+                    font-family: var(--font-body);
+                    font-size: 14px;
+                    max-width: 400px;
+                    line-height: 1.5;
+                }
             `}</style>
 
             <div className="rep-top-row">
@@ -989,7 +948,7 @@ const Reports = () => {
             </div>
 
             {/* REPORT VIEWER Container Card */}
-            {currentReport && (
+            {currentReport ? (
                 <div id="report-viewer" className="rep-view-card">
                     {/* Header bar row */}
                     <div className="rep-view-header">
@@ -1007,7 +966,7 @@ const Reports = () => {
                                 <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>content_copy</span>
                                 Copy JSON
                             </button>
-                            <button className="rep-btn-dl" onClick={() => alert("PDF download feature is being processed...")}>
+                            <button className="rep-btn-dl" onClick={handleDownloadPdf} disabled={loading}>
                                 <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>download</span>
                                 Download PDF
                             </button>
@@ -1021,14 +980,19 @@ const Reports = () => {
                                 Publication Trends (Papers Published)
                             </div>
                             <div className="rep-legend-row">
-                                <div className="rep-legend-item">
-                                    <span className="rep-legend-dot" style={{ background: '#0f766e' }} />
-                                    <span>ML Research</span>
-                                </div>
-                                <div className="rep-legend-item">
-                                    <span className="rep-legend-dot" style={{ background: '#94a3b8' }} />
-                                    <span>Industry Papers</span>
-                                </div>
+                                {(currentReport.keywordsList && currentReport.keywordsList.length > 0
+                                    ? currentReport.keywordsList
+                                    : (currentReport.chartData && currentReport.chartData.length > 0
+                                        ? Object.keys(currentReport.chartData[0]).filter(k => k !== 'year')
+                                        : [])).map((kw, index) => {
+                                            const colors = ['#0f766e', '#0d9488', '#14b8a6', '#2dd4bf', '#5eead4', '#99f6e4', '#ccfbf1'];
+                                            return (
+                                                <div key={kw} className="rep-legend-item">
+                                                    <span className="rep-legend-dot" style={{ background: colors[index % colors.length] }} />
+                                                    <span>{kw}</span>
+                                                </div>
+                                            );
+                                        })}
                             </div>
                         </div>
 
@@ -1049,22 +1013,24 @@ const Reports = () => {
                                         axisLine={false}
                                     />
                                     <Tooltip />
-                                    <Line
-                                        type="monotone"
-                                        dataKey="mlResearch"
-                                        name="ML Research"
-                                        stroke="#0f766e"
-                                        strokeWidth={3}
-                                        dot={{ r: 4, fill: '#fff', strokeWidth: 2.5, stroke: '#0f766e' }}
-                                    />
-                                    <Line
-                                        type="monotone"
-                                        dataKey="industryPapers"
-                                        name="Industry Papers"
-                                        stroke="#94a3b8"
-                                        strokeWidth={2.5}
-                                        dot={{ r: 4, fill: '#fff', strokeWidth: 2, stroke: '#94a3b8' }}
-                                    />
+                                    {(currentReport.keywordsList && currentReport.keywordsList.length > 0
+                                        ? currentReport.keywordsList
+                                        : (currentReport.chartData && currentReport.chartData.length > 0
+                                            ? Object.keys(currentReport.chartData[0]).filter(k => k !== 'year')
+                                            : [])).map((kw, index) => {
+                                                const colors = ['#0f766e', '#0d9488', '#14b8a6', '#2dd4bf', '#5eead4', '#99f6e4', '#ccfbf1'];
+                                                return (
+                                                    <Line
+                                                        key={kw}
+                                                        type="monotone"
+                                                        dataKey={kw}
+                                                        name={kw}
+                                                        stroke={colors[index % colors.length]}
+                                                        strokeWidth={3}
+                                                        dot={{ r: 4, fill: '#fff', strokeWidth: 2.5, stroke: colors[index % colors.length] }}
+                                                    />
+                                                );
+                                            })}
                                 </LineChart>
                             </ResponsiveContainer>
                         </div>
@@ -1146,6 +1112,12 @@ const Reports = () => {
                             Secured Analyst Report
                         </div>
                     </div>
+                </div>
+            ) : (
+                <div className="rep-empty-state">
+                    <span className="material-symbols-outlined rep-empty-icon">analytics</span>
+                    <h3>No Report Selected</h3>
+                    <p>Select a report from the History list or fill out the form above to generate a new report.</p>
                 </div>
             )}
         </div>
