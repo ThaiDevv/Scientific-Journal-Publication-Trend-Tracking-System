@@ -69,4 +69,38 @@ public interface PaperRepository extends JpaRepository<ResearchPaper, Long>,
            "GROUP BY p.publicationYear " +
            "ORDER BY p.publicationYear")
     List<YearlyStats> countPublicationsByYear(@Param("currentYear") int currentYear);
+
+
+    @Query("SELECT COUNT(DISTINCT p) FROM ResearchPaper p JOIN p.keywords k " +
+           "WHERE LOWER(k.name) IN :keywords " +
+           "AND p.publicationYear BETWEEN :yearFrom AND :yearTo")
+    long countByKeywordsAndYearRange(
+            @Param("keywords") List<String> keywords,
+            @Param("yearFrom") int yearFrom,
+            @Param("yearTo") int yearTo);
+
+    @Query("SELECT a.name, CAST(COUNT(DISTINCT p) AS int) " +
+           "FROM ResearchPaper p JOIN p.authors a JOIN p.keywords k " +
+           "WHERE LOWER(k.name) IN :keywords " +
+           "AND p.publicationYear BETWEEN :yearFrom AND :yearTo " +
+           "GROUP BY a.id, a.name " +
+           "ORDER BY COUNT(DISTINCT p) DESC")
+    List<Object[]> findTopAuthorsByKeywordsAndYear(
+            @Param("keywords") List<String> keywords,
+            @Param("yearFrom") int yearFrom,
+            @Param("yearTo") int yearTo,
+            Pageable pageable);
+
+    @Query("SELECT j.name, CAST(COUNT(DISTINCT p) AS int) " +
+           "FROM ResearchPaper p JOIN p.journal j JOIN p.keywords k " +
+           "WHERE LOWER(k.name) IN :keywords " +
+           "AND p.publicationYear BETWEEN :yearFrom AND :yearTo " +
+           "AND j IS NOT NULL " +
+           "GROUP BY j.id, j.name " +
+           "ORDER BY COUNT(DISTINCT p) DESC")
+    List<Object[]> findTopJournalsByKeywordsAndYear(
+            @Param("keywords") List<String> keywords,
+            @Param("yearFrom") int yearFrom,
+            @Param("yearTo") int yearTo,
+            Pageable pageable);
 }
