@@ -27,13 +27,11 @@ public class AuthorServiceImpl implements AuthorService {
         Author author = authorRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Author not found"));
 
-        int paperCount = paperRepository.countByAuthors_Id(id);
-
         return AuthorDetailResponse.builder()
                 .id(author.getId())
                 .name(author.getName())
                 .affiliation(author.getAffiliation())
-                .paperCount(paperCount)
+                .paperCount(author.getPaperCount() != null ? author.getPaperCount() : 0)
                 .build();
     }
 

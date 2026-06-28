@@ -65,7 +65,6 @@ public class UserServiceImpl implements UserService {
     }
 
 
-
     @Override
     @Transactional(readOnly = true)
     public UserPageResponse getAdminUsers(int page, int size, String search, String role) {

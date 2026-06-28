@@ -1,5 +1,6 @@
 package com.journaltracker.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty; // Thêm cái này để đổi tên cho Postman
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,12 +22,13 @@ public class Author {
     @Column(nullable = false)
     String name;
 
-
-
     @Column(name = "affiliation")
     String affiliation;
 
     @ManyToMany(mappedBy = "authors")
     @Builder.Default
     Set<ResearchPaper> papers = new HashSet<>();
+
+    @Column(name = "paper_count")
+    private Integer paperCount;
 }
