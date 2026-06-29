@@ -52,7 +52,6 @@ public class ReportServiceImpl implements ReportService {
     private final PaperRepository paperRepository;
     private final UserRepository userRepository;
 
-
     private final Map<Long, List<ReportResponse>> reportCache = new ConcurrentHashMap<>();
     private final AtomicLong idGenerator = new AtomicLong(1);
 
@@ -64,7 +63,6 @@ public class ReportServiceImpl implements ReportService {
         List<String> lowerKeywords = request.getKeywords().stream()
                 .map(String::toLowerCase)
                 .collect(Collectors.toList());
-
 
         List<TrendDataItem> trendDataItems = new ArrayList<>();
         int grandTotalPapers = 0;
@@ -84,15 +82,14 @@ public class ReportServiceImpl implements ReportService {
                     .mapToInt(DataPoint::getCount)
                     .sum();
 
-
             double growthRate = 0.0;
             if (dataPoints.size() >= 2) {
                 int firstYearCount = dataPoints.get(0).getCount();
                 int lastYearCount = dataPoints.get(dataPoints.size() - 1).getCount();
                 if (firstYearCount > 0) {
-                    growthRate = Math.round(((double) (lastYearCount - firstYearCount) / firstYearCount) * 100.0 * 10.0) / 10.0;
+                    growthRate = Math.min(Math.round(((double) (lastYearCount - firstYearCount) / firstYearCount) * 100.0 * 10.0) / 10.0, 999.0);
                 } else if (lastYearCount > 0) {
-                    growthRate = 100.0;
+                    growthRate = Math.min(lastYearCount * 100.0, 999.0);
                 }
             }
 
@@ -106,7 +103,6 @@ public class ReportServiceImpl implements ReportService {
             grandTotalPapers += totalForKeyword;
         }
 
-
         List<Object[]> topAuthorsRaw = paperRepository.findTopAuthorsByKeywordsAndYear(
                 lowerKeywords, request.getYearFrom(), request.getYearTo(), PageRequest.of(0, 10));
 
@@ -116,7 +112,6 @@ public class ReportServiceImpl implements ReportService {
                         .paperCount((Integer) row[1])
                         .build())
                 .collect(Collectors.toList());
-
 
         List<Object[]> topJournalsRaw = paperRepository.findTopJournalsByKeywordsAndYear(
                 lowerKeywords, request.getYearFrom(), request.getYearTo(), PageRequest.of(0, 10));
@@ -128,13 +123,11 @@ public class ReportServiceImpl implements ReportService {
                         .build())
                 .collect(Collectors.toList());
 
-
         ReportSummary summary = ReportSummary.builder()
                 .totalPapersAnalyzed(grandTotalPapers)
                 .timeRange(request.getYearFrom() + "-" + request.getYearTo())
                 .keywordsAnalyzed(request.getKeywords().size())
                 .build();
-
 
         ReportResponse response = ReportResponse.builder()
                 .id(idGenerator.getAndIncrement())
@@ -145,7 +138,6 @@ public class ReportServiceImpl implements ReportService {
                 .topAuthors(topAuthors)
                 .topJournals(topJournals)
                 .build();
-
 
         reportCache.computeIfAbsent(user.getId(), k -> new ArrayList<>()).add(response);
 
@@ -231,7 +223,7 @@ public class ReportServiceImpl implements ReportService {
 
             PdfPTable summaryTable = new PdfPTable(2);
             summaryTable.setWidthPercentage(100);
-            summaryTable.setWidths(new float[]{1, 2});
+            summaryTable.setWidths(new float[] { 1, 2 });
             addSummaryRow(summaryTable, "Total Papers Analyzed",
                     String.valueOf(report.getSummary().getTotalPapersAnalyzed()), normalFont);
             addSummaryRow(summaryTable, "Time Range",
@@ -256,7 +248,7 @@ public class ReportServiceImpl implements ReportService {
                         PdfPTable trendTable = new PdfPTable(2);
                         trendTable.setWidthPercentage(60);
                         trendTable.setHorizontalAlignment(Element.ALIGN_LEFT);
-                        addTableHeader(trendTable, new String[]{"Year", "Count"}, tableHeaderFont);
+                        addTableHeader(trendTable, new String[] { "Year", "Count" }, tableHeaderFont);
 
                         for (DataPoint dp : item.getDataPoints()) {
                             trendTable.addCell(createCell(String.valueOf(dp.getYear()), normalFont));
@@ -277,7 +269,7 @@ public class ReportServiceImpl implements ReportService {
 
                 PdfPTable authorsTable = new PdfPTable(2);
                 authorsTable.setWidthPercentage(80);
-                addTableHeader(authorsTable, new String[]{"Author Name", "Paper Count"}, tableHeaderFont);
+                addTableHeader(authorsTable, new String[] { "Author Name", "Paper Count" }, tableHeaderFont);
 
                 for (AuthorItem author : report.getTopAuthors()) {
                     authorsTable.addCell(createCell(author.getName(), normalFont));
@@ -295,7 +287,7 @@ public class ReportServiceImpl implements ReportService {
 
                 PdfPTable journalsTable = new PdfPTable(2);
                 journalsTable.setWidthPercentage(80);
-                addTableHeader(journalsTable, new String[]{"Journal Name", "Paper Count"}, tableHeaderFont);
+                addTableHeader(journalsTable, new String[] { "Journal Name", "Paper Count" }, tableHeaderFont);
 
                 for (JournalItem journal : report.getTopJournals()) {
                     journalsTable.addCell(createCell(journal.getName(), normalFont));
@@ -315,7 +307,6 @@ public class ReportServiceImpl implements ReportService {
             throw new RuntimeException("Error generating PDF report", e);
         }
     }
-
 
     private void addTableHeader(PdfPTable table, String[] headers, Font font) {
         for (String header : headers) {

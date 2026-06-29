@@ -33,6 +33,10 @@ const Dashboard = () => {
     const [keywordsData, setKeywordsData] = useState([]);
     const [loadingKeywords, setLoadingKeywords] = useState(true);
 
+    // Trending topics state
+    const [trendingTopics, setTrendingTopics] = useState([]);
+    const [loadingTrending, setLoadingTrending] = useState(true);
+
     useEffect(() => {
         // Stats
         dashboardApi.getStats()
@@ -111,6 +115,22 @@ const Dashboard = () => {
             })
             .catch(() => setKeywordsData([]))
             .finally(() => setLoadingKeywords(false));
+
+        // Trending Topics from API
+        setLoadingTrending(true);
+        dashboardApi.getTrendingTopics(4)
+            .then(res => {
+                setTrendingTopics(res.data?.body || res.data || []);
+            })
+            .catch(() => {
+                setTrendingTopics([
+                    { keyword: 'Large Language Models', growthRate: 48.2 },
+                    { keyword: 'Sustainable Energy Systems', growthRate: 31.5 },
+                    { keyword: 'Quantum Cryptography', growthRate: 22.1 },
+                    { keyword: 'Bio-informatics Genomics', growthRate: 18.4 }
+                ]);
+            })
+            .finally(() => setLoadingTrending(false));
     }, []);
 
     // Helper for YoY Badge
@@ -296,13 +316,19 @@ const Dashboard = () => {
                     font-family: var(--font-data);
                     font-size: 11px;
                     font-weight: 700;
-                    color: #0f766e;
-                    background: #e6f7f4;
                     padding: 4px 8px;
                     border-radius: 6px;
                     display: inline-flex;
                     align-items: center;
                     gap: 4px;
+                }
+                .db-trending-badge.positive {
+                    color: #0f766e;
+                    background: #e6f7f4;
+                }
+                .db-trending-badge.negative {
+                    color: #dc2626;
+                    background: #fef2f2;
                 }
                 .db-trending-badge span { font-size: 13px; }
                 .db-link {
@@ -569,45 +595,31 @@ const Dashboard = () => {
                 <div className="db-card db-card-inner">
                     <h2 className="db-section-title" style={{ marginBottom: 16 }}>Trending Topics</h2>
                     
-                    {/* Topic 1 */}
-                    <div className="db-trending-box">
-                        <span className="db-trending-rank">01</span>
-                        <span className="db-trending-name">Large Language Models</span>
-                        <span className="db-trending-badge">
-                            <span className="material-symbols-outlined">trending_up</span>
-                            48.2%
-                        </span>
-                    </div>
-
-                    {/* Topic 2 */}
-                    <div className="db-trending-box">
-                        <span className="db-trending-rank">02</span>
-                        <span className="db-trending-name">Sustainable Energy Systems</span>
-                        <span className="db-trending-badge">
-                            <span className="material-symbols-outlined">trending_up</span>
-                            31.5%
-                        </span>
-                    </div>
-
-                    {/* Topic 3 */}
-                    <div className="db-trending-box">
-                        <span className="db-trending-rank">03</span>
-                        <span className="db-trending-name">Quantum Cryptography</span>
-                        <span className="db-trending-badge">
-                            <span className="material-symbols-outlined">trending_up</span>
-                            22.1%
-                        </span>
-                    </div>
-
-                    {/* Topic 4 */}
-                    <div className="db-trending-box">
-                        <span className="db-trending-rank">04</span>
-                        <span className="db-trending-name">Bio-informatics Genomics</span>
-                        <span className="db-trending-badge">
-                            <span className="material-symbols-outlined">trending_up</span>
-                            18.4%
-                        </span>
-                    </div>
+                    {loadingTrending ? (
+                        <div className="db-chart-empty">
+                            <div className="db-spinner" />
+                            <span>Loading trending topics…</span>
+                        </div>
+                    ) : trendingTopics.length === 0 ? (
+                        <div className="db-chart-empty">No trending topics found.</div>
+                    ) : (
+                        trendingTopics.map((topic, index) => {
+                            const rate = topic.growthRate !== undefined ? topic.growthRate : 0.0;
+                            const isPositive = rate >= 0;
+                            return (
+                                <div key={topic.keyword || index} className="db-trending-box">
+                                    <span className="db-trending-rank">{String(index + 1).padStart(2, '0')}</span>
+                                    <span className="db-trending-name">{topic.keyword}</span>
+                                    <span className={`db-trending-badge ${isPositive ? 'positive' : 'negative'}`}>
+                                        <span className="material-symbols-outlined" style={{ fontSize: '13px' }}>
+                                            {isPositive ? 'trending_up' : 'trending_down'}
+                                        </span>
+                                        {isPositive ? `+${rate.toFixed(1)}%` : `${rate.toFixed(1)}%`}
+                                    </span>
+                                </div>
+                            );
+                        })
+                    )}
 
                     <span className="db-link" onClick={() => navigate('/topics')}>
                         View Full Report →

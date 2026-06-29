@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Component
 public class SyncStatusService {
     private final AtomicReference<SyncResult> last = new AtomicReference<>();
+    private final java.util.concurrent.atomic.AtomicBoolean running = new java.util.concurrent.atomic.AtomicBoolean(false);
 
     public void setLast(SyncResult r) {
         last.set(r);

@@ -70,7 +70,8 @@ const WordCloud = ({ data, loading }) => {
             display: inline-block;
             cursor: pointer;
             font-weight: 700;
-            line-height: 1.3;
+            margin: 8px 16px;
+            white-space: nowrap;
             transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
             opacity: 0;
             animation: wc-fade 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
@@ -87,13 +88,10 @@ const WordCloud = ({ data, loading }) => {
         <div style={{ position: 'relative', width: '100%' }}>
             <style>{styleSheet}</style>
             <div style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                justifyContent: 'center',
-                alignItems: 'center',
-                alignContent: 'center',
-                gap: '24px 36px',
-                padding: '24px 12px',
+                display: 'block',
+                textAlign: 'center',
+                lineHeight: '2.4',
+                padding: '24px 16px',
                 background: '#fff',
                 borderRadius: '12px',
                 minHeight: '240px',

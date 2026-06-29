@@ -4,14 +4,14 @@ import { useAuth } from "../../hooks/useAuth";
 import { notificationApi } from "../../api/notificationApi";
 
 const navItems = [
-    { to: "/dashboard",     icon: "dashboard",   label: "Dashboard" },
-    { to: "/papers/search", icon: "search",       label: "Search Papers" },
-    { to: "/trends",        icon: "trending_up",  label: "Trend Analysis" },
-    { to: "/topics",        icon: "explore",      label: "Topic Explorer" },
-    { to: "/following",     icon: "group",        label: "Following" },
-    { to: "/reports",       icon: "assessment",   label: "Reports" },
-    { to: "/bookmarks",     icon: "bookmark",     label: "Bookmarks" },
-    { to: "/admin",         icon: "admin_panel_settings", label: "Admin Panel" },
+    { to: "/dashboard", icon: "dashboard", label: "Dashboard" },
+    { to: "/papers/search", icon: "search", label: "Search Papers" },
+    { to: "/trends", icon: "trending_up", label: "Trend Analysis" },
+    { to: "/topics", icon: "explore", label: "Topic Explorer" },
+    { to: "/following", icon: "group", label: "Following" },
+    { to: "/reports", icon: "assessment", label: "Reports" },
+    { to: "/bookmarks", icon: "bookmark", label: "Bookmarks" },
+    { to: "/admin", icon: "admin_panel_settings", label: "Admin Panel" },
 ];
 
 
@@ -49,7 +49,7 @@ function Layout({ children }) {
 
             const listRes = await notificationApi.getNotifications(0, 50);
             const content = listRes.data?.body?.content || [];
-            
+
             const dbNotifs = content.map(item => ({
                 id: item.id,
                 message: item.message,
@@ -234,29 +234,34 @@ function Layout({ children }) {
                 {/* Navigation */}
                 <nav className="af-sidebar__nav">
                     {navItems
-                        .filter(({ to }) => to !== "/admin" || user?.role === "ADMIN")
-                        .map(({ to, icon, label }) => (
-                        <NavLink
-                            key={to}
-                            to={to}
-                            className={({ isActive }) =>
-                                `af-nav-item${isActive ? " active" : ""}`
+                        .filter(({ to }) => {
+                            if (!isAuthenticated) {
+                                return to !== "/following" && to !== "/bookmarks" && to !== "/admin";
                             }
-                        >
-                            <span
-                                className="material-symbols-outlined"
-                                style={{
-                                    fontVariationSettings:
-                                        location.pathname === to
-                                            ? "'FILL' 1"
-                                            : "'FILL' 0",
-                                }}
+                            return to !== "/admin" || user?.role === "ADMIN";
+                        })
+                        .map(({ to, icon, label }) => (
+                            <NavLink
+                                key={to}
+                                to={to}
+                                className={({ isActive }) =>
+                                    `af-nav-item${isActive ? " active" : ""}`
+                                }
                             >
-                                {icon}
-                            </span>
-                            <span>{label}</span>
-                        </NavLink>
-                    ))}
+                                <span
+                                    className="material-symbols-outlined"
+                                    style={{
+                                        fontVariationSettings:
+                                            location.pathname === to
+                                                ? "'FILL' 1"
+                                                : "'FILL' 0",
+                                    }}
+                                >
+                                    {icon}
+                                </span>
+                                <span>{label}</span>
+                            </NavLink>
+                        ))}
                 </nav>
 
                 {/* Bottom actions */}
@@ -392,8 +397,8 @@ function Layout({ children }) {
                                 {user?.name
                                     ? user.name.charAt(0).toUpperCase()
                                     : user?.username
-                                    ? user.username.charAt(0).toUpperCase()
-                                    : "A"}
+                                        ? user.username.charAt(0).toUpperCase()
+                                        : "A"}
                             </div>
                         </div>
                     </div>

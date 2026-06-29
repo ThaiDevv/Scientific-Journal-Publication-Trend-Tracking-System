@@ -32,6 +32,12 @@ export const getRecentPapers = (limit = 10) =>
 export const getTopKeywords = (limit = 10) =>
     axiosInstance.get(`/keywords/top?limit=${limit}`);
 
+// GET /api/dashboard/trending?limit=4
+export const getTrendingTopics = (limit = 4) =>
+    axiosInstance.get('/dashboard/trending', {
+        params: { limit },
+    });
+
 // ── Namespace object export (for pages using dashboardApi.method()) ────────────
 export const dashboardApi = {
     getStats: getDashboardStats,       // alias: Dashboard.jsx calls dashboardApi.getStats()
@@ -41,4 +47,5 @@ export const dashboardApi = {
     getYearlyStats,
     getRecentPapers,
     getTopKeywords,
+    getTrendingTopics,
 };

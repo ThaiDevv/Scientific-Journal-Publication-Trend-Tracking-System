@@ -78,10 +78,10 @@ public class TrendAnalysisServiceImpl implements TrendAnalysisService {
                 double growthRate = 0.0;
                 if (prevCount == null || prevCount == 0) {
                     if (currentCount > 0) {
-                        growthRate = 100.0;
+                        growthRate = Math.min(currentCount * 100.0, 999.0);
                     }
                 } else {
-                    growthRate = ((double) (currentCount - prevCount) / prevCount) * 100.0;
+                    growthRate = Math.min(((double) (currentCount - prevCount) / prevCount) * 100.0, 999.0);
                 }
 
                 BigDecimal rate = BigDecimal.valueOf(growthRate).setScale(2, RoundingMode.HALF_UP);

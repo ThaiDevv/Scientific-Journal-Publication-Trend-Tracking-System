@@ -48,7 +48,7 @@ function App() {
                 <Route path="/" element={<RootRedirect />} />
 
                 {/* Public routes */}
-                <Route path="/login"    element={<Login />} />
+                <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
 
                 {/* Protected routes — wrapped in Layout */}

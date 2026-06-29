@@ -24,6 +24,7 @@ public class AdminDataSourceController {
     private final ApiDataSourceRepository apiDataSourceRepository;
     private final DataSyncService dataSyncService;
     private final SyncStatusService syncStatusService;
+    private final com.journaltracker.service.TrendAnalysisService trendAnalysisService;
 
     @GetMapping("/datasources")
     public ResponseEntity<List<DataSourceResponse>> listSources() {
@@ -36,10 +37,14 @@ public class AdminDataSourceController {
     public ResponseEntity<DataSourceResponse> updateSource(@PathVariable Long id, @RequestBody ApiDataSource update) {
         ApiDataSource src = apiDataSourceRepository.findById(id).orElseThrow();
         // only allow toggling isActive and updating apiKey/baseUrl/name
-        if (update.getIsActive() != null) src.setIsActive(update.getIsActive());
-        if (update.getApiKey() != null) src.setApiKey(update.getApiKey());
-        if (update.getBaseUrl() != null) src.setBaseUrl(update.getBaseUrl());
-        if (update.getName() != null) src.setName(update.getName());
+        if (update.getIsActive() != null)
+            src.setIsActive(update.getIsActive());
+        if (update.getApiKey() != null)
+            src.setApiKey(update.getApiKey());
+        if (update.getBaseUrl() != null)
+            src.setBaseUrl(update.getBaseUrl());
+        if (update.getName() != null)
+            src.setName(update.getName());
         apiDataSourceRepository.save(src);
         return ResponseEntity.ok(map(src));
     }
@@ -57,6 +62,9 @@ public class AdminDataSourceController {
                 apiDataSourceRepository.save(s);
             });
         }
+
+        trendAnalysisService.recalculateTrends();
+
         syncStatusService.setLast(result);
         return ResponseEntity.ok(result);
     }

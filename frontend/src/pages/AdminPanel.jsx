@@ -129,10 +129,10 @@ function AdminPanel() {
                 try {
                     const originalDetails = await topicApi.getTopicById(editingTopic.id);
                     const originalIds = (originalDetails.data?.keywords || []).map(k => k.id);
-                    
+
                     const toLink = topicForm.keywordIds.filter(id => !originalIds.includes(id));
                     const toUnlink = originalIds.filter(id => !topicForm.keywordIds.includes(id));
-                    
+
                     for (const id of toLink) {
                         await topicApi.addKeywordToTopic(editingTopic.id, id);
                     }
@@ -190,7 +190,7 @@ function AdminPanel() {
             const res = await adminApi.getUsers(currentPage - 1, 10, searchQuery, roleParam);
             const body = res.data || {};
             const content = body.content || [];
-            
+
             // Map DB users
             const mapped = content.map(u => ({
                 id: u.id,
@@ -1222,7 +1222,7 @@ function AdminPanel() {
                                         onChange={e => setTopicForm(prev => ({ ...prev, description: e.target.value }))}
                                     />
                                 </div>
-                                
+
                                 {editingTopic && (
                                     <div className="adm-form-group">
                                         <label className="adm-checkbox-label">

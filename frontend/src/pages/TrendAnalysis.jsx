@@ -139,17 +139,17 @@ const TrendAnalysis = () => {
     const navigate = useNavigate();
     const defaultFallbackKeywords = ['AI', 'Big Data', 'Blockchain', 'Quantum Computing', 'Cybersecurity'];
 
-    const [inputValue, setInputValue]             = useState('');
+    const [inputValue, setInputValue] = useState('');
     const [selectedKeywords, setSelectedKeywords] = useState(defaultFallbackKeywords);
-    const [yearFrom, setYearFrom]                 = useState(2018);
-    const [yearTo, setYearTo]                     = useState(2025);
-    const [chartData, setChartData]               = useState([]);
-    const [tableData, setTableData]               = useState([]);
+    const [yearFrom, setYearFrom] = useState(2018);
+    const [yearTo, setYearTo] = useState(2025);
+    const [chartData, setChartData] = useState([]);
+    const [tableData, setTableData] = useState([]);
     const [trendingKeywords, setTrendingKeywords] = useState([]);
-    const [loading, setLoading]                   = useState(false);
-    const [loadingCloud, setLoadingCloud]         = useState(true);
-    const [suggestions, setSuggestions]           = useState([]);
-    const [showSuggest, setShowSuggest]           = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [loadingCloud, setLoadingCloud] = useState(true);
+    const [suggestions, setSuggestions] = useState([]);
+    const [showSuggest, setShowSuggest] = useState(false);
     const [followedKeywords, setFollowedKeywords] = useState([]);
 
     const loadFollowedKeywords = async () => {
@@ -248,9 +248,9 @@ const TrendAnalysis = () => {
         }))
         : [
             { id: 1, name: 'Quantum Cryptography', change: 42 },
-            { id: 2, name: 'Bioinformatics',        change: 28 },
-            { id: 3, name: 'Edge Computing',         change: 15 },
-            { id: 4, name: 'NFT Architecture',       change: -12 },
+            { id: 2, name: 'Bioinformatics', change: 28 },
+            { id: 3, name: 'Edge Computing', change: 15 },
+            { id: 4, name: 'NFT Architecture', change: -12 },
         ];
 
     return (

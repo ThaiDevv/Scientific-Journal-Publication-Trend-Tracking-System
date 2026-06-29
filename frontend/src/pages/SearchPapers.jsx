@@ -73,7 +73,7 @@ function SearchPapers() {
     const handleFollowJournalToggle = async (journalName) => {
         const foundJournal = journals.find(j => j.name === journalName);
         if (!foundJournal) return;
-        
+
         const existingFollow = followedJournals.find(f => f.targetName === journalName);
         try {
             if (existingFollow) {
