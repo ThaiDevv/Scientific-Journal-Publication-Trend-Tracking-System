@@ -29,13 +29,19 @@ public class JournalController {
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String field,
             @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "10") Integer size
+            @RequestParam(defaultValue = "10") Integer size,
+            Authentication authentication
     ) {
 
         Pageable pageable = PageRequest.of(page, size);
 
         Page<JournalResponse> result =
-                journalService.searchJournals(search, field, pageable);
+                journalService.searchJournals(
+                        search,
+                        field,
+                        pageable,
+                        getCurrentUsername(authentication)
+                );
 
         return new ApiResponse<>(
                 true,
@@ -45,21 +51,14 @@ public class JournalController {
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<JournalDetailResponse> getJournalById(
+    public JournalDetailResponse getJournalById(
             @PathVariable Long id,
             Authentication authentication
     ) {
 
-        JournalDetailResponse result =
-                journalService.getJournalById(
-                        id,
-                        getCurrentUsername(authentication)
-                );
-
-        return new ApiResponse<>(
-                true,
-                "Get journal detail successfully",
-                result
+        return journalService.getJournalById(
+                id,
+                getCurrentUsername(authentication)
         );
     }
 

@@ -35,8 +35,21 @@ public class JournalServiceImpl implements JournalService {
             Pageable pageable
     ) {
 
+        return getAllJournals(pageable, null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<JournalResponse> getAllJournals(
+            Pageable pageable,
+            String currentUsername
+    ) {
+
         return journalRepository.findAll(pageable)
-                .map(journalMapper::toResponse);
+                .map(journal -> journalMapper.toResponse(
+                        journal,
+                        isJournalFollowed(currentUsername, journal.getId())
+                ));
     }
 
     @Override
@@ -47,12 +60,27 @@ public class JournalServiceImpl implements JournalService {
             Pageable pageable
     ) {
 
+        return searchJournals(search, field, pageable, null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<JournalResponse> searchJournals(
+            String search,
+            String field,
+            Pageable pageable,
+            String currentUsername
+    ) {
+
         return journalRepository.searchJournals(
                         normalize(search),
                         normalize(field),
                         pageable
                 )
-                .map(journalMapper::toResponse);
+                .map(journal -> journalMapper.toResponse(
+                        journal,
+                        isJournalFollowed(currentUsername, journal.getId())
+                ));
     }
 
     @Override
@@ -76,16 +104,9 @@ public class JournalServiceImpl implements JournalService {
                         "Journal not found with id: " + id
                 ));
 
-        boolean isFollowed = currentUsername != null
-                && followRepository.existsByUserUsernameAndFollowTypeAndTargetId(
-                        currentUsername,
-                String.valueOf(FollowType.JOURNAL),
-                        id
-                );
-
         return journalMapper.toDetailResponse(
                 journal,
-                isFollowed
+                isJournalFollowed(currentUsername, id)
         );
     }
 
@@ -115,5 +136,18 @@ public class JournalServiceImpl implements JournalService {
         }
 
         return value.trim();
+    }
+
+    private boolean isJournalFollowed(
+            String currentUsername,
+            Long journalId
+    ) {
+
+        return currentUsername != null
+                && followRepository.existsByUserUsernameAndFollowTypeAndTargetId(
+                        currentUsername,
+                        FollowType.JOURNAL,
+                        journalId
+                );
     }
 }
