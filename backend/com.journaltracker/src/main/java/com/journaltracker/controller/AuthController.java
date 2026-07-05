@@ -1,5 +1,6 @@
 package com.journaltracker.controller;
 
+import com.journaltracker.client.ExternalApiClient;
 import com.journaltracker.dto.RawPaperData;
 import com.journaltracker.dto.request.LoginRequest;
 import com.journaltracker.dto.request.RefreshTokenRequest;
@@ -8,6 +9,7 @@ import com.journaltracker.dto.response.ApiResponse;
 import com.journaltracker.dto.response.AuthResponse;
 import com.journaltracker.external.CrossrefClient;
 import com.journaltracker.external.OpenAlexClient;
+import com.journaltracker.external.SemanticScholarClient;
 import com.journaltracker.scheduler.DataSyncScheduler;
 import com.journaltracker.service.AuthService;
 import jakarta.validation.Valid;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.client.RestTemplate;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
@@ -49,10 +53,5 @@ public class AuthController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.success("User registered successfully", authResponse));
-    }
-
-    @GetMapping("/test")
-    public void test() {
-       dataSyncScheduler.syncData();
     }
 }

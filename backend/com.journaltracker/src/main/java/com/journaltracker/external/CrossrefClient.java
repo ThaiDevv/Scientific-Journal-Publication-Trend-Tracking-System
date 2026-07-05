@@ -101,6 +101,31 @@ public class CrossrefClient implements ExternalApiClient {
         }
     }
 
+    @Override
+    public String fetchRawResponse(String query, int page, int pageSize) {
+        int requestedSize = normalizeSize(pageSize);
+        int offset = offsetFor(page, requestedSize);
+        try {
+            String body = webClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/works")
+                            .queryParam("query", query)
+                            .queryParam("rows", requestedSize)
+                            .queryParam("offset", offset)
+                            .build())
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .timeout(REQUEST_TIMEOUT)
+                    .retryWhen(rateLimitRetry())
+                    .block();
+            System.out.println("Crossref Raw Response: " + body);
+            return body;
+        } catch (Exception exception) {
+            log.warn("Crossref fetchRawResponse failed: {}", exception.getMessage());
+            return "Error: " + exception.getMessage();
+        }
+    }
+
     private List<RawPaperData> executeWorksRequest(WebClient.RequestHeadersSpec<?> requestSpec, int limit) {
         try {
             String body = requestSpec
@@ -109,6 +134,9 @@ public class CrossrefClient implements ExternalApiClient {
                     .timeout(REQUEST_TIMEOUT)
                     .retryWhen(rateLimitRetry())
                     .block();
+
+            System.out.println("Crossref executeWorksRequest Raw Response: " + body);
+
 
             JsonNode items = objectMapper.readTree(body).path("message").path("items");
             if (!items.isArray()) {

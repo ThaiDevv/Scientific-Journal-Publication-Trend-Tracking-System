@@ -266,24 +266,7 @@ function Layout({ children }) {
 
                 {/* Bottom actions */}
                 <div className="af-sidebar__bottom">
-                    <button
-                        className="af-sidebar__new-analysis"
-                        onClick={() => navigate("/trends")}
-                    >
-                        New Analysis
-                    </button>
 
-                    <a
-                        href="#profile"
-                        className="af-nav-item"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            navigate("/dashboard");
-                        }}
-                    >
-                        <span className="material-symbols-outlined">account_circle</span>
-                        <span>{user?.name || user?.username || "Profile"}</span>
-                    </a>
 
                     <a
                         href="#logout"

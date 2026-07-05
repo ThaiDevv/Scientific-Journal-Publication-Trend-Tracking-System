@@ -127,6 +127,32 @@ public class OpenAlexClient implements ExternalApiClient {
         }
     }
 
+    @Override
+    public String fetchRawResponse(String query, int page, int pageSize) {
+        int requestedSize = normalizeSize(pageSize);
+        int startPage = normalizePage(page);
+        try {
+            String body = webClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/works")
+                            .queryParam("search", query)
+                            .queryParam("filter", "concepts.id:" + COMPUTER_SCIENCE_CONCEPT_ID)
+                            .queryParam("per_page", requestedSize)
+                            .queryParam("page", startPage)
+                            .build())
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .timeout(REQUEST_TIMEOUT)
+                    .retryWhen(rateLimitRetry())
+                    .block();
+            System.out.println("OpenAlex Raw Response: " + body);
+            return body;
+        } catch (Exception exception) {
+            log.warn("OpenAlex fetchRawResponse failed: {}", exception.getMessage());
+            return "Error: " + exception.getMessage();
+        }
+    }
+
     private List<RawPaperData> executeWorksRequest(WebClient.RequestHeadersSpec<?> requestSpec, int limit) {
         try {
             String body = requestSpec
@@ -135,6 +161,9 @@ public class OpenAlexClient implements ExternalApiClient {
                     .timeout(REQUEST_TIMEOUT)
                     .retryWhen(rateLimitRetry())
                     .block();
+
+            System.out.println("OpenAlex executeWorksRequest Raw Response: " + body);
+
 
             JsonNode response = objectMapper.readTree(body);
             if (response == null || !response.has("results")) {

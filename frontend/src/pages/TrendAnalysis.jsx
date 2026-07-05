@@ -83,7 +83,7 @@ const SemanticCloud = ({ data, loading }) => {
 
     const min = sortedWords[sortedWords.length - 1].value;
     const max = sortedWords[0].value;
-    const fs = (v) => (max === min ? 24 : 13 + ((v - min) / (max - min)) * 38);
+    const fs = (v) => (max === min ? 22 : 14 + ((v - min) / (max - min)) * 22);
 
     // Reorder from inside out: largest in center, smaller outwards
     const arrangedWords = [];
@@ -95,39 +95,85 @@ const SemanticCloud = ({ data, loading }) => {
         }
     }
 
+    const styleSheet = `
+        .sc-container {
+            --sc-scale: 1;
+        }
+        .sc-item {
+            display: inline-block;
+            cursor: pointer;
+            font-weight: 700;
+            margin: 4px 8px;
+            vertical-align: middle;
+            white-space: normal;
+            line-height: 1.2;
+            transition: transform 0.2s, filter 0.2s;
+        }
+        @media (min-width: 921px) and (max-width: 1150px) {
+            .sc-container {
+                --sc-scale: 0.75;
+            }
+            .sc-item {
+                margin: 3px 6px;
+            }
+        }
+        @media (max-width: 768px) {
+            .sc-container {
+                --sc-scale: 0.8;
+            }
+            .sc-item {
+                margin: 3px 6px;
+            }
+        }
+        @media (max-width: 480px) {
+            .sc-container {
+                --sc-scale: 0.65;
+            }
+            .sc-item {
+                margin: 2px 4px;
+            }
+        }
+    `;
+
     return (
-        <div style={{
-            display: 'flex', flexWrap: 'wrap',
-            justifyContent: 'center', alignItems: 'center',
-            alignContent: 'center', gap: '24px 36px',
-            padding: '24px 12px', minHeight: 240,
-        }}>
-            {arrangedWords.map((w, i) => (
-                <span
-                    key={i}
-                    title={`${w.text}: ${w.value} papers`}
-                    style={{
-                        fontSize: fs(w.value),
-                        fontWeight: 700,
-                        color: getColor(w.value, max, min, w.text),
-                        fontFamily: 'var(--font-body)',
-                        cursor: 'default',
-                        transition: 'transform 0.2s, filter 0.2s',
-                        display: 'inline-block',
-                        animation: `wc-fade 0.5s ease ${i * 18}ms both`,
-                    }}
-                    onMouseEnter={e => {
-                        e.currentTarget.style.transform = 'scale(1.15)';
-                        e.currentTarget.style.filter = 'brightness(1.15)';
-                    }}
-                    onMouseLeave={e => {
-                        e.currentTarget.style.transform = 'scale(1)';
-                        e.currentTarget.style.filter = 'none';
-                    }}
-                >
-                    {w.text}
-                </span>
-            ))}
+        <div style={{ position: 'relative', width: '100%' }}>
+            <style>{styleSheet}</style>
+            <div className="sc-container" style={{
+                display: 'block',
+                textAlign: 'center',
+                lineHeight: '1.3',
+                padding: '4px 0',
+                minHeight: '200px',
+                overflow: 'hidden',
+                width: '100%',
+                boxSizing: 'border-box'
+            }}>
+                {arrangedWords.map((w, i) => (
+                    <span
+                        key={i}
+                        title={`${w.text}: ${w.value} papers`}
+                        className="sc-item"
+                        style={{
+                            fontSize: `calc(var(--sc-scale, 1) * ${fs(w.value)}px)`,
+                            color: getColor(w.value, max, min, w.text),
+                            fontFamily: 'var(--font-body)',
+                            whiteSpace: 'normal',
+                            lineHeight: '1.2',
+                            animation: `wc-fade 0.5s ease ${i * 18}ms both`,
+                        }}
+                        onMouseEnter={e => {
+                            e.currentTarget.style.transform = 'scale(1.15)';
+                            e.currentTarget.style.filter = 'brightness(1.15)';
+                        }}
+                        onMouseLeave={e => {
+                            e.currentTarget.style.transform = 'scale(1)';
+                            e.currentTarget.style.filter = 'none';
+                        }}
+                    >
+                        {w.text}
+                    </span>
+                ))}
+            </div>
         </div>
     );
 };
@@ -241,10 +287,10 @@ const TrendAnalysis = () => {
 
     /* ── top trending (mock growth if backend not wired) ── */
     const topTrending = trendingKeywords.length
-        ? trendingKeywords.slice(0, 6).map((kw, i) => ({
+        ? trendingKeywords.map((kw) => ({
             id: kw.id,
             name: kw.text,
-            change: [42, 28, 15, -12, 8, 33][i] ?? 5,
+            change: 5,
         }))
         : [
             { id: 1, name: 'Quantum Cryptography', change: 42 },
@@ -748,45 +794,56 @@ const TrendAnalysis = () => {
                 {/* Top Trending */}
                 <div className="ta-card ta-card-inner">
                     <h2 className="ta-trending-title">Top Trending</h2>
-                    {topTrending.map((item, i) => (
-                        <div
-                            key={item.name}
-                            className="ta-trending-item"
-                            onClick={() => addKeyword(item.name)}
-                            title={`Add "${item.name}" to analysis`}
-                            style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}
-                        >
-                            <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1, minWidth: 0 }}>
-                                <span className="ta-trending-rank">{String(i + 1).padStart(2, "0")}</span>
-                                <span className="ta-trending-name" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.name}</span>
-                            </div>
-                            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                <GrowthBadge rate={item.change} />
-                                {item.id && (
+                    <div style={{ 
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        gap: '8px',
+                        maxHeight: '340px',
+                        overflowY: 'auto',
+                        paddingRight: '6px'
+                    }}>
+                        {topTrending.map((item, index) => (
+                            <div
+                                key={item.id || index}
+                                className="ta-trending-item"
+                                onClick={() => {
+                                    if (selectedKeywords.includes(item.name)) {
+                                        removeKeyword(item.name);
+                                    } else {
+                                        addKeyword(item.name);
+                                    }
+                                }}
+                            >
+                                <span className="ta-trending-rank">{String(index + 1).padStart(2, '0')}</span>
+                                <span className="ta-trending-name">{item.name}</span>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                     <button
-                                        onClick={(e) => handleFollowKeywordToggle(e, item.name, item.id)}
-                                        style={{
-                                            background: "transparent",
-                                            border: "none",
-                                            color: followedKeywords.some(f => f.targetName === item.name) ? "var(--color-secondary)" : "var(--color-outline)",
-                                            cursor: "pointer",
-                                            display: "inline-flex",
-                                            alignItems: "center",
-                                            padding: "4px",
-                                            borderRadius: "4px",
-                                            transition: "all 0.2s"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            if (selectedKeywords.includes(item.name)) {
+                                                removeKeyword(item.name);
+                                            } else {
+                                                addKeyword(item.name);
+                                            }
                                         }}
-                                        title={followedKeywords.some(f => f.targetName === item.name) ? "Unfollow keyword" : "Follow keyword"}
+                                        style={{
+                                            background: 'none',
+                                            border: 'none',
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            color: selectedKeywords.includes(item.name) ? 'var(--color-primary)' : '#94a3b8',
+                                            padding: 0,
+                                        }}
                                     >
                                         <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>
-                                            {followedKeywords.some(f => f.targetName === item.name) ? "check_circle" : "add_circle"}
+                                            {selectedKeywords.includes(item.name) ? "check_circle" : "add_circle"}
                                         </span>
                                     </button>
-                                )}
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                    <span className="ta-view-lb" onClick={() => navigate('/topics')}>View Full Leaderboard</span>
+                        ))}
+                    </div>
                 </div>
             </div>
 

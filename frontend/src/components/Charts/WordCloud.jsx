@@ -49,7 +49,7 @@ const WordCloud = ({ data, loading }) => {
 
     const min = sortedWords[sortedWords.length - 1].value;
     const max = sortedWords[0].value;
-    const fs = (v) => (max === min ? 24 : 14 + ((v - min) / (max - min)) * 36);
+    const fs = (v) => (max === min ? 22 : 14 + ((v - min) / (max - min)) * 22);
 
     // Reorder from inside out: largest in center, smaller outwards
     const arrangedWords = [];
@@ -66,12 +66,17 @@ const WordCloud = ({ data, loading }) => {
             from { opacity: 0; transform: scale(0.72); }
             to   { opacity: 1; transform: scale(1); }
         }
+        .wc-container {
+            --wc-scale: 1;
+        }
         .wc-item {
             display: inline-block;
             cursor: pointer;
             font-weight: 700;
-            margin: 8px 16px;
-            white-space: nowrap;
+            margin: 4px 8px;
+            vertical-align: middle;
+            white-space: normal;
+            line-height: 1.2;
             transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
             opacity: 0;
             animation: wc-fade 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
@@ -82,19 +87,33 @@ const WordCloud = ({ data, loading }) => {
             text-shadow: 0 4px 12px rgba(0,0,0,0.08);
             z-index: 10;
         }
+        @media (max-width: 768px) {
+            .wc-container {
+                --wc-scale: 0.8;
+            }
+            .wc-item {
+                margin: 3px 6px;
+            }
+        }
+        @media (max-width: 480px) {
+            .wc-container {
+                --wc-scale: 0.65;
+            }
+            .wc-item {
+                margin: 2px 4px;
+            }
+        }
     `;
 
     return (
         <div style={{ position: 'relative', width: '100%' }}>
             <style>{styleSheet}</style>
-            <div style={{
+            <div className="wc-container" style={{
                 display: 'block',
                 textAlign: 'center',
-                lineHeight: '2.4',
-                padding: '24px 16px',
-                background: '#fff',
-                borderRadius: '12px',
-                minHeight: '240px',
+                lineHeight: '1.3',
+                padding: '4px 0',
+                minHeight: '200px',
                 overflow: 'hidden',
                 width: '100%',
                 boxSizing: 'border-box'
@@ -105,9 +124,11 @@ const WordCloud = ({ data, loading }) => {
                             className="wc-item"
                             onClick={() => navigate(`/papers/search?keyword=${encodeURIComponent(word.text)}`)}
                             style={{
-                                fontSize: `${fs(word.value)}px`,
+                                fontSize: `calc(var(--wc-scale, 1) * ${fs(word.value)}px)`,
                                 color: getColor(word.value, max, min, word.text),
                                 fontFamily: 'var(--font-body)',
+                                whiteSpace: 'normal',
+                                lineHeight: '1.2',
                                 animationDelay: `${index * 18}ms`
                             }}
                         >

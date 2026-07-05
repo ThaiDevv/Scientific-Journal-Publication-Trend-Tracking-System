@@ -2,6 +2,7 @@ package com.journaltracker.external;
 
 import com.journaltracker.client.ExternalApiClient;
 import com.journaltracker.dto.RawPaperData;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -75,6 +76,8 @@ public class SemanticScholarClient implements ExternalApiClient {
                 entity,
                 String.class
         );
+
+        System.out.println("SemanticScholar fetchPapers Raw Response: " + response.getBody());
 
         try {
 
@@ -181,6 +184,44 @@ public class SemanticScholarClient implements ExternalApiClient {
 
             return false;
 
+        }
+    }
+
+    @Override
+    public String fetchRawResponse(String query, int page, int pageSize) {
+        RATE_LIMITER.acquire();
+        int offset = (page - 1) * pageSize;
+
+        String url = UriComponentsBuilder
+                .fromUriString(baseUrl + "/graph/v1/paper/search")
+                .queryParam("query", query)
+                .queryParam("limit", pageSize)
+                .queryParam("offset", offset)
+                .queryParam(
+                        "fields",
+                        "title,abstract,year,authors,journal,publicationVenue,externalIds,url,s2FieldsOfStudy"
+                )
+                .toUriString();
+
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            if (apiKey != null && !apiKey.isBlank()) {
+                headers.set("x-api-key", apiKey);
+            }
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            ResponseEntity<String> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    entity,
+                    String.class
+            );
+            String body = response.getBody();
+            System.out.println("SemanticScholar Raw Response: " + body);
+            return body;
+        } catch (Exception e) {
+            System.err.println("Failed to fetch raw response from SemanticScholar: " + e.getMessage());
+            return "Error: " + e.getMessage();
         }
     }
 }
