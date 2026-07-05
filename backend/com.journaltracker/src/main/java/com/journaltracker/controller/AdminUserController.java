@@ -5,6 +5,7 @@ import com.journaltracker.dto.request.UserStatusRequest;
 import com.journaltracker.dto.response.UserPageResponse;
 import com.journaltracker.dto.response.UserResponse;
 import com.journaltracker.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,9 +41,9 @@ public class AdminUserController {
     @PutMapping("/{id}/status")
     public ResponseEntity<Void> changeUserStatus(
             @PathVariable Long id,
-            @RequestBody UserStatusRequest request) {
+            @Valid @RequestBody UserStatusRequest request) {
 
-        userService.changeUserStatus(id, request.isActive());
+        userService.changeUserStatus(id, request.getIsActive());
         return ResponseEntity.ok().build();
     }
 
