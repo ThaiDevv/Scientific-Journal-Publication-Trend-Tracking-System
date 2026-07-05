@@ -221,7 +221,7 @@ public class DataSyncServiceImpl implements DataSyncService {
     }
 
     @Override
-    public SyncResult syncAllSources(String query) {
+    public List<SyncResult> syncAllSources(String query) {
         List<SyncResult> results = new ArrayList<>();
         SyncResult result = new SyncResult();
         result.setSourceName("ALL");
@@ -247,6 +247,6 @@ public class DataSyncServiceImpl implements DataSyncService {
         result.setSyncedAt(LocalDate.now());
         log.info("[Sync] Tổng hợp ALL: tổng={}, mới={}, trùng={}, lỗi={}",
                 result.getTotalFetched(), result.getNewPapers(), result.getDuplicates(), result.getErrors());
-        return result;
+        return results;
     }
 }

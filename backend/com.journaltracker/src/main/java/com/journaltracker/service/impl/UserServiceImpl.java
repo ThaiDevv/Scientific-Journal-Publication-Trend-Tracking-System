@@ -107,7 +107,7 @@ public class UserServiceImpl implements UserService {
             throw new BadRequestException("You cannot disable your own Admin account!");
         }
 
-        user.setIsActive(isActive); // Note: Ensure the active field exists in User entity (or modify accordingly)
+        user.setIsActive(!isActive); // Note: Ensure the active field exists in User entity (or modify accordingly)
         userRepository.save(user);
     }
 

@@ -90,6 +90,9 @@ public class AuthServiceImpl implements AuthService {
 
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new UnauthorizedException("Invalid username or password"));
+        if(user.getIsActive() != true){
+            throw new UnauthorizedException("User is not active");
+        }
         String accessToken = jwtTokenProvider.generateToken(toUserDetails(user));
         String newrefreshToken = jwtTokenProvider.generateRefreshToken(toUserDetails(user));
         try {

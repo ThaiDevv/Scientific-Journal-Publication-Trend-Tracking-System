@@ -52,21 +52,20 @@ public class AdminDataSourceController {
     @PostMapping("/sync/trigger")
     public ResponseEntity<SyncResult> triggerSync(@RequestBody SyncTriggerRequest req) {
         SyncResult result;
-        if (req.getSourceName() == null || req.getSourceName().isBlank()) {
-            // sync all sources
-            result = dataSyncService.syncAllSources(req.getQuery() == null ? "" : req.getQuery());
-        } else {
-            result = dataSyncService.syncFromSource(req.getSourceName(), req.getQuery());
-            apiDataSourceRepository.findByNameIgnoreCase(req.getSourceName()).ifPresent(s -> {
-                s.setLastSyncAt(java.time.LocalDateTime.now());
-                apiDataSourceRepository.save(s);
-            });
-        }
-
+        result = dataSyncService.syncFromSource(req.getSourceName(), req.getQuery());
+        apiDataSourceRepository.findByNameIgnoreCase(req.getSourceName()).ifPresent(s -> {
+            s.setLastSyncAt(java.time.LocalDateTime.now());
+            apiDataSourceRepository.save(s);
+        });
         trendAnalysisService.recalculateTrends();
-
         syncStatusService.setLast(result);
         return ResponseEntity.ok(result);
+    }
+    @GetMapping("/sync/allsource")
+    public ResponseEntity<List<SyncResult>> allSources() {
+        List<SyncResult> list = dataSyncService.syncAllSources("machine learning");
+        trendAnalysisService.recalculateTrends();
+        return ResponseEntity.ok(list);
     }
 
     @GetMapping("/sync/status")
