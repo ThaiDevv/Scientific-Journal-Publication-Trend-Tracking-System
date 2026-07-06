@@ -52,6 +52,7 @@ function Layout({ children }) {
 
             const dbNotifs = content.map(item => ({
                 id: item.id,
+                title: item.title,
                 message: item.message,
                 timeText: formatNotifTime(item.createdAt),
                 isRead: item.isRead || false
@@ -210,17 +211,35 @@ function Layout({ children }) {
                 .af-notif-item.unread:hover {
                     background: #ecfdf5;
                 }
-                .af-notif-msg {
-                    font-family: var(--font-body);
+                .af-notif-item-title {
+                    font-family: var(--font-headline);
                     font-size: 13px;
-                    line-height: 1.45;
+                    font-weight: 600;
                     color: var(--color-on-surface);
                     margin: 0;
+                    line-height: 1.4;
+                }
+                .af-notif-item.unread .af-notif-item-title {
+                    font-weight: 700;
+                    color: var(--color-primary);
+                }
+                .af-notif-msg {
+                    font-family: var(--font-body);
+                    font-size: 12px;
+                    line-height: 1.4;
+                    color: var(--color-outline);
+                    margin: 0;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 }
                 .af-notif-time {
                     font-family: var(--font-data);
-                    font-size: 11px;
+                    font-size: 10px;
                     color: var(--color-outline);
+                    margin-top: 2px;
                 }
             `}</style>
             {/* ── Sidebar ── */}
@@ -366,6 +385,7 @@ function Layout({ children }) {
                                                         className={`af-notif-item ${item.isRead ? 'read' : 'unread'}`}
                                                         onClick={() => handleMarkSingleRead(item)}
                                                     >
+                                                        <h4 className="af-notif-item-title">{item.title}</h4>
                                                         <p className="af-notif-msg">{item.message}</p>
                                                         <span className="af-notif-time">{item.timeText}</span>
                                                     </div>

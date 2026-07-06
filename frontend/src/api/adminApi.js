@@ -19,6 +19,9 @@ export const adminApi = {
     triggerSync: (sourceName, query = "") =>
         axiosInstance.post(`/admin/sync/trigger`, { sourceName, query }),
 
+    syncAllSources: (query = "") =>
+        axiosInstance.get('/admin/sync/allsource', { params: { query } }),
+
     getSystemStats: () =>
         axiosInstance.get('/admin/stats')
 };

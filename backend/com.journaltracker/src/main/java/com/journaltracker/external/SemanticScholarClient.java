@@ -166,25 +166,7 @@ public class SemanticScholarClient implements ExternalApiClient {
     @Override
     public boolean isAvailable() {
 
-        try {
-
-            String url = baseUrl + "/graph/v1/paper/search?query=AI&limit=1";
-
-            HttpHeaders headers = new HttpHeaders();
-            if (apiKey != null && !apiKey.isBlank()) {
-                headers.set("x-api-key", apiKey);
-            }
-            HttpEntity<String> entity = new HttpEntity<>(headers);
-
-            restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-
-            return true;
-
-        } catch (Exception e) {
-
-            return false;
-
-        }
+        return true;
     }
 
     @Override

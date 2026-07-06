@@ -31,6 +31,9 @@ function AdminPanel() {
     const [syncingId, setSyncingId] = useState(null);
     const [syncResult, setSyncResult] = useState(null);
     const [sourcesLoading, setSourcesLoading] = useState(false);
+    const [syncAllQuery, setSyncAllQuery] = useState("");
+    const [isSyncingAll, setIsSyncingAll] = useState(false);
+    const [allSyncResults, setAllSyncResults] = useState(null);
 
     // Tab 4 (Research Topics CRUD) states
     const [topics, setTopics] = useState([]);
@@ -312,6 +315,54 @@ function AdminPanel() {
             console.error("Sync failed:", e);
         } finally {
             setSyncingId(null);
+        }
+    };
+
+    // Handle sync all sources
+    const handleSyncAll = async () => {
+        if (isSyncingAll) return;
+        setIsSyncingAll(true);
+        setAllSyncResults(null);
+        setSyncResult(null);
+        try {
+            const res = await adminApi.syncAllSources(syncAllQuery);
+            const resultsList = Array.isArray(res.data) ? res.data : (res.data?.body || []);
+            
+            // Calculate aggregates
+            let totalFetched = 0;
+            let newPapers = 0;
+            let duplicates = 0;
+            let errors = 0;
+            
+            resultsList.forEach(r => {
+                totalFetched += r.totalFetched || 0;
+                newPapers += r.newPapers || 0;
+                duplicates += r.duplicates || 0;
+                errors += r.errors || 0;
+            });
+            
+            setAllSyncResults({
+                summary: {
+                    totalFetched,
+                    newPapers,
+                    duplicates,
+                    errors
+                },
+                details: resultsList.map(r => ({
+                    sourceName: r.sourceName || "Unknown API",
+                    totalFetched: r.totalFetched || 0,
+                    newPapers: r.newPapers || 0,
+                    duplicates: r.duplicates || 0,
+                    errors: r.errors || 0
+                }))
+            });
+            
+            fetchSources();
+        } catch (e) {
+            console.error("Sync all failed:", e);
+            alert("Đã xảy ra lỗi khi đồng bộ tất cả các nguồn dữ liệu!");
+        } finally {
+            setIsSyncingAll(false);
         }
     };
 
@@ -886,6 +937,254 @@ function AdminPanel() {
                     background: #64748b;
                     color: #fff;
                 }
+                
+                /* Global Sync Control Panel */
+                .adm-sync-control-panel {
+                    background: #fff;
+                    border: 1.5px solid var(--color-outline-variant);
+                    border-radius: var(--radius-xl);
+                    padding: 24px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 16px;
+                    box-shadow: var(--shadow-sm);
+                }
+                .adm-sync-control-header h3 {
+                    margin: 0 0 6px 0;
+                    font-family: var(--font-ui);
+                    font-size: 18px;
+                    color: var(--color-primary);
+                    font-weight: 700;
+                }
+                .adm-sync-control-header p {
+                    margin: 0;
+                    font-family: var(--font-body);
+                    font-size: 13.5px;
+                    color: var(--color-on-surface-variant);
+                }
+                .adm-sync-control-body {
+                    display: flex;
+                    gap: 16px;
+                    align-items: center;
+                    flex-wrap: wrap;
+                }
+                .adm-sync-input-group {
+                    position: relative;
+                    flex: 1;
+                    min-width: 280px;
+                }
+                .adm-sync-input {
+                    width: 100%;
+                    height: 42px;
+                    border: 1.5px solid var(--color-outline-variant);
+                    border-radius: 8px;
+                    padding: 0 16px 0 42px;
+                    font-family: var(--font-body);
+                    font-size: 14px;
+                    box-sizing: border-box;
+                    transition: border-color 0.2s;
+                }
+                .adm-sync-input:focus {
+                    border-color: #0f766e;
+                    outline: none;
+                }
+                .adm-sync-input-icon {
+                    position: absolute;
+                    left: 14px;
+                    top: 12px;
+                    color: var(--color-outline);
+                    font-size: 20px;
+                }
+                .adm-btn-sync-all {
+                    height: 42px;
+                    padding: 0 24px;
+                    background: #0f766e;
+                    color: #fff;
+                    border: none;
+                    border-radius: 8px;
+                    font-family: var(--font-ui);
+                    font-size: 14px;
+                    font-weight: 700;
+                    cursor: pointer;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    transition: background 0.2s, transform 0.1s;
+                    box-shadow: 0 2px 4px rgba(15, 118, 110, 0.2);
+                }
+                .adm-btn-sync-all:hover {
+                    background: #0d6059;
+                }
+                .adm-btn-sync-all:active {
+                    transform: translateY(1px);
+                }
+                .adm-btn-sync-all:disabled {
+                    background: #cbd5e1;
+                    color: #64748b;
+                    cursor: not-allowed;
+                    box-shadow: none;
+                }
+                .adm-spinner-white {
+                    border-top-color: #fff !important;
+                }
+                
+                /* Results Dashboard */
+                .adm-sync-results-dashboard {
+                    background: #fff;
+                    border: 1.5px solid var(--color-outline-variant);
+                    border-radius: var(--radius-xl);
+                    padding: 24px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 20px;
+                    box-shadow: var(--shadow-md);
+                    animation: fadeIn 0.3s ease-out;
+                }
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(8px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                .adm-sync-results-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    border-bottom: 1.5px solid var(--color-outline-variant);
+                    padding-bottom: 12px;
+                }
+                .adm-sync-results-header h4 {
+                    margin: 0;
+                    font-family: var(--font-ui);
+                    font-size: 16px;
+                    color: var(--color-primary);
+                    font-weight: 700;
+                }
+                .adm-btn-close-results {
+                    background: transparent;
+                    border: 1px solid var(--color-outline-variant);
+                    border-radius: 6px;
+                    padding: 6px 12px;
+                    font-family: var(--font-ui);
+                    font-size: 12.5px;
+                    font-weight: 700;
+                    color: var(--color-on-surface-variant);
+                    cursor: pointer;
+                    transition: all 0.2s;
+                }
+                .adm-btn-close-results:hover {
+                    background: #f1f5f9;
+                    color: #111827;
+                }
+                
+                /* Summary cards in results */
+                .adm-sync-summary-cards {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    gap: 16px;
+                }
+                .adm-summary-card {
+                    border-radius: 10px;
+                    padding: 16px;
+                    display: flex;
+                    align-items: center;
+                    gap: 14px;
+                    box-shadow: var(--shadow-sm);
+                }
+                .adm-summary-card.card-total {
+                    background: #eff6ff;
+                    border: 1px solid #bfdbfe;
+                    color: #1d4ed8;
+                }
+                .adm-summary-card.card-new {
+                    background: #f0fdf4;
+                    border: 1px solid #bbf7d0;
+                    color: #15803d;
+                }
+                .adm-summary-card.card-duplicates {
+                    background: #fef3c7;
+                    border: 1px solid #fde68a;
+                    color: #b45309;
+                }
+                .adm-summary-card.card-errors {
+                    background: #fef2f2;
+                    border: 1px solid #fecaca;
+                    color: #b91c1c;
+                }
+                .card-icon {
+                    font-size: 28px;
+                }
+                .card-info {
+                    display: flex;
+                    flex-direction: column;
+                }
+                .card-label {
+                    font-family: var(--font-ui);
+                    font-size: 12px;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    opacity: 0.8;
+                }
+                .card-value {
+                    font-family: var(--font-data);
+                    font-size: 22px;
+                    font-weight: 700;
+                }
+                
+                /* Detailed results table */
+                .adm-results-table-wrapper {
+                    overflow-x: auto;
+                    border: 1px solid var(--color-outline-variant);
+                    border-radius: 8px;
+                }
+                .adm-results-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    text-align: left;
+                    font-family: var(--font-body);
+                    font-size: 13.5px;
+                }
+                .adm-results-table th {
+                    background: #f8fafc;
+                    padding: 12px 16px;
+                    font-weight: 700;
+                    color: var(--color-on-surface);
+                    border-bottom: 1.5px solid var(--color-outline-variant);
+                    font-family: var(--font-ui);
+                    font-size: 12.5px;
+                }
+                .adm-results-table td {
+                    padding: 12px 16px;
+                    border-bottom: 1px solid var(--color-outline-variant);
+                    color: var(--color-on-surface-variant);
+                }
+                .adm-results-table tr:last-child td {
+                    border-bottom: none;
+                }
+                .status-badge {
+                    display: inline-block;
+                    padding: 4px 8px;
+                    border-radius: 4px;
+                    font-family: var(--font-ui);
+                    font-size: 11px;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                }
+                .status-success {
+                    background: #dcfce7;
+                    color: #15803d;
+                }
+                .status-warning {
+                    background: #fef3c7;
+                    color: #b45309;
+                }
+                .status-error {
+                    background: #fee2e2;
+                    color: #b91c1c;
+                }
+                .text-success { color: #16a34a; }
+                .text-warning { color: #d97706; }
+                .text-error { color: #dc2626; }
+                .text-muted { color: #94a3b8; }
+                .font-bold { font-weight: 700; }
             `}</style>
 
             {/* Tab header selectors */}
@@ -1035,11 +1334,102 @@ function AdminPanel() {
             {/* Tab 2: API Data Sources */}
             {activeTab === "sources" && (
                 <>
+                    {/* Global Sync Control Panel */}
+                    <div className="adm-sync-control-panel" style={{ marginBottom: "20px" }}>
+                        <div className="adm-sync-control-header">
+                            <h3>Đồng Bộ Dữ Liệu Từ Tất Cả Nguồn (Crossref, OpenAlex, Semantic Scholar)</h3>
+                            <p>Nhập từ khóa tìm kiếm (mặc định: "machine learning") và nhấn nút để bắt đầu lấy bài báo từ 3 nguồn API.</p>
+                        </div>
+                        <div className="adm-sync-control-body">
+                            <div className="adm-sync-input-group">
+                                <span className="material-symbols-outlined adm-sync-input-icon">search</span>
+                                <input
+                                    type="text"
+                                    placeholder="Nhập từ khóa tìm kiếm (VD: artificial intelligence, machine learning)..."
+                                    value={syncAllQuery}
+                                    onChange={(e) => setSyncAllQuery(e.target.value)}
+                                    disabled={isSyncingAll}
+                                    className="adm-sync-input"
+                                />
+                            </div>
+                            <button
+                                onClick={handleSyncAll}
+                                disabled={isSyncingAll || syncingId !== null}
+                                className="adm-btn-sync-all"
+                            >
+                                {isSyncingAll ? (
+                                    <>
+                                        <div className="adm-loading-spinner adm-spinner-white" />
+                                        Đang đồng bộ...
+                                    </>
+                                ) : (
+                                    <>
+                                        <span className="material-symbols-outlined">sync</span>
+                                        Đồng bộ tất cả nguồn
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Sync Results Dashboard */}
+                    {allSyncResults && (
+                        <div className="adm-sync-results-dashboard" style={{ marginBottom: "20px" }}>
+                            <div className="adm-sync-results-header">
+                                <h4>Báo Cáo Kết Quả Đồng Bộ Toàn Cục</h4>
+                                <button className="adm-btn-close-results" onClick={() => setAllSyncResults(null)}>
+                                    Đóng báo cáo
+                                </button>
+                            </div>
+                            
+                            <div className="adm-results-table-wrapper">
+                                <table className="adm-results-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Tên Nguồn API</th>
+                                            <th>Trạng Thế</th>
+                                            <th>Bài báo lấy về</th>
+                                            <th>Bài báo mới</th>
+                                            <th>Bài báo trùng</th>
+                                            <th>Số lỗi xảy ra</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {allSyncResults.details.map((detail, index) => {
+                                            const hasErrors = detail.errors > 0;
+                                            const hasPapers = detail.newPapers > 0;
+                                            let statusText = "Thành công";
+                                            let statusClass = "status-success";
+                                            if (hasErrors) {
+                                                statusText = hasPapers ? "Hoàn thành có lỗi" : "Thất bại / Lỗi";
+                                                statusClass = hasPapers ? "status-warning" : "status-error";
+                                            }
+                                            return (
+                                                <tr key={index}>
+                                                    <td style={{ fontWeight: 700 }}>{detail.sourceName}</td>
+                                                    <td>
+                                                        <span className={`status-badge ${statusClass}`}>{statusText}</span>
+                                                    </td>
+                                                    <td>{detail.totalFetched}</td>
+                                                    <td className="text-success" style={{ fontWeight: 700 }}>+{detail.newPapers}</td>
+                                                    <td className="text-warning">{detail.duplicates}</td>
+                                                    <td className={detail.errors > 0 ? "text-error" : "text-muted"} style={{ fontWeight: detail.errors > 0 ? 700 : 400 }}>
+                                                        {detail.errors}
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    )}
+
                     {syncResult && (
-                        <div className="adm-sync-banner">
+                        <div className="adm-sync-banner" style={{ marginBottom: "20px" }}>
                             <span className="material-symbols-outlined" style={{ fontSize: 20 }}>check_circle</span>
                             <div>
-                                Synchronization successful! Retrieved: <strong>{syncResult.newPapers} new papers</strong>, duplicate <strong>{syncResult.duplicates} papers</strong>, errors: <strong>{syncResult.errors}</strong>.
+                                Đồng bộ thành công nguồn đơn lẻ! Retrieved: <strong>{syncResult.newPapers} new papers</strong>, duplicate <strong>{syncResult.duplicates} papers</strong>, errors: <strong>{syncResult.errors}</strong>.
                             </div>
                         </div>
                     )}
@@ -1078,7 +1468,7 @@ function AdminPanel() {
                                                 <td>
                                                     <button
                                                         className="adm-btn-sync"
-                                                        disabled={syncingId !== null}
+                                                        disabled={syncingId !== null || isSyncingAll}
                                                         onClick={() => handleSyncTrigger(s)}
                                                     >
                                                         {syncingId === s.id ? (

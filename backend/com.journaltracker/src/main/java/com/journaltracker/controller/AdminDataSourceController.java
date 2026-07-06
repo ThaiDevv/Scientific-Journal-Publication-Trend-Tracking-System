@@ -62,8 +62,22 @@ public class AdminDataSourceController {
         return ResponseEntity.ok(result);
     }
     @GetMapping("/sync/allsource")
-    public ResponseEntity<List<SyncResult>> allSources() {
-        List<SyncResult> list = dataSyncService.syncAllSources("machine learning");
+    public ResponseEntity<List<SyncResult>> allSources(@RequestParam(required = false) String query) {
+        String activeQuery = (query == null || query.isBlank()) ? "machine learning" : query;
+        List<SyncResult> list = dataSyncService.syncAllSources(activeQuery);
+        List<ApiDataSource> allDbSources = apiDataSourceRepository.findAll();
+        for (SyncResult res : list) {
+            if (res.getSourceName() != null) {
+                String cleanResName = res.getSourceName().replaceAll("\\s+", "").toLowerCase();
+                allDbSources.stream()
+                    .filter(s -> s.getName() != null && s.getName().replaceAll("\\s+", "").toLowerCase().equals(cleanResName))
+                    .findFirst()
+                    .ifPresent(s -> {
+                        s.setLastSyncAt(java.time.LocalDateTime.now());
+                        apiDataSourceRepository.save(s);
+                    });
+            }
+        }
         trendAnalysisService.recalculateTrends();
         return ResponseEntity.ok(list);
     }

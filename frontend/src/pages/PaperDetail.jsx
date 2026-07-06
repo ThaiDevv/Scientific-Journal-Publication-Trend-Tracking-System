@@ -209,18 +209,6 @@ function PaperDetail() {
                             <span className="material-symbols-outlined">bookmark</span>
                             <span>{bookmarked ? "Bookmarked" : "Bookmark"}</span>
                         </button>
-                        {paper.sourceUrl && (
-                            <a
-                                href={paper.sourceUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="af-btn-primary"
-                                style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", justifyItems: "center" }}
-                            >
-                                <span className="material-symbols-outlined" style={{ color: "var(--color-on-primary)" }}>download</span>
-                                <span>Source / PDF</span>
-                            </a>
-                        )}
                     </div>
                 </div>
 

@@ -35,6 +35,7 @@ public class DataSyncScheduler {
     private final NotificationService notificationService;
     private final ApiDataSourceRepository apiDataSourceRepository;
     private final SyncStatusService syncStatusService;
+
     @Scheduled(cron = "${sync.cron:0 0 13 * * ?}")
     public void syncData() {
         if (!syncProperties.isEnabled()) {

@@ -2,7 +2,7 @@ package com.journaltracker.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.journaltracker.entity.ResearchPaper;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -19,4 +19,6 @@ public class SyncResult {
 
     @JsonIgnore
     private List<ResearchPaper> syncedPapers = new ArrayList<>();
+
+   
 }
