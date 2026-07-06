@@ -10,6 +10,14 @@ A full-stack web application for tracking and analyzing scientific publication t
 
 The **Scientific Journal Publication Trend Tracking System** is a web-based application designed to help researchers, lecturers, and students monitor and analyze research trends in real-time. It aggregates publication data from multiple international APIs, performs analytics, and presents them in an interactive dashboard.
 
+### Context
+Trong bối cảnh số lượng bài báo khoa học và journal học thuật ngày càng gia tăng, việc theo dõi xu hướng nghiên cứu, chủ đề nổi bật và sự phát triển của các lĩnh vực học thuật trở nên khó khăn đối với giảng viên, sinh viên và nhà nghiên cứu. Các nền tảng học thuật hiện nay chủ yếu hỗ trợ tìm kiếm bài báo nhưng chưa tập trung nhiều vào việc phân tích xu hướng công bố theo thời gian và trực quan hóa dữ liệu nghiên cứu.
+
+### Problems
+- Khó theo dõi sự thay đổi và phát triển của các chủ đề nghiên cứu theo thời gian do số lượng bài báo khoa học ngày càng lớn.
+- Việc tìm kiếm bài báo trên các nền tảng học thuật hiện nay chủ yếu dựa trên keyword, chưa hỗ trợ phân tích xu hướng nghiên cứu một cách trực quan.
+- Giảng viên, sinh viên và nhà nghiên cứu mất nhiều thời gian để xác định các chủ đề đang nổi bật hoặc có tiềm năng nghiên cứu.
+
 ### Key Features
 - **Multi-source Aggregation**: Syncs with OpenAlex, Crossref, and Semantic Scholar.
 - **Trend Analytics**: Growth rate calculations, emerging topic detection, and comparisons.
@@ -17,6 +25,38 @@ The **Scientific Journal Publication Trend Tracking System** is a web-based appl
 - **Automated Sync**: Configurable cron-based background data synchronization.
 - **Follow & Notify**: Real-time notifications for followed journals, topics, or keywords.
 - **Rich Dashboard**: Word clouds, trend line charts, bar/pie charts for visual insights.
+
+### Primary Actors
+- **Researcher**: Phân tích xu hướng nghiên cứu, theo dõi journal và keyword chuyên sâu, khám phá các chủ đề mới nổi, và xem thống kê công bố theo thời gian.
+- **Lecturer / Student**: Tìm kiếm bài báo tham khảo, khám phá các chủ đề phổ biến, lưu bài báo hoặc keyword quan tâm, và xem dashboard xu hướng cơ bản.
+- **System Administrator**: Quản lý tài khoản người dùng, cấu hình nguồn dữ liệu API, cập nhật dữ liệu bài báo và quản lý hệ thống.
+
+### Functional Requirements
+- User authentication and authorization
+- Search research papers by keyword, author, or journal
+- View paper details and publication information
+- Track publication trends by keyword or topic
+- Display charts and dashboard statistics
+- View trending research topics
+- Save bookmarks for papers or keywords
+- Follow journals or research topics
+- Receive notifications for newly published papers
+- Generate simple analytical reports
+- Synchronize data from external academic APIs
+- Manage users and system configuration (Admin)
+
+### Main Entities
+- User
+- Research Paper
+- Journal
+- Keyword
+- Research Topic
+- Publication Trend
+- Author
+- Bookmark
+- Notification
+- Dashboard Report
+- API Data Source
 
 ---
 
