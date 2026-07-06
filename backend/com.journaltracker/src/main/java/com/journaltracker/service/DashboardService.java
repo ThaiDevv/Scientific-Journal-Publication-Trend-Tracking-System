@@ -1,6 +1,5 @@
 package com.journaltracker.service;
 
-import com.journaltracker.dto.TrendingTopic;
 import com.journaltracker.dto.response.DashboardStatsResponse;
 import com.journaltracker.dto.response.FieldDistributionResponse;
 import com.journaltracker.dto.response.JournalStatsResponse;
