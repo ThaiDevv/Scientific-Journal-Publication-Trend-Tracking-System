@@ -2,16 +2,23 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getPaperById } from "../api/paperApi";
 import { addBookmark, removeBookmark, getMyBookmarks } from "../api/bookmarkApi";
+import { useAuth } from "../hooks/useAuth";
+import { followApi } from "../api/followApi";
 
 function PaperDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
 
+    const { isAuthenticated } = useAuth();
     const [paper, setPaper] = useState(null);
     const [loading, setLoading] = useState(true);
     const [bookmarked, setBookmarked] = useState(false);
     const [actionLoading, setActionLoading] = useState(false);
     const [toastMessage, setToastMessage] = useState(null);
+
+    // Follow journal states
+    const [followedId, setFollowedId] = useState(null);
+    const [followLoading, setFollowLoading] = useState(false);
 
     // Show transient notification messages
     const triggerToast = (msg) => {
@@ -35,6 +42,23 @@ function PaperDetail() {
                     const bookmarks = bookmarkRes?.data?.body?.content || [];
                     const isSaved = bookmarks.some((item) => item.id === paperData.id);
                     setBookmarked(isSaved);
+                }
+
+                // 3. Check if this journal is followed
+                if (paperData && isAuthenticated) {
+                    const jId = paperData.journal?.id || paperData.journalId;
+                    if (jId) {
+                        try {
+                            const followRes = await followApi.getFollows();
+                            const follows = followRes?.data?.body || [];
+                            const match = follows.find(
+                                (f) => f.followType === "JOURNAL" && f.targetId === jId
+                            );
+                            setFollowedId(match ? match.id : null);
+                        } catch (e) {
+                            console.error("Failed to load follow status:", e);
+                        }
+                    }
                 }
             } catch (err) {
                 console.warn("Error connecting to Paper Detail API, using fallback mock data:", err);
@@ -92,6 +116,45 @@ function PaperDetail() {
             triggerToast(err?.response?.data?.message || "Action failed");
         } finally {
             setActionLoading(false);
+        }
+    };
+
+    // Follow Journal Toggle logic
+    const handleFollowToggle = async () => {
+        if (!isAuthenticated) {
+            triggerToast("Please login to follow journals!");
+            return;
+        }
+        if (!paper) return;
+        const jId = paper.journal?.id || paper.journalId;
+        if (!jId) return;
+
+        setFollowLoading(true);
+        try {
+            if (followedId) {
+                await followApi.unfollow(followedId);
+                setFollowedId(null);
+                triggerToast("Unfollowed journal successfully");
+            } else {
+                const res = await followApi.followJournal(jId);
+                const followObj = res.data?.body;
+                if (followObj) {
+                    setFollowedId(followObj.id);
+                } else {
+                    const followRes = await followApi.getFollows();
+                    const follows = followRes?.data?.body || [];
+                    const match = follows.find(
+                        (f) => f.followType === "JOURNAL" && f.targetId === jId
+                    );
+                    setFollowedId(match ? match.id : null);
+                }
+                triggerToast("Followed journal successfully");
+            }
+        } catch (err) {
+            console.error("Follow toggle failed:", err);
+            triggerToast(err?.response?.data?.message || "Action failed");
+        } finally {
+            setFollowLoading(false);
         }
     };
 
@@ -209,6 +272,19 @@ function PaperDetail() {
                             <span className="material-symbols-outlined">bookmark</span>
                             <span>{bookmarked ? "Bookmarked" : "Bookmark"}</span>
                         </button>
+
+                        {journalId && (
+                            <button
+                                className={`af-btn-bookmark${followedId ? " bookmarked" : ""}`}
+                                onClick={handleFollowToggle}
+                                disabled={followLoading}
+                            >
+                                <span className="material-symbols-outlined">
+                                    {followedId ? "check" : "add"}
+                                </span>
+                                <span>{followedId ? "Following Journal" : "Follow Journal"}</span>
+                            </button>
+                        )}
                     </div>
                 </div>
 

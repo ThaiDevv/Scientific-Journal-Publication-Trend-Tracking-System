@@ -25,6 +25,7 @@ public class AdminDataSourceController {
     private final DataSyncService dataSyncService;
     private final SyncStatusService syncStatusService;
     private final com.journaltracker.service.TrendAnalysisService trendAnalysisService;
+    private final com.journaltracker.service.NotificationService notificationService;
 
     @GetMapping("/datasources")
     public ResponseEntity<List<DataSourceResponse>> listSources() {
@@ -59,6 +60,12 @@ public class AdminDataSourceController {
         });
         trendAnalysisService.recalculateTrends();
         syncStatusService.setLast(result);
+
+        // Gửi thông báo cho người dùng đang theo dõi
+        if (result.getSyncedPapers() != null && !result.getSyncedPapers().isEmpty()) {
+            notificationService.notifyFollowers(result.getSyncedPapers());
+        }
+
         return ResponseEntity.ok(result);
     }
     @GetMapping("/sync/allsource")
@@ -76,6 +83,10 @@ public class AdminDataSourceController {
                         s.setLastSyncAt(java.time.LocalDateTime.now());
                         apiDataSourceRepository.save(s);
                     });
+            }
+            // Gửi thông báo cho người dùng
+            if (res.getSyncedPapers() != null && !res.getSyncedPapers().isEmpty()) {
+                notificationService.notifyFollowers(res.getSyncedPapers());
             }
         }
         trendAnalysisService.recalculateTrends();

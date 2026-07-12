@@ -61,7 +61,6 @@ public class SemanticScholarClient implements ExternalApiClient {
                 )
                 .toUriString();
 
-        System.out.println(url);
         HttpHeaders headers = new HttpHeaders();;
         if (apiKey != null && !apiKey.isBlank()) {
             headers.set("x-api-key", apiKey);
@@ -76,8 +75,6 @@ public class SemanticScholarClient implements ExternalApiClient {
                 entity,
                 String.class
         );
-
-        System.out.println("SemanticScholar fetchPapers Raw Response: " + response.getBody());
 
         try {
 
@@ -199,7 +196,6 @@ public class SemanticScholarClient implements ExternalApiClient {
                     String.class
             );
             String body = response.getBody();
-            System.out.println("SemanticScholar Raw Response: " + body);
             return body;
         } catch (Exception e) {
             System.err.println("Failed to fetch raw response from SemanticScholar: " + e.getMessage());

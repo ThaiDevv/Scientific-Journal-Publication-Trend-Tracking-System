@@ -118,7 +118,6 @@ public class CrossrefClient implements ExternalApiClient {
                     .timeout(REQUEST_TIMEOUT)
                     .retryWhen(rateLimitRetry())
                     .block();
-            System.out.println("Crossref Raw Response: " + body);
             return body;
         } catch (Exception exception) {
             log.warn("Crossref fetchRawResponse failed: {}", exception.getMessage());
@@ -134,8 +133,6 @@ public class CrossrefClient implements ExternalApiClient {
                     .timeout(REQUEST_TIMEOUT)
                     .retryWhen(rateLimitRetry())
                     .block();
-
-            System.out.println("Crossref executeWorksRequest Raw Response: " + body);
 
 
             JsonNode items = objectMapper.readTree(body).path("message").path("items");

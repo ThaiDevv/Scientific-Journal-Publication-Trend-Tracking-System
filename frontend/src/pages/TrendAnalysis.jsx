@@ -183,10 +183,9 @@ const SemanticCloud = ({ data, loading }) => {
    ═══════════════════════════════════════════ */
 const TrendAnalysis = () => {
     const navigate = useNavigate();
-    const defaultFallbackKeywords = ['AI', 'Big Data', 'Blockchain', 'Quantum Computing', 'Cybersecurity'];
 
     const [inputValue, setInputValue] = useState('');
-    const [selectedKeywords, setSelectedKeywords] = useState(defaultFallbackKeywords);
+    const [selectedKeywords, setSelectedKeywords] = useState([]);
     const [yearFrom, setYearFrom] = useState(2018);
     const [yearTo, setYearTo] = useState(2025);
     const [chartData, setChartData] = useState([]);
@@ -238,17 +237,9 @@ const TrendAnalysis = () => {
                 const mapped = list.map(kw => ({ id: kw.id, text: kw.name, value: kw.usageCount }));
                 setTrendingKeywords(mapped);
                 setSuggestions(mapped.map(m => m.text));
-
-                // Get top 5 keywords from API, or fallback to default list
-                const apiTop5 = mapped.slice(0, 5).map(m => m.text);
-                const initialKws = apiTop5.length >= 3 ? apiTop5 : defaultFallbackKeywords;
-                setSelectedKeywords(initialKws);
-                handleAnalyze(initialKws);
             })
             .catch(() => {
                 setTrendingKeywords([]);
-                setSelectedKeywords(defaultFallbackKeywords);
-                handleAnalyze(defaultFallbackKeywords);
             })
             .finally(() => setLoadingCloud(false));
     }, []);
@@ -835,11 +826,33 @@ const TrendAnalysis = () => {
                                             color: selectedKeywords.includes(item.name) ? 'var(--color-primary)' : '#94a3b8',
                                             padding: 0,
                                         }}
+                                        title={selectedKeywords.includes(item.name) ? "Remove from comparison" : "Add to comparison"}
                                     >
                                         <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>
                                             {selectedKeywords.includes(item.name) ? "check_circle" : "add_circle"}
                                         </span>
                                     </button>
+
+                                    {/* Follow Keyword button */}
+                                    {item.id && (
+                                        <button
+                                            onClick={(e) => handleFollowKeywordToggle(e, item.name, item.id)}
+                                            style={{
+                                                background: 'none',
+                                                border: 'none',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                color: followedKeywords.some(f => f.targetName === item.name) ? '#10b981' : '#94a3b8',
+                                                padding: 0,
+                                            }}
+                                            title={followedKeywords.some(f => f.targetName === item.name) ? "Unfollow keyword" : "Follow keyword"}
+                                        >
+                                            <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>
+                                                {followedKeywords.some(f => f.targetName === item.name) ? "notifications_active" : "notifications"}
+                                            </span>
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         ))}

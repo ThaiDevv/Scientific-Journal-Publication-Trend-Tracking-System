@@ -88,12 +88,28 @@ public class ResearchTopicServiceImpl implements ResearchTopicService {
                 .map(k -> new TopicDetailResponse.KeywordDto(k.getId(), k.getName()))
                 .toList();
 
+        List<Long> keywordIds = topic.getKeywords().stream()
+                .map(Keyword::getId)
+                .toList();
+
+        List<TopicDetailResponse.TrendData> trendDataList = Collections.emptyList();
+        if (!keywordIds.isEmpty()) {
+            List<Object[]> rawTrends = publicationTrendRepository.findTrendDataByKeywordIds(keywordIds);
+            trendDataList = rawTrends.stream()
+                    .map(row -> new TopicDetailResponse.TrendData(
+                            ((Number) row[0]).intValue(),
+                            ((Number) row[1]).intValue()
+                    ))
+                    .toList();
+        }
+
         return TopicDetailResponse.builder()
                 .id(topic.getId())
                 .name(topic.getName())
                 .description(topic.getDescription())
                 .isTrending(topic.isTrending())
                 .keywords(keywordDtos)
+                .trendData(trendDataList)
                 .build();
     }
 

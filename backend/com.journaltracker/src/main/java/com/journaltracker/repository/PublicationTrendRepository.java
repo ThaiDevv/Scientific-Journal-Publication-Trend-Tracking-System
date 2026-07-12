@@ -22,4 +22,11 @@ public interface PublicationTrendRepository extends JpaRepository<PublicationTre
            "WHERE t.year = :currentYear " +
            "ORDER BY t.growthRate DESC")
     List<TrendingTopic> findTopTrending(@Param("currentYear") int currentYear, Pageable pageable);
+
+    @Query("SELECT pt.year, SUM(pt.paperCount) " +
+           "FROM PublicationTrend pt " +
+           "WHERE pt.keywordId IN :keywordIds " +
+           "GROUP BY pt.year " +
+           "ORDER BY pt.year ASC")
+    List<Object[]> findTrendDataByKeywordIds(@Param("keywordIds") List<Long> keywordIds);
 }

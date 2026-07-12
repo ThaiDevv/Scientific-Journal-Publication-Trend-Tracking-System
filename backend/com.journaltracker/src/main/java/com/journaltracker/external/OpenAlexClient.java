@@ -145,7 +145,6 @@ public class OpenAlexClient implements ExternalApiClient {
                     .timeout(REQUEST_TIMEOUT)
                     .retryWhen(rateLimitRetry())
                     .block();
-            System.out.println("OpenAlex Raw Response: " + body);
             return body;
         } catch (Exception exception) {
             log.warn("OpenAlex fetchRawResponse failed: {}", exception.getMessage());
@@ -161,8 +160,6 @@ public class OpenAlexClient implements ExternalApiClient {
                     .timeout(REQUEST_TIMEOUT)
                     .retryWhen(rateLimitRetry())
                     .block();
-
-            System.out.println("OpenAlex executeWorksRequest Raw Response: " + body);
 
 
             JsonNode response = objectMapper.readTree(body);
