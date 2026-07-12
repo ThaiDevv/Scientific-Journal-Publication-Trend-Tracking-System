@@ -44,14 +44,14 @@ const Dashboard = () => {
             .catch(() => setStats({ totalPapers: 12540, totalJournals: 450, totalAuthors: 8200, totalKeywords: 15000 }))
             .finally(() => setLoadingStats(false));
 
-        // Compare Trends (AI vs Blockchain vs Quantum)
-        const compareKeywords = ["AI", "Blockchain", "Quantum"];
+        // Compare Trends (Artificial Intelligence vs Blockchain vs Quantum)
+        const compareKeywords = ["Artificial Intelligence", "Blockchain", "Quantum"];
         const mockTrend = [
-            { year: 2022, AI: 18, Blockchain: 24, Quantum: 5 },
-            { year: 2023, AI: 45, Blockchain: 32, Quantum: 10 },
-            { year: 2024, AI: 68, Blockchain: 28, Quantum: 22 },
-            { year: 2025, AI: 88, Blockchain: 45, Quantum: 30 },
-            { year: 2026, AI: 98, Blockchain: 50, Quantum: 60 }
+            { year: 2022, "Artificial Intelligence": 18, Blockchain: 24, Quantum: 5 },
+            { year: 2023, "Artificial Intelligence": 45, Blockchain: 32, Quantum: 10 },
+            { year: 2024, "Artificial Intelligence": 68, Blockchain: 28, Quantum: 22 },
+            { year: 2025, "Artificial Intelligence": 88, Blockchain: 45, Quantum: 30 },
+            { year: 2026, "Artificial Intelligence": 98, Blockchain: 50, Quantum: 60 }
         ];
         setLoadingTrend(true);
         trendApi.getCompareTrends(compareKeywords)
@@ -519,7 +519,7 @@ const Dashboard = () => {
                         </div>
                         <div className="db-legend">
                             <span className="db-legend-item">
-                                <span className="db-legend-dot" style={{ background: '#111827' }} /> AI
+                                <span className="db-legend-dot" style={{ background: '#111827' }} /> Artificial Intelligence
                             </span>
                             <span className="db-legend-item">
                                 <span className="db-legend-dot" style={{ background: '#0f766e' }} /> Blockchain
@@ -559,8 +559,8 @@ const Dashboard = () => {
                                     />
                                     <Line
                                         type="monotone"
-                                        dataKey="AI"
-                                        name="AI"
+                                        dataKey="Artificial Intelligence"
+                                        name="Artificial Intelligence"
                                         stroke="#111827"
                                         strokeWidth={2.5}
                                         dot={false}
