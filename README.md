@@ -177,7 +177,6 @@ Project tasks and assignments grouped by team members:
 ### Trãi Nguyễn Anh
 - [x] **JP-13**: Admin - Quản lý Users
 - [x] **JP-21**: Author & Keyword API
-- [x] **JP-25**: OpenAlex API Client
 - [x] **JP-31**: Research Topic CRUD
 - [x] **JP-35**: Frontend - Dashboard Page
 - [x] **JP-38**: Frontend - Trend Analysis Page
@@ -194,6 +193,7 @@ Project tasks and assignments grouped by team members:
 - [x] **JP-41**: Bookmark API
 
 ### Trương Lâm Hưng
+- [x] **JP-25**: OpenAlex API Client
 - [x] **JP-26**: Crossref API Client
 - [x] **JP-30**: Trend API Endpoints
 - [x] **JP-47**: Report Generation API
