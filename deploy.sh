@@ -51,7 +51,7 @@ fi
 echo ""
 echo "📂 Bước 3: Clone repository..."
 REPO_DIR="$HOME/journal-trend-tracker"
-REPO_URL="https://github.com/YOUR_GITHUB_USERNAME/Scientific-Journal-Publication-Trend-Tracking-System.git"
+REPO_URL="https://github.com/ThaiDevv/Scientific-Journal-Publication-Trend-Tracking-System.git"
 
 if [ -d "$REPO_DIR" ]; then
     echo "📂 Repository đã tồn tại, pulling latest..."
