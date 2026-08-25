@@ -1,0 +1,99 @@
+# ============================================================
+# Docker Compose - Scientific Journal Trend Tracking System
+# Services: MySQL 8.0 + Spring Boot Backend + React Frontend
+# ============================================================
+# Sử dụng: docker compose up -d
+# Dừng:    docker compose down
+# Logs:    docker compose logs -f
+# Rebuild: docker compose up -d --build
+# ============================================================
+
+services:
+  # ---- MySQL Database ----
+  mysql:
+    image: mysql:8.0
+    container_name: jtracker-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: journal_tracker_db
+      MYSQL_USER: jtracker
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-jtracker_password}
+      MYSQL_CHARACTER_SET_SERVER: utf8mb4
+      MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
+    ports:
+      - "3307:3306"    # Port 3307 bên ngoài để tránh conflict với MySQL local
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - jtracker-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rootpassword}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    command: --default-authentication-plugin=mysql_native_password
+
+  # ---- Spring Boot Backend ----
+  backend:
+    build:
+      context: ./backend/com.journaltracker
+      dockerfile: Dockerfile
+    container_name: jtracker-backend
+    restart: unless-stopped
+    environment:
+      # Database
+      DB_URL: jdbc:mysql://mysql:3306/journal_tracker_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      DB_USERNAME: jtracker
+      DB_PASSWORD: ${MYSQL_PASSWORD:-jtracker_password}
+      # JWT
+      JWT_SECRET: ${JWT_SECRET:-mySuperSecretKeyForJwtAuthenticationSpringBootProject2026VerySecureSecretKey}
+      JWT_ACCESS_EXPIRATION: "86400000"
+      JWT_REFRESH_EXPIRATION: "604800000"
+      # Server
+      PORT: "8080"
+      # External APIs
+      OPENALEX_EMAIL: ${OPENALEX_EMAIL:-tranvanthai20062@gmail.com}
+      SEMANTIC_SCHOLAR_API_KEY: ${SEMANTIC_SCHOLAR_API_KEY:-}
+      # Sync
+      SYNC_ENABLED: "true"
+      SYNC_CRON: "0 0 13 * * ?"
+      SYNC_DEFAULT_QUERY: "machine learning"
+      SYNC_MAX_PAGES: "10"
+      # CORS - cho phép frontend container
+      CORS_ALLOWED_ORIGINS: "http://localhost,http://localhost:80,http://frontend"
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - jtracker-net
+
+  # ---- React Frontend (Nginx) ----
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: /api
+        VITE_APP_NAME: "Journal Trend Tracker"
+    container_name: jtracker-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - jtracker-net
+
+# ---- Persistent Volumes ----
+volumes:
+  mysql_data:
+    driver: local
+
+# ---- Docker Network ----
+networks:
+  jtracker-net:
+    driver: bridge
